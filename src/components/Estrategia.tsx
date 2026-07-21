@@ -33,17 +33,21 @@ export function Estrategia() {
   const [newLinkUrl, setNewLinkUrl] = useState('');
 
   useEffect(() => {
-    localStorage.setItem('outgrid_reference_links', JSON.stringify(links));
     if (supabase) {
-      supabase.from('reference_links').select('*').then(({ data, error }) => {
-        if (!error && data && data.length > 0) {
-          setLinks(data.map((item: any) => ({
-            id: String(item.id),
-            title: item.title,
-            url: item.url
-          })));
+      (async () => {
+        try {
+          const { data, error } = await supabase.from('reference_links').select('*');
+          if (!error && data && data.length > 0) {
+            setLinks(data.map((item: any) => ({
+              id: String(item.id),
+              title: item.title,
+              url: item.url
+            })));
+          }
+        } catch (err) {
+          console.warn('Supabase links fetch error:', err);
         }
-      }).catch(err => console.warn('Supabase links fetch error:', err));
+      })();
     }
   }, []);
 
@@ -207,16 +211,28 @@ export function Estrategia() {
     setNewLinkUrl('');
 
     if (supabase) {
-      supabase.from('reference_links').insert([
-        { id: newLink.id, title: newLink.title, url: newLink.url }
-      ]).catch(err => console.warn('Supabase link insert error:', err));
+      (async () => {
+        try {
+          await supabase.from('reference_links').insert([
+            { id: newLink.id, title: newLink.title, url: newLink.url }
+          ]);
+        } catch (err) {
+          console.warn('Supabase link insert error:', err);
+        }
+      })();
     }
   };
 
   const handleRemoveLink = (id: string) => {
     setLinks(links.filter(link => link.id !== id));
     if (supabase) {
-      supabase.from('reference_links').delete().eq('id', id).catch(err => console.warn('Supabase link delete error:', err));
+      (async () => {
+        try {
+          await supabase.from('reference_links').delete().eq('id', id);
+        } catch (err) {
+          console.warn('Supabase link delete error:', err);
+        }
+      })();
     }
   };
 

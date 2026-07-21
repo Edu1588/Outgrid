@@ -310,14 +310,14 @@ export function Captacao() {
               <div className="absolute inset-0 bg-orange-primary/20 blur-3xl rounded-full"></div>
               <img 
                 src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784649912/ChatGPT_Image_21_de_jul._de_2026_13_03_31_tm1lry.png" 
-                alt="Lucas Correa" 
+                alt="Lucas Corrêa" 
                 className="w-full max-w-md mx-auto lg:mx-0 h-auto object-cover rounded-3xl relative z-10 shadow-2xl border border-white/10"
               />
             </div>
             <div className="w-full lg:w-1/2">
               <span className="text-orange-primary font-bold tracking-widest uppercase text-sm mb-4 block">Conheça o Mentor</span>
               <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight text-white">
-                Lucas Correa
+                Lucas Corrêa
               </h2>
               <div className="space-y-4 text-gray-400 text-lg leading-relaxed">
                 <p>

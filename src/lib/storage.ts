@@ -15,6 +15,17 @@ export interface PageView {
   timestamp: string;
 }
 
+export interface ScrapedLead {
+  id: string;
+  storeName: string;
+  city: string;
+  email: string;
+  phone: string;
+  instagramLikes?: number;
+  status: 'Não contatado' | 'Em contato' | 'Reunião agendada' | 'Fechado' | 'Perdido';
+  createdAt: string;
+}
+
 export function saveLead(leadData: Omit<Lead, 'id' | 'createdAt'>) {
   try {
     const currentLeadsStr = localStorage.getItem('outgrid_leads');
@@ -68,5 +79,44 @@ export function getPageViews(): PageView[] {
   } catch (e) {
     console.error('Failed to get page views:', e);
     return [];
+  }
+}
+
+export function getScrapedLeads(): ScrapedLead[] {
+  try {
+    const leadsStr = localStorage.getItem('outgrid_scraped_leads');
+    return leadsStr ? JSON.parse(leadsStr) : [];
+  } catch (e) {
+    console.error('Failed to get scraped leads:', e);
+    return [];
+  }
+}
+
+export function saveScrapedLead(leadData: Omit<ScrapedLead, 'id' | 'createdAt'>) {
+  try {
+    const currentLeads = getScrapedLeads();
+    const newLead: ScrapedLead = {
+      ...leadData,
+      id: Math.random().toString(36).substring(2, 9),
+      createdAt: new Date().toISOString()
+    };
+    currentLeads.push(newLead);
+    localStorage.setItem('outgrid_scraped_leads', JSON.stringify(currentLeads));
+    return newLead;
+  } catch (e) {
+    console.error('Failed to save scraped lead:', e);
+  }
+}
+
+export function updateScrapedLeadStatus(id: string, status: ScrapedLead['status']) {
+  try {
+    const currentLeads = getScrapedLeads();
+    const leadIndex = currentLeads.findIndex(l => l.id === id);
+    if (leadIndex >= 0) {
+      currentLeads[leadIndex].status = status;
+      localStorage.setItem('outgrid_scraped_leads', JSON.stringify(currentLeads));
+    }
+  } catch (e) {
+    console.error('Failed to update scraped lead status:', e);
   }
 }

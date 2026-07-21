@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ProtectedPage } from './ProtectedPage';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
@@ -21,18 +21,33 @@ export function Estrategia() {
   const [links, setLinks] = useState<ReferenceLink[]>([]);
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
-  const [images, setImages] = useState<MoodboardImage[]>([
-    {
-      id: 'default-1',
-      url: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1784649912/ChatGPT_Image_21_de_jul._de_2026_13_03_31_tm1lry.png',
-      name: 'Lucas Correa - Mentor',
-    },
-    {
-      id: 'default-2',
-      url: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1784650580/criativoLucas_o6byvu.png',
-      name: 'Estilo de Criativo',
+  const [images, setImages] = useState<MoodboardImage[]>(() => {
+    const saved = localStorage.getItem('outgrid_moodboard_images');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved images', e);
+      }
     }
-  ]);
+    return [
+      {
+        id: 'default-1',
+        url: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1784649912/ChatGPT_Image_21_de_jul._de_2026_13_03_31_tm1lry.png',
+        name: 'Lucas Corrêa - Mentor',
+      },
+      {
+        id: 'default-2',
+        url: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1784650580/criativoLucas_o6byvu.png',
+        name: 'Estilo de Criativo',
+      }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('outgrid_moodboard_images', JSON.stringify(images));
+  }, [images]);
+
   const [isUploading, setIsUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -96,38 +111,47 @@ export function Estrategia() {
     if (!file) return;
 
     setIsUploading(true);
-    try {
-      if (!supabase) {
-        throw new Error('Supabase client not initialized');
-      }
+    let publicUrl = '';
+    let pathId = Math.random().toString(36).substring(7);
 
+    try {
       const compressedFile = await compressImage(file);
       
-      const { data, error } = await supabase.storage
-        .from('moodboard')
-        .upload(compressedFile.name, compressedFile, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      if (supabase) {
+        const { data, error } = await supabase.storage
+          .from('moodboard')
+          .upload(compressedFile.name, compressedFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-      if (error) {
-        throw error;
+        if (error) {
+          throw error;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('moodboard')
+          .getPublicUrl(data.path);
+          
+        publicUrl = urlData.publicUrl;
+        pathId = data.path;
+      } else {
+        throw new Error('Supabase client not initialized');
       }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('moodboard')
-        .getPublicUrl(data.path);
-
+    } catch (error) {
+      console.warn('Fallback to local storage due to Supabase error:', error);
+      // Fallback: convert file to data URL and save locally
+      publicUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.readAsDataURL(file);
+      });
+    } finally {
       setImages(prev => [...prev, {
-        id: data.path,
+        id: pathId,
         url: publicUrl,
         name: 'Nova Referência'
       }]);
-
-    } catch (error) {
-      console.error('Erro ao fazer upload da imagem:', error);
-      alert('Erro ao fazer upload da imagem. Verifique se o bucket "moodboard" existe e é público no Supabase.');
-    } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';

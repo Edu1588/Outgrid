@@ -3,6 +3,8 @@ import { motion } from "motion/react";
 import { Check, ArrowRight } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
+import { saveLead } from "../lib/storage";
+
 export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -25,6 +27,7 @@ export function Contact() {
       if (supabase) {
         await supabase.from('leads').insert([data]);
       }
+      saveLead(data);
     } catch (err) {
       console.error('Error saving lead:', err);
     }

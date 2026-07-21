@@ -61,6 +61,9 @@ const DiagonalMarquee = () => {
 import { SpeedometerHover } from "./SpeedometerHover";
 import { Helmet } from "react-helmet-async";
 
+import { JourneyCarousel } from "./JourneyCarousel";
+import { saveLead } from "../lib/storage";
+
 export function Captacao() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,6 +85,7 @@ export function Captacao() {
       if (supabase) {
         await supabase.from('leads').insert([data]);
       }
+      saveLead(data);
     } catch (err) {
       console.error('Error saving lead:', err);
     }
@@ -295,6 +299,8 @@ export function Captacao() {
       </section>
 
       <DiagonalMarquee />
+
+      <JourneyCarousel />
 
       {/* Conheça o Mentor */}
       <section className="py-24 bg-[#0A0A0A] border-t border-b border-white/5 relative overflow-hidden">

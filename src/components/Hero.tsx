@@ -21,7 +21,7 @@ export function Hero() {
            <img 
              src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784652418/HERO_OUTGRID_suvjmq.png"
              alt="Car"
-             className="w-full h-full object-cover opacity-50 mix-blend-luminosity"
+             className="w-full h-full object-cover object-[25%_center] md:object-center opacity-50 mix-blend-luminosity"
            />
          </motion.div>
       </div>

@@ -23,8 +23,9 @@ import { TermsOfUse } from "./components/TermsOfUse";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
 import { ApresentacaoComercial } from "./components/ApresentacaoComercial";
 import { Estrategia } from "./components/Estrategia";
-
 import { Captacao } from "./components/Captacao";
+import { Admin } from "./components/Admin";
+import { trackPageView } from "./lib/storage";
 
 function smoothScroll(targetY: number, duration: number) {
   const startY = window.scrollY;
@@ -64,6 +65,16 @@ function ScrollManager() {
     }
   }, [pathname, hash]);
 
+  return null;
+}
+
+function PageTracker() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (!pathname.startsWith('/admin')) {
+      trackPageView(pathname);
+    }
+  }, [pathname]);
   return null;
 }
 
@@ -122,6 +133,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <PageTracker />
       <Routes>
         <Route path="/" element={<MainApp />} />
         <Route path="/termos" element={<TermsOfUse />} />
@@ -129,6 +141,7 @@ export default function App() {
         <Route path="/apresentacao-comercial" element={<ApresentacaoComercial />} />
         <Route path="/estrategia" element={<Estrategia />} />
         <Route path="/captacao" element={<Captacao />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );

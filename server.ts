@@ -114,19 +114,21 @@ async function startServer() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama3-70b-8192",
+          model: "llama-3.3-70b-versatile",
           messages: [
             {
               role: "system",
               content: `Você é um analista de inteligência de mercado. A partir dos resultados de busca (título, snippet e link) do Google sobre concessionárias, extraia informações estruturadas.
 Retorne um JSON contendo uma propriedade "leads", que é um array de objetos.
 Cada objeto deve ter:
-- "storeName": O nome real e limpo da loja (sem arrobas, sufixos desnecessários ou textos da rede social).
+- "storeName": O nome real e limpo da loja. Se o título for muito genérico (como "Loja de veículos" ou "Instagram photo"), extraia o nome da loja a partir do nome de usuário no link do Instagram (ex: instagram.com/nomedaloja -> Nome da Loja) ou do snippet. Evite nomes genéricos.
 - "score": Um número de 0 a 100. Calcule o score baseado na oportunidade de vender serviços de marketing/site:
    * Lojas COM site próprio (links que não sejam de redes sociais) recebem score BAIXO (ex: 10-30).
    * Lojas SEM site próprio (links de Instagram/Facebook/portais) recebem score ALTO (ex: 70-100).
    * Se o snippet indicar poucos seguidores ou curtidas, aumente o score.
-- "link": O mesmo link original fornecido.
+- "link": Tente extrair o link do SITE OFICIAL da loja a partir do snippet (ex: www.loja.com.br). Não retorne o link do Instagram. Se não encontrar o site oficial no snippet, retorne uma string vazia "".
+- "phone": Tente extrair um número de telefone ou WhatsApp do snippet. Se não encontrar, retorne uma string vazia "".
+- "email": Tente extrair um email do snippet. Se não encontrar, retorne uma string vazia "".
 
 Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do JSON.`
             },
@@ -140,7 +142,9 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do
       });
 
       if (!groqResponse.ok) {
-        throw new Error(`Groq API responded with status: ${groqResponse.status}`);
+        const errText = await groqResponse.text();
+        console.error("Groq Error Response:", errText);
+        throw new Error(`Groq API responded with status: ${groqResponse.status}. Body: ${errText}`);
       }
 
       const groqData = await groqResponse.json();
@@ -162,11 +166,11 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do
           id: crypto.randomBytes(4).toString("hex"),
           storeName: lead.storeName || "Loja Desconhecida",
           city: randomCity,
-          email: "contato@loja.com.br", 
-          phone: "(00) 0000-0000",
+          email: lead.email || "", 
+          phone: lead.phone || "",
           score: lead.score || 50,
           status: 'Não contatado',
-          link: lead.link,
+          link: lead.link || "",
           createdAt: new Date().toISOString()
         };
       });
@@ -177,9 +181,9 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do
       await saveLeadsToDB(updatedLeads);
 
       res.json({ success: true, count: allLeads.length, leads: allLeads });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Scraping error:", error);
-      res.status(500).json({ error: "Failed to scrape data" });
+      res.status(500).json({ error: "Failed to scrape data", details: error.message });
     }
   });
 

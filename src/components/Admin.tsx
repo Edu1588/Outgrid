@@ -314,28 +314,14 @@ export function Admin() {
       
       {/* Scraper Control Panel */}
       <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-          <div className="max-w-2xl">
+        <div className="flex flex-col justify-between items-start gap-6">
+          <div className="max-w-3xl">
             <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
-              <Search className="text-orange-primary" /> Raspagem Ativa (Integração Serper + Groq)
+              <Search className="text-orange-primary" /> Como funciona a busca de leads
             </h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Busque concessionárias de pequeno e médio porte no Google na região de Campinas. A inteligência artificial (Groq) analisa os resultados, limpa o nome real da loja e calcula um score de oportunidade (lojas sem site próprio e com menor engajamento ganham scores mais altos). A busca seleciona automaticamente cidades da região (Campinas, Valinhos, Vinhedo, etc).
+              Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja e calcula um score de oportunidade: lojas que não possuem site próprio e têm menor engajamento recebem scores mais altos, indicando maior potencial para venda de serviços. A busca percorre rotineiramente cidades da região (Campinas, Valinhos, Vinhedo, etc).
             </p>
-          </div>
-          
-          <div className="flex-1 w-full lg:w-auto flex justify-end items-center gap-2">
-            <button 
-              onClick={simulateScraping}
-              disabled={isScraping}
-              className="bg-orange-primary hover:bg-[#FF7043] disabled:opacity-50 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shadow-lg"
-            >
-              {isScraping ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Buscando...</>
-              ) : (
-                <><RefreshCw className="w-4 h-4" /> Buscar Novas Lojas (Campinas e Região)</>
-              )}
-            </button>
           </div>
         </div>
       </div>
@@ -377,11 +363,24 @@ export function Admin() {
                 <tr key={lead.id} className="hover:bg-white/5 transition-colors group">
                   <td className="p-4">
                     <div className="font-bold text-white mb-1">{lead.storeName}</div>
-                    <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.city}</div>
+                    <div className="flex flex-col gap-1">
+                      <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.city}</div>
+                      {lead.link && (
+                        <a href={lead.link} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-primary hover:underline truncate max-w-[200px] inline-block">
+                          {lead.link}
+                        </a>
+                      )}
+                    </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-sm text-gray-300 flex items-center gap-1 mb-1"><Phone className="w-3 h-3 text-gray-500" /> {lead.phone}</div>
-                    <div className="text-xs text-gray-500 flex items-center gap-1"><Mail className="w-3 h-3" /> {lead.email}</div>
+                    <div className="text-sm text-gray-300 flex items-center gap-1 mb-1">
+                      <Phone className="w-3 h-3 text-gray-500" /> 
+                      {lead.phone || <span className="text-gray-600 italic">Não encontrado</span>}
+                    </div>
+                    <div className="text-xs text-gray-500 flex items-center gap-1">
+                      <Mail className="w-3 h-3" /> 
+                      {lead.email || <span className="text-gray-600 italic">Não encontrado</span>}
+                    </div>
                   </td>
                   <td className="p-4">
                     {lead.score !== undefined ? (

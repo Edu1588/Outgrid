@@ -37,7 +37,7 @@ const products = [
     image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&auto=format&fit=crop&q=60",
     title: "OUTGRID",
     subtitle: "Tecnologia que converte",
-    description: "Plataforma completa de vendas com página dos veículos, site do vendedor, IA de atendimento, integração com estoque e ferramentas de conversão.",
+    description: "Mentoria e estratégia completa de vendas com página dos veículos, site do vendedor, IA de atendimento, integração com estoque e ferramentas de conversão.",
     features: [
       "Página dedicada aos veículos",
       "Site personalizado por vendedor",

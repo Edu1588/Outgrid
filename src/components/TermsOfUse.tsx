@@ -22,8 +22,8 @@ export function TermsOfUse() {
             </section>
             
             <section>
-              <h2 className="text-2xl font-bold text-white mb-4">2. Uso da Plataforma</h2>
-              <p>Nossa plataforma foi projetada para conectar o estoque de lojas de automóveis a um site profissional. Você concorda em usar a plataforma apenas para fins legais e de acordo com todas as leis aplicáveis.</p>
+              <h2 className="text-2xl font-bold text-white mb-4">2. Uso dos Serviços</h2>
+              <p>Nossa mentoria foi projetada para otimizar as vendas e o marketing de lojas de automóveis. Você concorda em usar os materiais e as metodologias ensinadas apenas para fins legais e de acordo com todas as leis aplicáveis.</p>
             </section>
             
             <section>

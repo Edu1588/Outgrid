@@ -18,7 +18,7 @@ export function PrivacyPolicy() {
           <div className="space-y-8 text-gray-300">
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">1. Coleta de Dados</h2>
-              <p>Coletamos informações pessoais que você nos fornece diretamente, como nome, e-mail, telefone e nome da empresa ao solicitar uma demonstração ou usar nossos serviços. Também podemos coletar automaticamente dados de navegação e uso da plataforma.</p>
+              <p>Coletamos informações pessoais que você nos fornece diretamente, como nome, e-mail, telefone e nome da empresa ao solicitar uma demonstração ou usar nossos serviços. Também podemos coletar automaticamente dados de navegação e uso dos nossos serviços e materiais.</p>
             </section>
             
             <section>
@@ -28,7 +28,7 @@ export function PrivacyPolicy() {
             
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">3. Compartilhamento de Dados</h2>
-              <p>Não vendemos ou alugamos suas informações pessoais a terceiros. Podemos compartilhar dados com parceiros de serviço estritamente necessários para a operação da plataforma, exigindo que eles mantenham o mesmo nível de segurança e privacidade.</p>
+              <p>Não vendemos ou alugamos suas informações pessoais a terceiros. Podemos compartilhar dados com parceiros de serviço estritamente necessários para a prestação da mentoria e serviços, exigindo que eles mantenham o mesmo nível de segurança e privacidade.</p>
             </section>
             
             <section>

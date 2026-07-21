@@ -15,13 +15,24 @@ export function Admin() {
   const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>([]);
   
   const [isScraping, setIsScraping] = useState(false);
-  const [scrapeCity, setScrapeCity] = useState("");
+
+  const fetchScrapedLeads = async () => {
+    try {
+      const response = await fetch('/api/leads/scraped');
+      if (response.ok) {
+        const data = await response.json();
+        setScrapedLeads(data);
+      }
+    } catch (e) {
+      console.error('Error fetching scraped leads', e);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
       setLeads(getLeads());
       setPageViews(getPageViews());
-      setScrapedLeads(getScrapedLeads());
+      fetchScrapedLeads();
     }
   }, [isAuthenticated]);
 
@@ -36,32 +47,51 @@ export function Admin() {
   };
 
   const simulateScraping = async () => {
-    if (!scrapeCity) {
-      alert("Digite uma cidade para simular a raspagem (ex: São Paulo, Campinas)");
-      return;
-    }
-    
     setIsScraping(true);
     
-    // Simulate network delay
-    await new Promise(r => setTimeout(r, 2000));
-    
-    // Add 3 mock leads
-    const mockLeads = [
-      { storeName: `Auto Prime ${scrapeCity}`, city: scrapeCity, email: `contato@autoprime${scrapeCity.toLowerCase().replace(/\s/g, '')}.com.br`, phone: "(11) 99999-1111", instagramLikes: Math.floor(Math.random() * 50), status: 'Não contatado' as const },
-      { storeName: `Motors ${scrapeCity} VIP`, city: scrapeCity, email: `vendas@motorsvip.com.br`, phone: "(11) 98888-2222", instagramLikes: Math.floor(Math.random() * 150), status: 'Não contatado' as const },
-      { storeName: `Via Carros ${scrapeCity}`, city: scrapeCity, email: `contato@viacarros.com.br`, phone: "(11) 97777-3333", instagramLikes: Math.floor(Math.random() * 20), status: 'Não contatado' as const },
-    ];
-    
-    mockLeads.forEach(lead => saveScrapedLead(lead));
-    setScrapedLeads(getScrapedLeads());
+    try {
+      const response = await fetch('/api/scrape', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao raspar dados. Verifique a chave da API Serper.');
+      }
+
+      const data = await response.json();
+      
+      if (data.leads && data.leads.length > 0) {
+        // Backend now handles saving to the DB. Just re-fetch
+        fetchScrapedLeads();
+        alert(`${data.leads.length} leads prospectados com sucesso!`);
+      } else {
+        alert('Nenhuma concessionária encontrada.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao realizar a raspagem. A API KEY do Serper pode estar faltando no .env');
+    }
+
     setIsScraping(false);
-    setScrapeCity("");
   };
 
-  const handleStatusChange = (id: string, status: ScrapedLead['status']) => {
-    updateScrapedLeadStatus(id, status);
-    setScrapedLeads(getScrapedLeads());
+  const handleStatusChange = async (id: string, status: ScrapedLead['status']) => {
+    // Optimistic UI update
+    setScrapedLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l));
+    try {
+      await fetch(`/api/leads/scraped/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+    } catch (e) {
+      console.error('Failed to update status', e);
+      fetchScrapedLeads(); // revert on fail
+    }
   };
 
   // Prepare Analytics Data
@@ -159,7 +189,7 @@ export function Admin() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-[#111] border border-white/5 rounded-2xl p-6 lg:col-span-2">
-          <h3 className="text-lg font-bold text-white mb-6">Tráfego da Plataforma (Últimos dias)</h3>
+          <h3 className="text-lg font-bold text-white mb-6">Tráfego da Loja (Últimos dias)</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -290,30 +320,20 @@ export function Admin() {
               <Search className="text-orange-primary" /> Raspagem Ativa (Integração Serper.dev)
             </h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Busque concessionárias de pequeno e médio porte no Google. Analisa volume de curtidas no Instagram (necessita de integração com API de terceiros para redes sociais). Salve até 30 leads por dia nesta planilha para prospectar.
+              Busque concessionárias de pequeno e médio porte no Google na região de Campinas. Analisa volume de curtidas no Instagram (necessita de integração com API de terceiros para redes sociais). Salve até 30 leads por dia nesta planilha para prospectar. A busca seleciona automaticamente cidades da região (Campinas, Valinhos, Vinhedo, etc).
             </p>
           </div>
           
-          <div className="flex-1 w-full lg:w-auto bg-[#0A0A0A] border border-white/10 p-2 rounded-xl flex items-center gap-2">
-            <div className="relative flex-1">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <input 
-                type="text" 
-                value={scrapeCity}
-                onChange={(e) => setScrapeCity(e.target.value)}
-                placeholder="Cidade (Ex: Campinas)" 
-                className="w-full bg-transparent border-none pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:ring-0"
-              />
-            </div>
+          <div className="flex-1 w-full lg:w-auto flex justify-end items-center gap-2">
             <button 
               onClick={simulateScraping}
               disabled={isScraping}
-              className="bg-orange-primary hover:bg-[#FF7043] disabled:opacity-50 text-white font-bold text-sm px-4 py-2 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap"
+              className="bg-orange-primary hover:bg-[#FF7043] disabled:opacity-50 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shadow-lg"
             >
               {isScraping ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Buscando...</>
               ) : (
-                <><RefreshCw className="w-4 h-4" /> Buscar Lojas</>
+                <><RefreshCw className="w-4 h-4" /> Buscar Novas Lojas (Campinas e Região)</>
               )}
             </button>
           </div>

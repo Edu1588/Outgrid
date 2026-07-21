@@ -639,7 +639,7 @@ export function Estrategia() {
               <div><h2>A ideia central em uma frase</h2></div>
             </div>
             <p>O Acelerador de Vendas é a frente de mentoria e estratégia do OUTGRID para <strong>lojas de veículos que querem vender mais carros todo mês</strong> usando o digital — sem depender só dos portais.</p>
-            <p>Não vendemos “projeto de tecnologia”. Vendemos <strong>carros vendidos</strong>. Tudo o que fazemos — campanha, leads e plataforma — existe para colocar mais oportunidades na mesa do vendedor e fechar mais negócios. Essa é a sensação que o dono da loja precisa ter:</p>
+            <p>Não vendemos “projeto de tecnologia”. Vendemos <strong>carros vendidos</strong>. Tudo o que fazemos — campanha, leads e estratégias — existe para colocar mais oportunidades na mesa do vendedor e fechar mais negócios. Essa é a sensação que o dono da loja precisa ter:</p>
             <div className="quote">
               <div className="say">“O OUTGRID vai montar uma estratégia para a minha loja vender mais carros.”</div>
               <div className="not">Não: “O OUTGRID vai transformar a minha empresa.”</div>
@@ -756,9 +756,9 @@ export function Estrategia() {
               <div className="product">
                 <div className="tag">Produto 3 · A máquina</div>
                 <h3>OUTGRID</h3>
-                <p className="role">A plataforma de vendas que transforma visitante em lead e lead em venda.</p>
+                <p className="role">O ecossistema de vendas que transforma visitante em lead e lead em venda.</p>
                 <div className="chips">
-                  <span className="chip">Plataforma de vendas</span>
+                  <span className="chip">Mentoria e estratégia</span>
                   <span className="chip">Página dos veículos</span>
                   <span className="chip">Site do vendedor</span>
                   <span className="chip">IA de atendimento</span>

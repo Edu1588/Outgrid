@@ -57,7 +57,7 @@ export function Solution() {
           transition={{ delay: 0.2 }}
           className="text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto mb-12"
         >
-          Ter sua plataforma própria que gera tráfego, leads e vendas todos os dias. Esse caminho tem nome: <strong className="text-white font-bold">OUTGRID</strong>. A tecnologia que transforma o site da sua loja em uma máquina de vendas.
+          Ter seu próprio ecossistema que gera tráfego, leads e vendas todos os dias. Esse caminho tem nome: <strong className="text-white font-bold">OUTGRID</strong>. A metodologia que transforma a estrutura da sua loja em uma máquina de vendas.
         </motion.p>
       </div>
 

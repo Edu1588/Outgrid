@@ -10,7 +10,7 @@ const faqs = [
   },
   {
     question: "Preciso ter conhecimento prévio sobre tecnologia e marketing para usar?",
-    answer: "Não! A nossa plataforma foi desenvolvida para ser intuitiva e fácil de usar. Nós cuidamos de toda a infraestrutura para que você possa focar no que faz de melhor: vender carros."
+    answer: "Não! A nossa mentoria foi estruturada para ser intuitiva e fácil de aplicar. Nós ensinamos toda a base e fornecemos as ferramentas para que você possa focar no que faz de melhor: vender carros."
   },
   {
     question: "Quais resultados posso esperar após implementar o OUTGRID?",
@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "Quanto tempo leva para integrar meu estoque?",
-    answer: "A integração é automática e ocorre em questão de minutos após a configuração inicial. Trabalhamos com as principais plataformas do mercado."
+    answer: "A estruturação dos seus canais ocorre em questão de dias após o início. Trabalhamos orientando sobre os melhores sistemas do mercado."
   },
   {
     question: "Existe algum prazo de fidelidade?",
@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     question: "Posso passar o acesso para meus vendedores usarem?",
-    answer: "Sim! O sistema foi desenhado para que toda a sua equipe comercial tenha acesso e possa gerenciar os leads e as vendas diretamente na plataforma."
+    answer: "Sim! A estratégia foi desenhada para que toda a sua equipe comercial participe e possa gerenciar os leads e as vendas diretamente com o método ensinado."
   }
 ];
 

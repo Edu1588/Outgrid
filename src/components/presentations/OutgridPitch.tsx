@@ -325,7 +325,7 @@ export const defaultSlidesData = [
       'O portal <span className="text-[#E95800] font-bold">não é seu sócio</span>, é o dono <span className="text-[#E95800] font-bold">do seu cliente</span>',
       'Se amanhã ele <span className="text-[#E95800] font-bold">desligar seus anúncios</span>, você <span className="text-[#E95800] font-bold">para de vender</span>.',
       'Enquanto <span className="text-[#E95800] font-bold">você vende carros</span>, o portal <span className="text-[#E95800] font-bold">constrói a marca dele</span> não a sua.',
-      'Vender pelos portais <span className="text-[#E95800] font-bold">custa cerca de 74% a mais</span> do que vender pela <span className="text-[#E95800] font-bold">sua própria plataforma</span>.'
+      'Vender pelos portais <span className="text-[#E95800] font-bold">custa cerca de 74% a mais</span> do que vender pelo <span className="text-[#E95800] font-bold">seu próprio canal</span>.'
     ]
   },
   {
@@ -333,7 +333,7 @@ export const defaultSlidesData = [
     bigText: 'minha Loja',
     title: '<span className="text-[#E95800] font-black text-6xl">O Caminho</span> é ter o que <span className="text-[#E95800] font-black text-6xl">é seu!</span>',
     bullets: [
-      '<span className="font-bold">Invista</span> na <span className="font-bold">sua marca</span>, na sua plataforma e no seu canal direto com o cliente.',
+      '<span className="font-bold">Invista</span> na <span className="font-bold">sua marca</span>, no seu ecossistema e no seu canal direto com o cliente.',
       'Use portais como <span className="font-bold">parceiros</span> mas não como base.',
       'Construa a autoridade de <span className="font-bold">sua própria marca</span>.'
     ],
@@ -346,8 +346,8 @@ export const defaultSlidesData = [
     logoLeft: 'OUT',
     logoRight: 'GRID',
     bullets: [
-      'A <span className="text-[#E95800] font-bold">Outgrid</span> é uma solução que une <span className="text-[#E95800] font-bold">tecnologia</span> e <span className="text-[#E95800] font-bold">marketing automotivo.</span>',
-      'Ela transforma o <span className="text-[#E95800] font-bold">site da sua loja</span> em uma máquina de <span className="text-[#E95800] font-bold">geração de leads</span> e <span className="text-[#E95800] font-bold">vendas</span>, com <span className="text-[#E95800] font-bold">performance, independência</span> e <span className="text-[#E95800] font-bold">domínio total</span> sobre os <span className="text-[#E95800] font-bold">seus resultados.</span>'
+      'A <span className="text-[#E95800] font-bold">Outgrid</span> é uma mentoria que une <span className="text-[#E95800] font-bold">estratégia</span> e <span className="text-[#E95800] font-bold">marketing automotivo.</span>',
+      'Ela transforma a <span className="text-[#E95800] font-bold">operação da sua loja</span> em uma máquina de <span className="text-[#E95800] font-bold">geração de leads</span> e <span className="text-[#E95800] font-bold">vendas</span>, com <span className="text-[#E95800] font-bold">performance, independência</span> e <span className="text-[#E95800] font-bold">domínio total</span> sobre os <span className="text-[#E95800] font-bold">seus resultados.</span>'
     ]
   },
   {
@@ -366,7 +366,7 @@ export const defaultSlidesData = [
     bulletsRight: [
       'Total controle sobre sua audiência e seus leads.',
       'Custo médio por venda: <span className="font-bold">R$ 390</span>.',
-      'Seu site se torna sua principal fonte de vendas.',
+      'Seu canal se torna sua principal fonte de vendas.',
       'Fortalece a marca e a autoridade da sua loja.',
       'Independência e previsibilidade nos resultados.'
     ],
@@ -377,16 +377,16 @@ export const defaultSlidesData = [
     bgImage: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
     title: 'Como Funciona a <span className="font-black">Out<span className="text-[#E95800]">grid</span></span>',
     steps: [
-      { title: "1. Gestão de Estoque", desc: "Integração com sistemas internos da loja", icon: "Settings" },
-      { title: "2. Website Outgrid", desc: "Atualização automática do estoque no site personalizado.", icon: "BarChart" },
-      { title: "3. CRM Integrado", desc: "Captação e qualificação automática dos leads.", icon: "Users" },
-      { title: "4. Leads Qualificados", desc: "Contatos prontos para abordagem e fechamento.", icon: "Users" },
-      { title: "5. Vendas e Resultados", desc: "Conversão previsível e mensurável.", icon: "TrendingUp" }
+      { title: "1. Diagnóstico", desc: "Análise da operação comercial da loja.", icon: "Settings" },
+      { title: "2. Posicionamento", desc: "Otimização do site e marca da loja.", icon: "BarChart" },
+      { title: "3. Campanhas", desc: "Captação e geração ativa de leads.", icon: "Users" },
+      { title: "4. Funil de Vendas", desc: "Qualificação e abordagem estruturada.", icon: "Users" },
+      { title: "5. Resultados", desc: "Conversão previsível e escalável.", icon: "TrendingUp" }
     ]
   },
   {
     bgImage: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-    title: 'Seu website como<br/> <span className="text-[#E95800] font-black">Plataforma de Vendas</span>',
+    title: 'Seu website como<br/> <span className="text-[#E95800] font-black">Máquina de Vendas</span>',
     subtitle: 'O cliente navega como em um <span className="text-[#E95800] font-bold">grande portal</span>, mas dentro <span className="text-[#E95800] font-bold">da loja</span>:',
     bullets: [
       'Envía <span className="text-[#E95800] font-bold">propostas</span> e simula <span className="text-[#E95800] font-bold">parcelas</span>.',

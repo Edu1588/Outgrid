@@ -1,8 +1,129 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ProtectedPage } from './ProtectedPage';
+import { Helmet } from 'react-helmet-async';
+import { supabase } from '../lib/supabase';
+import { ImagePlus, Loader2 } from 'lucide-react';
+
+interface MoodboardImage {
+  id: string;
+  url: string;
+  name: string;
+}
 
 export function Estrategia() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [images, setImages] = useState<MoodboardImage[]>([
+    {
+      id: 'default-1',
+      url: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1784649912/ChatGPT_Image_21_de_jul._de_2026_13_03_31_tm1lry.png',
+      name: 'Lucas Correa - Mentor',
+    },
+    {
+      id: 'default-2',
+      url: 'https://res.cloudinary.com/ifuatk2z/image/upload/v1784650580/criativoLucas_o6byvu.png',
+      name: 'Estilo de Criativo',
+    }
+  ]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1080;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          let quality = 0.9;
+          const compress = () => {
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error('Canvas to Blob failed'));
+                return;
+              }
+              if (blob.size > 1024 * 1024 && quality > 0.1) {
+                quality -= 0.1;
+                compress();
+              } else {
+                const extension = file.name.split('.').pop() || 'jpg';
+                const newName = `outgrid-moodboard-${Date.now()}.${extension}`;
+                resolve(new File([blob], newName, { type: blob.type || 'image/jpeg' }));
+              }
+            }, file.type || 'image/jpeg', quality);
+          };
+          compress();
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+
+      const compressedFile = await compressImage(file);
+      
+      const { data, error } = await supabase.storage
+        .from('moodboard')
+        .upload(compressedFile.name, compressedFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('moodboard')
+        .getPublicUrl(data.path);
+
+      setImages(prev => [...prev, {
+        id: data.path,
+        url: publicUrl,
+        name: 'Nova Referência'
+      }]);
+
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem:', error);
+      alert('Erro ao fazer upload da imagem. Verifique se o bucket "moodboard" existe e é público no Supabase.');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -10,6 +131,10 @@ export function Estrategia() {
 
   return (
     <ProtectedPage title="Plano de Conteúdo e Estratégia">
+      <Helmet>
+        <title>Estratégia e Checklist - OUTGRID</title>
+        <meta name="description" content="Checklists, moodboard e base estratégica OUTGRID." />
+      </Helmet>
       <div className={`estrategia-wrapper ${theme}`} data-theme={theme}>
         <style>{`
           .estrategia-wrapper {
@@ -676,6 +801,104 @@ export function Estrategia() {
               <div className="road-row"><span className="wk">Semana 2</span><div><div className="rt">Landing page</div><div className="rd">Adaptar o site OUTGRID para o novo foco: copy nova, funil de captação e reunião como CTA.</div></div></div>
               <div className="road-row"><span className="wk">Semana 3</span><div><div className="rt">Funil + criativos</div><div className="rd">Montar a aplicação/quiz de qualificação e os anúncios (estilo AEG) para Meta e Google.</div></div></div>
               <div className="road-row"><span className="wk">Semana 4</span><div><div className="rt">No ar e otimizando</div><div className="rd">Subir campanhas, medir leads qualificados e conversão, ajustar oferta e criativos.</div></div></div>
+            </div>
+          </section>
+
+          {/* 09 CHECKLISTS */}
+          <section className="block" id="s9">
+            <div className="sec-head">
+              <span className="sec-num">09</span>
+              <div>
+                <h2>Checklists de Objetivos</h2>
+                <p className="sec-sub">Passo a passo prático para execução das etapas da estratégia.</p>
+              </div>
+            </div>
+            
+            <div className="road">
+              <div className="road-row">
+                <span className="wk">Oferta</span>
+                <div>
+                  <div className="rt">Posicionamento & Copy</div>
+                  <ul className="list-none space-y-2 mt-4 text-[#C1C1C1]">
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Definir ICP (Perfil de Cliente Ideal) da loja</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Escrever os ganchos principais (ex: Pare de depender dos portais)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Estruturar a promessa de valor do funil</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="road-row">
+                <span className="wk">Captação</span>
+                <div>
+                  <div className="rt">Funil & LP</div>
+                  <ul className="list-none space-y-2 mt-4 text-[#C1C1C1]">
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Criar landing page otimizada (mobile first)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Configurar formulário de qualificação (Quiz)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Instalar pixels de rastreamento (Meta/Google)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Configurar eventos de conversão no site</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="road-row">
+                <span className="wk">Tráfego</span>
+                <div>
+                  <div className="rt">Campanhas & Anúncios</div>
+                  <ul className="list-none space-y-2 mt-4 text-[#C1C1C1]">
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Gravar vídeos curtos seguindo os ângulos (Sec 07)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Subir campanha no Meta Ads (foco em Lead)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Subir campanha no Google Ads (fundo de funil)</li>
+                    <li className="flex items-start gap-2"><span className="text-orange-primary">☐</span> Acompanhar CPL e taxa de conversão diária</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 10 MOODBOARD */}
+          <section className="block" id="s10">
+            <div className="sec-head">
+              <span className="sec-num">10</span>
+              <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2>Moodboard & Referências</h2>
+                  <p className="sec-sub">Imagens, criativos e referências visuais para manter a identidade alinhada.</p>
+                </div>
+                <div className="shrink-0">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-primary hover:bg-[#FF7043] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg transition-colors shadow-sm"
+                  >
+                    {isUploading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ImagePlus className="w-4 h-4" />
+                    )}
+                    {isUploading ? 'Enviando...' : 'Adicionar Imagem'}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+              {images.map((img) => (
+                <div key={img.id} className="bg-[var(--surface-2)] rounded-xl overflow-hidden border border-[var(--border)] p-4 flex flex-col gap-4">
+                  <div className="aspect-[4/3] rounded-lg overflow-hidden bg-black-main relative group">
+                    <img src={img.url} alt={img.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  </div>
+                  <div>
+                    <h4 className="text-[var(--text)] font-bold mb-1">{img.name}</h4>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
 

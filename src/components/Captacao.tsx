@@ -58,6 +58,9 @@ const DiagonalMarquee = () => {
   );
 };
 
+import { SpeedometerHover } from "./SpeedometerHover";
+import { Helmet } from "react-helmet-async";
+
 export function Captacao() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,6 +100,10 @@ export function Captacao() {
 
   return (
     <div className="min-h-screen bg-black-main font-sans selection:bg-orange-primary/30 selection:text-white text-white">
+      <Helmet>
+        <title>Captação de Lojas - OUTGRID</title>
+        <meta name="description" content="Acelere as vendas da sua loja de carros. Inscreva-se para falar com um especialista OUTGRID." />
+      </Helmet>
       {/* Topbar */}
       <div className="bg-orange-primary text-black text-center py-3 px-5 font-extrabold text-sm md:text-base tracking-wide uppercase">
         Exclusivo para donos de loja de veículos que querem vender mais carros
@@ -375,7 +382,8 @@ export function Captacao() {
       {/* Footer */}
       <footer className="py-12 border-t border-white/10 text-center">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="flex justify-center mb-6">
+          <div className="flex flex-col items-center justify-center mb-6 gap-8">
+            <SpeedometerHover />
             <Logo className="text-white opacity-80" />
           </div>
           <p className="text-sm text-gray-500 font-medium">

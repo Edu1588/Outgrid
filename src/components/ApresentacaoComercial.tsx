@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProtectedPage } from "./ProtectedPage";
 import { motion } from "motion/react";
+import { Helmet } from "react-helmet-async";
 import { Play, Edit3, Plus, FileText, CheckCircle2 } from "lucide-react";
 import { PresentationViewer } from "./PresentationViewer";
 import { PresentationEditor } from "./PresentationEditor";
@@ -23,6 +24,10 @@ export function ApresentacaoComercial() {
 
   return (
     <ProtectedPage title="Apresentação Comercial">
+      <Helmet>
+        <title>Apresentação Comercial - OUTGRID</title>
+        <meta name="description" content="Editor e visualizador da apresentação comercial da OUTGRID." />
+      </Helmet>
       {showViewer && (
         <PresentationViewer 
           slides={renderedSlides} 

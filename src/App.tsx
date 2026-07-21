@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { Background } from "./components/Background";
+import { Helmet } from "react-helmet-async";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Marquee } from "./components/Marquee";
@@ -72,9 +72,12 @@ function MainApp() {
 
   return (
     <div className="min-h-screen bg-black-main font-sans selection:bg-orange-primary/30 selection:text-white relative">
+      <Helmet>
+        <title>OUTGRID - Aceleração Automotiva</title>
+        <meta name="description" content="Pare de depender dos portais. Construa a presença digital da sua loja de carros e aumente suas vendas." />
+      </Helmet>
       {!isLoaded && <Loader onComplete={() => setIsLoaded(true)} />}
       
-      <Background />
       <Header />
       
       <main className={isLoaded ? "opacity-100 transition-opacity duration-1000" : "opacity-0"}>

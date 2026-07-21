@@ -103,6 +103,7 @@ export function Captacao() {
       <Helmet>
         <title>Captação de Lojas - OUTGRID</title>
         <meta name="description" content="Acelere as vendas da sua loja de carros. Inscreva-se para falar com um especialista OUTGRID." />
+        <meta property="og:image" content="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_1_voq4bn.png" />
       </Helmet>
       {/* Topbar */}
       <div className="bg-orange-primary text-black text-center py-3 px-5 font-extrabold text-sm md:text-base tracking-wide uppercase">

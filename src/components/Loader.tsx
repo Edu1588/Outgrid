@@ -40,7 +40,7 @@ export function Loader({ onComplete }: { onComplete: () => void }) {
         transition={{ duration: 0.5 }}
         className="fixed inset-0 z-[9999] bg-[#121212] flex flex-col items-center justify-center text-[#eee]"
       >
-        <div className="relative w-[300px] h-[165px] mb-8 flex justify-center items-end">
+        <div className="relative w-[300px] h-[175px] mb-8 mx-auto">
           {/* Gauge Arc Container */}
           <div className="absolute top-0 left-0 w-[300px] h-[150px] overflow-hidden">
             {/* Gauge Arc */}
@@ -89,18 +89,18 @@ export function Loader({ onComplete }: { onComplete: () => void }) {
           </div>
 
           {/* Value Display */}
-          <div className="absolute bottom-[35px] left-1/2 -translate-x-1/2 text-2xl font-light text-[#eee] z-10 text-center">
+          <div className="absolute top-[95px] left-1/2 -translate-x-1/2 text-2xl font-light text-[#eee] z-10 text-center">
             <div>{Math.round(progress)}</div>
             <span className="text-[0.8rem] text-[#888]">%</span>
           </div>
 
           {/* Needle */}
-          <div className="absolute bottom-[15px] left-1/2 w-0 h-0 z-10">
+          <div className="absolute top-[150px] left-1/2 w-0 h-0 z-20">
             <div 
-              className="absolute -bottom-[5px] -left-[3px] w-[6px] h-[130px] bg-orange-primary origin-[50%_100%] rounded-t-md shadow-[0_0_5px_rgba(255,140,0,0.5)] transition-transform duration-[50ms] ease-linear"
+              className="absolute bottom-0 -left-[3px] w-[6px] h-[130px] bg-orange-primary origin-bottom rounded-t-md shadow-[0_0_5px_rgba(255,140,0,0.5)] transition-transform duration-[50ms] ease-linear"
               style={{ transform: `rotate(${angle}deg)` }}
             ></div>
-            <div className="absolute -bottom-[15px] -left-[15px] w-[30px] h-[30px] bg-[#333] rounded-full border-2 border-orange-primary z-11 shadow-[0_2px_5px_rgba(0,0,0,0.5)]"></div>
+            <div className="absolute -top-[15px] -left-[15px] w-[30px] h-[30px] bg-[#333] rounded-full border-2 border-orange-primary shadow-[0_2px_5px_rgba(0,0,0,0.5)]"></div>
           </div>
         </div>
 

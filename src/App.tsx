@@ -75,6 +75,7 @@ function MainApp() {
       <Helmet>
         <title>OUTGRID - Aceleração Automotiva</title>
         <meta name="description" content="Pare de depender dos portais. Construa a presença digital da sua loja de carros e aumente suas vendas." />
+        <meta property="og:image" content="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_1_voq4bn.png" />
       </Helmet>
       {!isLoaded && <Loader onComplete={() => setIsLoaded(true)} />}
       

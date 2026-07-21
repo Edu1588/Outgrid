@@ -134,6 +134,7 @@ export function Estrategia() {
       <Helmet>
         <title>Estratégia e Checklist - OUTGRID</title>
         <meta name="description" content="Checklists, moodboard e base estratégica OUTGRID." />
+        <meta property="og:image" content="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_1_voq4bn.png" />
       </Helmet>
       <div className={`estrategia-wrapper ${theme}`} data-theme={theme}>
         <style>{`

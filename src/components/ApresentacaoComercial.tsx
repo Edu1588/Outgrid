@@ -27,6 +27,7 @@ export function ApresentacaoComercial() {
       <Helmet>
         <title>Apresentação Comercial - OUTGRID</title>
         <meta name="description" content="Editor e visualizador da apresentação comercial da OUTGRID." />
+        <meta property="og:image" content="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_1_voq4bn.png" />
       </Helmet>
       {showViewer && (
         <PresentationViewer 

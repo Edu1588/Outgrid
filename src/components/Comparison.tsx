@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { XCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Highlight } from "./Highlight";
+import { SpeedometerHover } from "./SpeedometerHover";
 
 const portais = [
   "Custo de Aquisição alto",
@@ -97,10 +98,11 @@ export function Comparison() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-16 text-center"
+          className="mt-16 text-center flex flex-col items-center justify-center gap-4"
         >
+          <SpeedometerHover />
           <a href="#contato" className="inline-flex items-center justify-center gap-2 bg-black-main text-white hover:bg-gray-800 hover:-translate-y-1 transition-all shadow-xl px-12 py-4 rounded-full font-bold text-lg tracking-widest uppercase">
-            Faça a mudança agora
+            Quero acelerar agora
           </a>
         </motion.div>
       </div>

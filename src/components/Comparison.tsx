@@ -3,6 +3,7 @@ import { XCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Highlight } from "./Highlight";
 import { SpeedometerHover } from "./SpeedometerHover";
+import { getAcceleratedClientsCount } from "../utils/clientCounter";
 
 const portais = [
   "Custo de Aquisição alto",
@@ -19,6 +20,8 @@ const outgrid = [
 ];
 
 export function Comparison() {
+  const clientsCount = getAcceleratedClientsCount();
+
   return (
     <section className="pt-40 md:pt-48 pb-40 md:pb-48 bg-[#F4F4F5] text-black-main relative z-10 overflow-hidden">
       <div className="max-w-5xl mx-auto px-6">
@@ -98,12 +101,16 @@ export function Comparison() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-16 text-center flex flex-col items-center justify-center gap-4"
+          className="mt-16 text-center flex flex-col items-center justify-center gap-3"
         >
           <SpeedometerHover theme="light" />
           <a href="#contato" className="inline-flex items-center justify-center gap-2 bg-black-main text-white hover:bg-gray-800 hover:-translate-y-1 transition-all shadow-xl px-12 py-4 rounded-full font-bold text-lg tracking-widest uppercase">
             Quero acelerar agora
           </a>
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-600 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span><strong className="text-gray-900">{clientsCount} lojas</strong> já aceleraram seus negócios</span>
+          </div>
         </motion.div>
       </div>
     </section>

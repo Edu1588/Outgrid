@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getLeads, getPageViews, getScrapedLeads, saveScrapedLead, updateScrapedLeadStatus, Lead, PageView, ScrapedLead } from "../lib/storage";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
-import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles } from 'lucide-react';
+import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const translations = {
@@ -650,19 +650,23 @@ export function Admin() {
                         </div>
                         {/* Website Link */}
                         {lead.link && !lead.link.includes('instagram.com') ? (
-                          <a 
-                            href={lead.link.startsWith('http') ? lead.link : `https://${lead.link}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-xs text-orange-primary hover:underline flex items-center gap-1.5 truncate max-w-[220px]"
-                            title="Site Oficial"
-                          >
-                            <Globe className="w-3 h-3 shrink-0" />
-                            <span className="truncate">{lead.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                          </a>
+                          <div className="flex items-center gap-2">
+                            <a 
+                              href={lead.link.startsWith('http') ? lead.link : `https://${lead.link}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="text-xs text-orange-primary hover:underline flex items-center gap-1.5 truncate max-w-[200px]"
+                              title="Site Oficial"
+                            >
+                              <Globe className="w-3.5 h-3.5 shrink-0 text-orange-primary" />
+                              <span className="truncate font-medium">{lead.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                            </a>
+                            <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.2 rounded font-mono">Site Ativo</span>
+                          </div>
                         ) : (
-                          <div className="text-[11px] text-gray-600 flex items-center gap-1 italic">
-                            <Globe className="w-3 h-3 shrink-0 text-gray-700" /> Sem site próprio
+                          <div className="inline-flex items-center gap-1 text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold w-fit mt-0.5">
+                            <AlertTriangle className="w-3 h-3 shrink-0 text-amber-400" />
+                            <span>Sem site próprio (Apenas Social/Portais)</span>
                           </div>
                         )}
                         {/* Instagram Link */}
@@ -671,13 +675,13 @@ export function Admin() {
                             href={lead.instagram || lead.link} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-xs text-pink-400 hover:text-pink-300 hover:underline flex items-center gap-1.5 truncate max-w-[220px]"
+                            className="text-xs text-pink-400 hover:text-pink-300 hover:underline flex items-center gap-1.5 truncate max-w-[220px] mt-0.5"
                             title="Instagram Oficial"
                           >
                             <svg className="w-3 h-3 shrink-0 fill-current text-pink-400" viewBox="0 0 24 24">
                               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                             </svg>
-                            <span className="truncate">Instagram</span>
+                            <span className="truncate">Instagram Oficial</span>
                           </a>
                         )}
                       </div>
@@ -690,13 +694,13 @@ export function Admin() {
                             href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}`} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="hover:text-orange-primary transition-colors font-medium text-xs"
+                            className="hover:text-orange-primary transition-colors font-medium text-xs flex items-center gap-1 text-emerald-400 font-mono"
                             title="Abrir no WhatsApp"
                           >
                             {lead.phone}
                           </a>
                         ) : (
-                          <span className="text-gray-600 text-xs italic">Não encontrado</span>
+                          <span className="text-gray-500 text-xs italic">Não informado</span>
                         )}
                       </div>
                       <div className="text-xs text-gray-400 flex items-center gap-1.5">
@@ -710,22 +714,26 @@ export function Admin() {
                             {lead.email}
                           </a>
                         ) : (
-                          <span className="text-gray-600 italic">Não encontrado</span>
+                          <span className="text-gray-500 text-[11px] italic">Contato via WhatsApp</span>
                         )}
                       </div>
                     </td>
                     <td className="p-4">
                       {lead.score !== undefined ? (
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${lead.score >= 70 ? 'bg-red-500' : lead.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
-                          <span className={`text-sm font-bold ${lead.score >= 70 ? 'text-red-400' : lead.score >= 40 ? 'text-yellow-400' : 'text-green-400'}`}>
-                            {lead.score} <span className="text-gray-500 text-xs font-normal">/ 100</span>
-                          </span>
-                          {lead.score >= 70 && (
-                            <span className="text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full ml-2 uppercase font-bold tracking-wider">
-                              Oportunidade
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${lead.score >= 70 ? 'bg-emerald-400 animate-pulse' : lead.score >= 40 ? 'bg-yellow-400' : 'bg-gray-400'}`}></div>
+                            <span className={`text-sm font-extrabold font-mono ${lead.score >= 70 ? 'text-emerald-400' : lead.score >= 40 ? 'text-yellow-400' : 'text-gray-300'}`}>
+                              {lead.score} <span className="text-gray-500 text-xs font-normal">/ 100</span>
                             </span>
-                          )}
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider w-fit border ${
+                            lead.score >= 70 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                            lead.score >= 40 ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 
+                            'bg-zinc-800 text-gray-400 border-zinc-700'
+                          }`}>
+                            {lead.score >= 70 ? (lead.link ? 'Score Alto (Aceleração PWA)' : 'Score Alto (Oportunidade)') : lead.score >= 40 ? 'Score Médio' : 'Site Otimizado'}
+                          </span>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-500">N/A</span>

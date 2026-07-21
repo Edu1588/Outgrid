@@ -1,10 +1,13 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Logo } from "./Logo";
 import { Highlight } from "./Highlight";
-import { Check, X, Play, ArrowRight, ShieldCheck, Award, Lock } from "lucide-react";
+import { Check, X, Play, ArrowRight, ShieldCheck, Award, Lock, Sparkles, Flame, Clock } from "lucide-react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { supabase } from "../lib/supabase";
+import { getAcceleratedClientsCount } from "../utils/clientCounter";
+import { TopCountdownBanner } from "./TopCountdownBanner";
 
 const Seals = () => (
   <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-6 text-[#C5A059]">
@@ -59,7 +62,6 @@ const DiagonalMarquee = () => {
 };
 
 import { SpeedometerHover } from "./SpeedometerHover";
-import { Helmet } from "react-helmet-async";
 
 import { JourneyCarousel } from "./JourneyCarousel";
 import { saveLead } from "../lib/storage";
@@ -67,6 +69,7 @@ import { saveLead } from "../lib/storage";
 export function Captacao() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const clientsCount = getAcceleratedClientsCount();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,32 +108,43 @@ export function Captacao() {
   return (
     <div className="min-h-screen bg-black-main font-sans selection:bg-orange-primary/30 selection:text-white text-white">
       <Helmet>
-        <title>Captação de Lojas - OUTGRID</title>
-        <meta name="description" content="Acelere as vendas da sua loja de carros. Inscreva-se para falar com um especialista OUTGRID." />
+        <title>Análise & Mentoria de Vendas - OUTGRID</title>
+        <meta name="description" content="Análise Digital e Mentoria Estratégica gratuita para as 50 primeiras lojas de veículos. Inscreva-se agora!" />
         <meta property="og:image" content="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_1_voq4bn.png" />
       </Helmet>
+
+      {/* Top Countdown Sticky Banner */}
+      <TopCountdownBanner />
+
       {/* Topbar */}
-      <div className="bg-orange-primary text-black text-center py-3 px-5 font-extrabold text-sm md:text-base tracking-wide uppercase">
-        Exclusivo para donos de loja de veículos que querem vender mais carros
+      <div className="bg-zinc-900 border-b border-white/10 text-gray-300 text-center py-2.5 px-4 font-bold text-xs md:text-sm tracking-wide flex items-center justify-center gap-2">
+        <Sparkles className="w-4 h-4 text-orange-primary shrink-0" />
+        <span>Análise Gratuita de Negócio + Mentoria Estratégica para os <strong className="text-white">50 Primeiros Donos de Loja</strong></span>
       </div>
 
       {/* Hero */}
-      <header className="relative text-center pt-16 pb-16 overflow-hidden">
+      <header className="relative text-center pt-12 pb-16 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2FyfGVufDB8MHwwfHx8Mg%3D%3D" alt="Car Background" className="w-full h-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-b from-black-main/80 via-black-main/90 to-black-main"></div>
         </div>
         <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <div className="flex justify-center mb-10">
+          <div className="flex justify-center mb-8">
             <Link to="/">
               <Logo className="text-white" />
             </Link>
           </div>
+
+          <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-primary px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold uppercase tracking-wider mb-6">
+            <Flame className="w-4 h-4 text-orange-primary animate-pulse" />
+            Programa das 50 Primeiras Lojas · Restam 7 Vagas
+          </div>
+
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-6 text-balance">
-            Vou te mostrar a estratégia que faz lojas de veículos <Highlight delay={0.4}>venderem mais</Highlight> carros todo mês pela internet
+            Receba uma <Highlight delay={0.4}>Análise de Negócio</Highlight> e Mentoria de Vendas para sua loja de carros
           </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-            Assista à apresentação abaixo e descubra como atrair leads qualificados pra sua loja de forma simples, previsível e sem depender só dos portais.
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Nós vamos analisar a presença digital da sua loja, identificar onde você está perdendo vendas e estruturar a estratégia para você vender mais carros todo mês.
           </p>
 
           <div className="relative mx-auto max-w-3xl aspect-video bg-[#161618] border border-white/10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl">
@@ -154,6 +168,10 @@ export function Captacao() {
             <a href="#quero" className="bg-orange-primary hover:bg-[#FF7043] inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase">
               Quero vender mais <ArrowRight className="w-6 h-6" />
             </a>
+            <div className="flex items-center justify-center gap-2 mt-3 text-xs text-gray-400 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span><strong className="text-white">{clientsCount} lojas</strong> já aceleraram seus negócios</span>
+            </div>
             <Seals />
           </div>
         </div>
@@ -338,11 +356,15 @@ export function Captacao() {
       {/* Form */}
       <section id="quero" className="py-24 relative z-10 bg-black-main">
         <div className="max-w-3xl mx-auto px-6 text-center">
+          <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-primary px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider mb-4">
+            <Flame className="w-4 h-4 text-orange-primary animate-pulse" />
+            Exclusivo: 50 Primeiras Lojas (Apenas 7 Vagas Restantes)
+          </div>
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-balance">
-            Dê o primeiro passo pra <span className="text-orange-primary">vender mais carros</span>
+            Garanta sua <span className="text-orange-primary">Análise de Negócio + Mentoria Gratuita</span>
           </h2>
-          <p className="text-lg text-gray-400 mb-10 max-w-xl mx-auto">
-            Preencha abaixo e um especialista entra em contato pra montar a estratégia da sua loja. Leva menos de 1 minuto.
+          <p className="text-lg text-gray-300 mb-10 max-w-xl mx-auto leading-relaxed">
+            Preencha os dados abaixo. O especialista Lucas Corrêa e a equipe OUTGRID farão um diagnóstico completo da sua loja para apresentar o plano de ação.
           </p>
           
           <div className="max-w-xl mx-auto bg-[#161618] border border-white/10 rounded-3xl p-8 md:p-10 text-left shadow-2xl">
@@ -371,11 +393,15 @@ export function Captacao() {
                   </select>
                 </div>
                 <div className="pt-2 flex flex-col items-center">
-                  <button type="submit" disabled={isSubmitting} className="bg-orange-primary hover:bg-[#FF7043] disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed w-full max-w-md mx-auto inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase border-none">
-                    {isSubmitting ? 'Enviando...' : 'Quero vender mais'} <ArrowRight className="w-5 h-5" />
+                  <button type="submit" disabled={isSubmitting} className="bg-orange-primary hover:bg-[#FF7043] disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed w-full max-w-md mx-auto inline-flex items-center justify-center gap-3 text-white font-extrabold text-lg py-5 px-8 rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase border-none text-center">
+                    {isSubmitting ? 'Enviando...' : 'Garantir Análise + Mentoria'} <ArrowRight className="w-5 h-5 shrink-0" />
                   </button>
+                  <div className="flex items-center justify-center gap-2 mt-3 text-xs text-gray-400 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span><strong className="text-white">{clientsCount} lojas</strong> já aceleraram seus negócios</span>
+                  </div>
                   <Seals />
-                  <p className="text-center text-sm text-gray-500 mt-4 font-medium">Resposta em até 24h · Sem compromisso</p>
+                  <p className="text-center text-xs text-gray-400 mt-4 font-medium">Apenas 7 vagas disponíveis para mentoria gratuita · Resposta em até 24h</p>
                 </div>
               </form>
             ) : (

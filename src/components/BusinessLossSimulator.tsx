@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { 
   AlertTriangle, 
   TrendingDown, 
-  TrendingUp, 
-  Gauge, 
   Clock, 
   Zap, 
   CheckCircle2, 
   XCircle, 
   ArrowRight, 
   Sparkles,
-  BarChart2,
-  RefreshCw
+  BarChart2
 } from "lucide-react";
+import { getAcceleratedClientsCount } from "../utils/clientCounter";
 
 interface Scenario {
   name: string;
@@ -85,26 +83,27 @@ const scenarios: Scenario[] = [
 
 export function BusinessLossSimulator() {
   const [scenarioIndex, setScenarioIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
   const [liveLossCounter, setLiveLossCounter] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
+  const clientsCount = getAcceleratedClientsCount();
 
   const current = scenarios[scenarioIndex];
 
-  // Auto-cycle scenarios every 8 seconds if playing
+  // Auto-cycle scenarios every 6 seconds endlessly
   useEffect(() => {
-    if (!isPlaying) return;
     const interval = setInterval(() => {
       setScenarioIndex((prev) => (prev + 1) % scenarios.length);
-    }, 8000);
+      setAnimKey((prev) => prev + 1);
+    }, 6000);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, []);
 
-  // Real-time ticking loss counter animation (lasts 3 seconds)
+  // Real-time ticking loss counter animation
   useEffect(() => {
     setLiveLossCounter(0);
     const target = current.monthlyLoss;
-    const duration = 3000; // 3 seconds
-    const steps = 60;
+    const duration = 1500;
+    const steps = 35;
     const stepTime = duration / steps;
     const increment = target / steps;
 
@@ -120,7 +119,7 @@ export function BusinessLossSimulator() {
     }, stepTime);
 
     return () => clearInterval(timer);
-  }, [scenarioIndex]);
+  }, [scenarioIndex, animKey]);
 
   const handleContactClick = () => {
     const message = encodeURIComponent(
@@ -157,7 +156,6 @@ export function BusinessLossSimulator() {
             className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6 leading-tight"
           >
             Você está <span className="text-orange-primary underline decoration-orange-primary/40 underline-offset-8">deixando dinheiro na mesa</span> todos os dias
-            <span className="inline-block w-6 md:w-8 h-1 md:h-1.5 bg-orange-primary rounded-full ml-2.5 align-middle" />
           </motion.h2>
 
           <motion.p
@@ -168,44 +166,44 @@ export function BusinessLossSimulator() {
             className="text-gray-300 text-base md:text-lg leading-relaxed"
           >
             Um site lento, desatualizado ou sem inteligência comercial faz o comprador perder o interesse nos primeiros 3 segundos e ir para o concorrente. 
-            <strong className="text-white block mt-2">Abaixo, veja a simulação animada do impacto no faturamento e como o HUB Web OUTGRID recupera essas vendas:</strong>
+            <strong className="text-white block mt-2">Veja quanto a sua loja pode estar perdendo e como o HUB Web OUTGRID recupera essas vendas:</strong>
           </motion.p>
         </div>
 
-        {/* Automated Scenario Selector Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
-          {scenarios.map((sc, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setScenarioIndex(idx);
-                setIsPlaying(false);
-              }}
-              className={`py-2.5 px-5 rounded-full text-xs font-bold transition-all flex items-center gap-2 border ${
-                scenarioIndex === idx
-                  ? 'bg-orange-primary text-black border-orange-primary shadow-lg shadow-orange-primary/20 scale-105'
-                  : 'bg-zinc-900/80 text-gray-400 border-white/10 hover:border-white/30 hover:text-white'
-              }`}
-            >
-              <BarChart2 className="w-3.5 h-3.5" />
-              {sc.name}
-            </button>
-          ))}
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            title={isPlaying ? "Pausar animação" : "Iniciar animação automática"}
-            className="p-2.5 bg-zinc-900 border border-white/10 rounded-full text-gray-400 hover:text-white transition-colors"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isPlaying ? 'animate-spin text-orange-primary' : ''}`} />
-          </button>
+        {/* Scenario Indicator Badges (Automated Showcase) */}
+        <div className="flex justify-center mb-10">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {scenarios.map((sc, idx) => (
+              <div
+                key={idx}
+                className={`py-2 px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 border relative overflow-hidden select-none ${
+                  scenarioIndex === idx
+                    ? 'bg-orange-primary text-black border-orange-primary shadow-lg shadow-orange-primary/20'
+                    : 'bg-zinc-900/60 text-gray-500 border-white/5 opacity-60'
+                }`}
+              >
+                <BarChart2 className="w-3.5 h-3.5" />
+                {sc.name}
+                {scenarioIndex === idx && (
+                  <motion.div
+                    key={`tab-progress-${scenarioIndex}-${animKey}`}
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 6, ease: "linear" }}
+                    className="absolute bottom-0 left-0 h-1 bg-black/40"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Animated Simulation Display */}
+        {/* Simulation Display */}
         <motion.div
-          key={scenarioIndex}
+          key={`sim-${scenarioIndex}-${animKey}`}
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
           className="bg-zinc-900/90 border border-white/10 rounded-2xl p-6 md:p-10 backdrop-blur-xl shadow-2xl mb-16"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
@@ -219,31 +217,37 @@ export function BusinessLossSimulator() {
                   <div>
                     <span className="text-xs font-bold uppercase text-red-400 tracking-wider block">Cenário Tradicional</span>
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-red-400" /> Site Lento Comum
+                      <Clock className="w-4 h-4 text-red-400 animate-spin" style={{ animationDuration: '4s' }} /> Site Lento Comum
                     </h3>
                   </div>
                   <XCircle className="w-6 h-6 text-red-400" />
                 </div>
 
-                {/* Animated Loading Bar */}
+                {/* Loading Bar with continuous loading loop */}
                 <div className="mb-6 bg-zinc-900 p-4 rounded-lg border border-red-500/20">
                   <div className="flex justify-between text-xs mb-2">
                     <span className="text-gray-400">Tempo de Carregamento:</span>
-                    <strong className="text-red-400 font-extrabold">{current.slowSiteTime} (Muito Lento)</strong>
+                    <strong className="text-red-400 font-extrabold">{current.slowSiteTime} (Lento)</strong>
                   </div>
-                  <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden relative">
                     <motion.div 
+                      key={`slow-${scenarioIndex}-${animKey}`}
                       initial={{ width: "0%" }}
-                      animate={{ width: "85%" }}
-                      transition={{ duration: 3.5, ease: "easeInOut" }}
-                      className="bg-red-500 h-full rounded-full"
+                      animate={{ width: ["0%", "85%", "85%", "0%"] }}
+                      transition={{ 
+                        duration: 4.8, 
+                        repeat: Infinity, 
+                        repeatDelay: 0.5,
+                        ease: ["easeOut", "linear", "easeInOut"] 
+                      }}
+                      className="bg-red-500 h-full rounded-full shadow-lg shadow-red-500/50"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-3 text-sm text-gray-300">
                   <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span>Taxa de Abandono (Desistência):</span>
+                    <span>Taxa de Abandono:</span>
                     <strong className="text-red-400 font-extrabold">{current.slowBounceRate}% dos compradores</strong>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/5">
@@ -272,31 +276,37 @@ export function BusinessLossSimulator() {
                   <div>
                     <span className="text-xs font-bold uppercase text-emerald-400 tracking-wider block">Solução Exclusiva</span>
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Zap className="w-4 h-4 fill-emerald-400 text-emerald-400" /> HUB Web OUTGRID
+                      <Zap className="w-4 h-4 fill-emerald-400 text-emerald-400 animate-pulse" /> HUB Web OUTGRID
                     </h3>
                   </div>
                   <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                 </div>
 
-                {/* Animated Fast Bar */}
+                {/* Fast Bar with instant response animation loop */}
                 <div className="mb-6 bg-zinc-900/80 p-4 rounded-lg border border-emerald-500/20">
                   <div className="flex justify-between text-xs mb-2">
                     <span className="text-gray-400">Tempo de Carregamento PWA:</span>
                     <strong className="text-emerald-400 font-extrabold">{current.hubSiteTime} (Ultrarrápido)</strong>
                   </div>
-                  <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden relative">
                     <motion.div 
+                      key={`hub-${scenarioIndex}-${animKey}`}
                       initial={{ width: "0%" }}
-                      animate={{ width: "15%" }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                      className="bg-emerald-400 h-full rounded-full"
+                      animate={{ width: ["0%", "15%", "15%", "0%"] }}
+                      transition={{ 
+                        duration: 4.8, 
+                        repeat: Infinity, 
+                        repeatDelay: 0.5,
+                        times: [0, 0.12, 0.9, 1] 
+                      }}
+                      className="bg-emerald-400 h-full rounded-full shadow-lg shadow-emerald-400/50"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-3 text-sm text-gray-300">
                   <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span>Taxa de Abandono (Retenção 85%):</span>
+                    <span>Taxa de Abandono:</span>
                     <strong className="text-emerald-400 font-extrabold">{current.hubBounceRate}% (Mínimo)</strong>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/5">
@@ -318,10 +328,10 @@ export function BusinessLossSimulator() {
 
           </div>
 
-          {/* Animated Loss Summary Banner */}
+          {/* Loss Summary Banner */}
           <div className="mt-8 bg-gradient-to-r from-red-950/90 via-zinc-900 to-orange-950/90 border border-orange-primary/40 rounded-xl p-6 text-center relative overflow-hidden">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <TrendingDown className="w-5 h-5 text-red-400 animate-bounce" />
+              <TrendingDown className="w-5 h-5 text-red-400" />
               <span className="text-xs uppercase font-extrabold text-orange-primary tracking-widest">
                 Dinheiro Deixado na Mesa Todo Mês
               </span>
@@ -335,14 +345,21 @@ export function BusinessLossSimulator() {
               Isso representa até <strong className="text-orange-primary">R$ {current.yearlyLoss.toLocaleString('pt-BR')} por ano</strong> que sua empresa deixa de faturar devido a um site lento e sem inteligência de conversão.
             </p>
 
-            <button
-              onClick={handleContactClick}
-              className="mt-6 w-full md:w-auto mx-auto py-4 px-8 bg-orange-primary hover:bg-orange-primary/90 text-black font-extrabold text-sm rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-orange-primary/25 hover:scale-[1.02]"
-            >
-              <Sparkles className="w-4 h-4 text-black" />
-              SOLICITAR ANÁLISE DE NEGÓCIO DA SUA LOJA
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="mt-6">
+              <button
+                onClick={handleContactClick}
+                className="w-full md:w-auto mx-auto py-4 px-8 bg-orange-primary hover:bg-orange-primary/90 text-black font-extrabold text-sm rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-orange-primary/25 hover:scale-[1.02]"
+              >
+                <Sparkles className="w-4 h-4 text-black" />
+                SOLICITAR ANÁLISE DE NEGÓCIO DA SUA LOJA
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center justify-center gap-2 mt-3 text-xs text-gray-400 font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span><strong className="text-white">{clientsCount} lojas</strong> já aceleraram seus negócios</span>
+              </div>
+            </div>
           </div>
         </motion.div>
 

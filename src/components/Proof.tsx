@@ -12,7 +12,7 @@ const stats = [
 
 export function Proof() {
   return (
-    <section id="resultados" className="py-32 bg-black-main relative z-10 border-t border-white/5">
+    <section id="resultados" className="py-32 bg-black-main relative z-20 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 text-center">
         
         <motion.div
@@ -75,9 +75,9 @@ export function Proof() {
             </div>
           </div>
 
-          <Button as="a" href="#contato" variant="primary" className="bg-orange-primary text-white hover:bg-orange-600 border-none px-10">
+          <a href="#contato" className="inline-flex items-center justify-center gap-2 bg-orange-primary text-white hover:bg-[#FF7043] hover:-translate-y-1 transition-all shadow-lg shadow-orange-primary/20 px-10 py-4 rounded-full font-bold text-sm tracking-widest uppercase">
             Seja o próximo case de sucesso
-          </Button>
+          </a>
         </motion.div>
       </div>
     </section>

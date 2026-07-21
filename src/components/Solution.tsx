@@ -27,7 +27,7 @@ const benefits = [
 
 export function Solution() {
   return (
-    <section id="solucao" className="py-32 relative bg-black-main border-t border-white/5 overflow-hidden">
+    <section id="solucao" className="py-32 relative z-20 bg-black-main border-t border-white/5 overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] h-[600px] bg-orange-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
       
       <div className="max-w-7xl mx-auto px-6 relative z-10 text-center mb-20">

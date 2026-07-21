@@ -22,7 +22,7 @@ const problems = [
 
 export function TheProblem() {
   return (
-    <section id="problema" className="pt-24 pb-32 md:pb-40 relative overflow-hidden bg-gray-50">
+    <section id="problema" className="pt-24 pb-32 md:pb-40 relative z-10 overflow-hidden bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         <div className="mb-12">

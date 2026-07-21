@@ -81,7 +81,7 @@ function MainApp() {
         <Hero />
         <Marquee />
         <TheProblem />
-        <SectionDivider bgTop="white" bgBottom="black-main" />
+        <SectionDivider bgTop="#F9FAFB" bgBottom="black-main" />
         <Cost />
         <Pricing />
         

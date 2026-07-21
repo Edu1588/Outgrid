@@ -37,7 +37,7 @@ const features = [
 
 export function Features() {
   return (
-    <section id="recursos" className="pt-40 md:pt-48 pb-32 bg-[#F4F4F5] text-black-main overflow-hidden">
+    <section id="recursos" className="pt-40 md:pt-48 pb-32 bg-[#F4F4F5] text-black-main overflow-hidden relative z-10">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <motion.div

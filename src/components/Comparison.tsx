@@ -19,7 +19,7 @@ const outgrid = [
 
 export function Comparison() {
   return (
-    <section className="pt-40 md:pt-48 pb-40 md:pb-48 bg-[#F4F4F5] text-black-main overflow-hidden">
+    <section className="pt-40 md:pt-48 pb-40 md:pb-48 bg-[#F4F4F5] text-black-main relative z-10 overflow-hidden">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-16">
           <motion.div
@@ -78,7 +78,7 @@ export function Comparison() {
               <ul className="space-y-6">
                 {outgrid.map((item, idx) => (
                   <li key={idx} className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-orange-primary shrink-0" />
+                    <CheckCircle2 className="w-6 h-6 text-[#34A853] shrink-0" />
                     <span className="text-white font-medium text-lg">{item}</span>
                   </li>
                 ))}
@@ -99,9 +99,9 @@ export function Comparison() {
           transition={{ delay: 0.4 }}
           className="mt-16 text-center"
         >
-          <Button as="a" href="#contato" variant="primary" className="bg-black-main text-white hover:bg-gray-800 border-none shadow-xl px-12 py-4 rounded-full text-lg">
+          <a href="#contato" className="inline-flex items-center justify-center gap-2 bg-black-main text-white hover:bg-gray-800 hover:-translate-y-1 transition-all shadow-xl px-12 py-4 rounded-full font-bold text-lg tracking-widest uppercase">
             Faça a mudança agora
-          </Button>
+          </a>
         </motion.div>
       </div>
     </section>

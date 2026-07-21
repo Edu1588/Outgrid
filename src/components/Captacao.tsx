@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Highlight } from "./Highlight";
 import { Check, X, Play, ArrowRight, ShieldCheck, Award, Lock } from "lucide-react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { supabase } from "../lib/supabase";
 
 const Seals = () => (
   <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-6 text-[#C5A059]">
@@ -22,26 +24,35 @@ const Seals = () => (
 );
 
 const DiagonalMarquee = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const x1 = useTransform(scrollYProgress, [0, 1], [0, -500]);
+  const x2 = useTransform(scrollYProgress, [0, 1], [-500, 0]);
+
   return (
-    <div className="relative h-64 overflow-hidden flex items-center justify-center -my-10 z-0">
+    <div ref={containerRef} className="relative h-64 overflow-hidden flex items-center justify-center -my-10 z-0">
       <div className="absolute w-[150%] bg-[#222222] py-4 transform -rotate-3 z-10 shadow-xl whitespace-nowrap overflow-hidden">
-        <div className="animate-marquee flex items-center w-max">
+        <motion.div style={{ x: x1 }} className="flex items-center w-max">
           {[...Array(10)].map((_, i) => (
              <span key={i} className="text-gray-400 font-medium text-xl md:text-3xl px-8">
                Então chegou a hora de tomar a <span className="text-white font-bold">decisão mais inteligente</span> para você e sua loja!
              </span>
           ))}
-        </div>
+        </motion.div>
       </div>
       
-      <div className="absolute w-[150%] bg-[#E5C170] py-4 transform rotate-3 z-20 shadow-xl whitespace-nowrap overflow-hidden">
-        <div className="animate-marquee-reverse flex items-center w-max">
+      <div className="absolute w-[150%] bg-orange-primary py-4 transform rotate-3 z-20 shadow-xl whitespace-nowrap overflow-hidden">
+        <motion.div style={{ x: x2 }} className="flex items-center w-max">
           {[...Array(10)].map((_, i) => (
-             <span key={i} className="text-black font-medium text-xl md:text-3xl px-8">
+             <span key={i} className="text-white font-medium text-xl md:text-3xl px-8">
                Então chegou a hora de tomar a <span className="text-black font-bold">decisão mais inteligente</span> para você e sua loja!
              </span>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -49,10 +60,39 @@ const DiagonalMarquee = () => {
 
 export function Captacao() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get('name') as string,
+      whatsapp: formData.get('whatsapp') as string,
+      store: formData.get('store') as string,
+      volume: formData.get('volume') as string,
+      source: 'Captacao'
+    };
+
+    try {
+      if (supabase) {
+        await supabase.from('leads').insert([data]);
+      }
+    } catch (err) {
+      console.error('Error saving lead:', err);
+    }
+    
+    setIsSubmitting(false);
     setFormSubmitted(true);
+
+    const volumeText = data.volume === '1' ? 'até 10' : 
+                       data.volume === '2' ? 'de 10 a 30' : 
+                       data.volume === '3' ? 'de 30 a 50' : 'mais de 50';
+
+    const message = `Olá! Meu nome é ${data.name}, da loja ${data.store}. Vendo ${volumeText} carros por mês e gostaria de saber mais sobre o Acelerador de Vendas. Meu WhatsApp é ${data.whatsapp}.`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/5519974070224?text=${encodedMessage}`, '_blank');
   };
 
   return (
@@ -99,10 +139,8 @@ export function Captacao() {
           </div>
 
           <div className="mt-12 flex flex-col items-center">
-            <a href="#quero" className="btn-12 inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 hover:shadow-lg shadow-md uppercase">
-              <span className="btn-text flex items-center gap-3">
-                Quero vender mais <ArrowRight className="w-6 h-6" />
-              </span>
+            <a href="#quero" className="bg-orange-primary hover:bg-[#FF7043] inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase">
+              Quero vender mais <ArrowRight className="w-6 h-6" />
             </a>
             <Seals />
           </div>
@@ -142,10 +180,8 @@ export function Captacao() {
           </p>
           
           <div className="text-center flex flex-col items-center">
-            <a href="#quero" className="btn-12 inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 hover:shadow-lg shadow-md uppercase">
-              <span className="btn-text flex items-center gap-3">
-                Quero mudar isso <ArrowRight className="w-5 h-5" />
-              </span>
+            <a href="#quero" className="bg-orange-primary hover:bg-[#FF7043] inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase">
+              Quero mudar isso <ArrowRight className="w-5 h-5" />
             </a>
             <Seals />
           </div>
@@ -153,30 +189,43 @@ export function Captacao() {
       </section>
 
       {/* O Que Significa */}
-      <section className="py-20 bg-[#101012] border-t border-white/10">
-        <div className="max-w-4xl mx-auto px-6">
+      <section className="py-20 bg-[#101012] border-t border-white/10 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4 tracking-tight text-balance">
             O que significa entrar no <span className="text-orange-primary">Acelerador de Vendas</span>
           </h2>
-          <p className="text-center text-gray-400 text-lg mb-12">
+          <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
             Uma estratégia feita pra sua loja vender mais carros — não pra "ficar bonita na internet".
           </p>
           
-          <div className="grid gap-6 max-w-3xl mx-auto">
-            {[
-              <><b className="font-bold text-white">Leads qualificados no WhatsApp do seu vendedor</b> e a cidade agendando visita na sua loja.</>,
-              <>Atrair os <b className="font-bold text-white">melhores leads</b> e vender carro todo dia com campanhas que geram resultado.</>,
-              <><b className="font-bold text-white">Não depender</b> de marketplaces e portais — com controle total do seu investimento.</>,
-              <>Uma máquina que <b className="font-bold text-white">atende na hora, inclusive fora do horário</b>, e não deixa o lead esfriar.</>,
-              <>Ser <b className="font-bold text-white">referência na sua cidade</b> — com os concorrentes vendo sua loja como máquina de vendas.</>
-            ].map((text, i) => (
-              <div key={i} className="flex gap-4 items-start py-5 border-b border-white/10 last:border-0">
-                <div className="w-8 h-8 rounded-full bg-[#34A853] flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="w-5 h-5 text-white" strokeWidth={3} />
-                </div>
-                <p className="text-lg text-gray-300">{text}</p>
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            <div className="flex-1 w-full relative">
+              <img 
+                src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_1_voq4bn.png" 
+                alt="Acelerador de Vendas" 
+                className="w-full h-auto object-contain drop-shadow-2xl rounded-2xl" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-orange-primary/20 to-transparent rounded-2xl mix-blend-overlay pointer-events-none"></div>
+            </div>
+            
+            <div className="flex-1 w-full">
+              <div className="grid gap-2">
+                {[
+                  <><b className="font-bold text-white">Leads qualificados no WhatsApp do seu vendedor</b> e a cidade agendando visita na sua loja.</>,
+                  <>Atrair os <b className="font-bold text-white">melhores leads</b> e vender carro todo dia com campanhas que geram resultado.</>,
+                  <><b className="font-bold text-white">Não depender</b> de marketplaces e portais — com controle total do seu investimento.</>,
+                  <>Uma máquina que <b className="font-bold text-white">atende na hora, inclusive fora do horário</b>, e não deixa o lead esfriar.</>,
+                  <>Ser <b className="font-bold text-white">referência na sua cidade</b> — com os concorrentes vendo sua loja como máquina de vendas.</>
+                ].map((text, i) => (
+                  <div key={i} className="flex gap-4 items-start py-5 border-b border-white/10 last:border-0">
+                    <div className="w-8 h-8 rounded-full bg-[#34A853] flex items-center justify-center shrink-0 mt-0.5 shadow-lg">
+                      <Check className="w-5 h-5 text-white" strokeWidth={3} />
+                    </div>
+                    <p className="text-lg text-gray-300">{text}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -211,10 +260,8 @@ export function Captacao() {
           </div>
           
           <div className="text-center mt-12 flex flex-col items-center">
-            <a href="#quero" className="btn-12 inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 hover:shadow-lg shadow-md uppercase">
-              <span className="btn-text flex items-center gap-3">
-                Quero fazer parte <ArrowRight className="w-5 h-5" />
-              </span>
+            <a href="#quero" className="bg-orange-primary hover:bg-[#FF7043] inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 w-full max-w-md rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase">
+              Quero fazer parte <ArrowRight className="w-5 h-5" />
             </a>
             <Seals />
           </div>
@@ -241,6 +288,36 @@ export function Captacao() {
 
       <DiagonalMarquee />
 
+      {/* Conheça o Mentor */}
+      <section className="py-24 bg-[#0A0A0A] border-t border-b border-white/5 relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            <div className="w-full lg:w-1/2 relative">
+              <div className="absolute inset-0 bg-orange-primary/20 blur-3xl rounded-full"></div>
+              <img 
+                src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784649912/ChatGPT_Image_21_de_jul._de_2026_13_03_31_tm1lry.png" 
+                alt="Lucas Correa" 
+                className="w-full max-w-md mx-auto lg:mx-0 h-auto object-cover rounded-3xl relative z-10 shadow-2xl border border-white/10"
+              />
+            </div>
+            <div className="w-full lg:w-1/2">
+              <span className="text-orange-primary font-bold tracking-widest uppercase text-sm mb-4 block">Conheça o Mentor</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight text-white">
+                Lucas Correa
+              </h2>
+              <div className="space-y-4 text-gray-400 text-lg leading-relaxed">
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+                <p>
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Form */}
       <section id="quero" className="py-24 relative z-10 bg-black-main">
         <div className="max-w-3xl mx-auto px-6 text-center">
@@ -256,19 +333,19 @@ export function Captacao() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Seu nome</label>
-                  <input type="text" placeholder="Nome completo" required className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium" />
+                  <input type="text" name="name" placeholder="Nome completo" required className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">WhatsApp</label>
-                  <input type="tel" placeholder="(00) 00000-0000" required className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium" />
+                  <input type="tel" name="whatsapp" placeholder="(00) 00000-0000" required className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nome da loja</label>
-                  <input type="text" placeholder="Sua loja de veículos" required className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium" />
+                  <input type="text" name="store" placeholder="Sua loja de veículos" required className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Quantos carros você vende por mês?</label>
-                  <select required defaultValue="" className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium appearance-none">
+                  <select name="volume" required defaultValue="" className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-primary focus:ring-1 focus:ring-orange-primary transition-all font-medium appearance-none">
                     <option value="" disabled>Selecione</option>
                     <option value="1">Até 10 carros</option>
                     <option value="2">De 10 a 30 carros</option>
@@ -277,10 +354,8 @@ export function Captacao() {
                   </select>
                 </div>
                 <div className="pt-2 flex flex-col items-center">
-                  <button type="submit" className="btn-12 w-full max-w-md mx-auto inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 rounded-full transition-all hover:bg-black/90 shadow-lg uppercase border-none">
-                    <span className="btn-text flex items-center justify-center gap-3 w-full">
-                      Quero vender mais <ArrowRight className="w-5 h-5" />
-                    </span>
+                  <button type="submit" disabled={isSubmitting} className="bg-orange-primary hover:bg-[#FF7043] disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed w-full max-w-md mx-auto inline-flex items-center justify-center gap-3 text-white font-extrabold text-xl py-6 px-12 rounded-full transition-all hover:-translate-y-1 shadow-lg hover:shadow-orange-primary/30 uppercase border-none">
+                    {isSubmitting ? 'Enviando...' : 'Quero vender mais'} <ArrowRight className="w-5 h-5" />
                   </button>
                   <Seals />
                   <p className="text-center text-sm text-gray-500 mt-4 font-medium">Resposta em até 24h · Sem compromisso</p>

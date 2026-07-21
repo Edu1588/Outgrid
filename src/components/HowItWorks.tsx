@@ -51,7 +51,7 @@ const products = [
 
 export function HowItWorks() {
   return (
-    <section id="metodo" className="py-24 bg-white relative">
+    <section id="metodo" className="pt-24 pb-32 md:pb-40 bg-white relative z-10">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         <div className="mb-16">
@@ -116,7 +116,7 @@ export function HowItWorks() {
                 <ul className="space-y-3">
                   {product.features.map((feature, fIdx) => (
                     <li key={fIdx} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-red-500 shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-[#34A853] shrink-0" />
                       <span className="text-[#334155] text-sm">{feature}</span>
                     </li>
                   ))}

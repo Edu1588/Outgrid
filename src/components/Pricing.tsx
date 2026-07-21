@@ -27,7 +27,7 @@ const plans = [
 
 export function Pricing() {
   return (
-    <section id="planos" className="py-32 bg-black-main relative z-10">
+    <section id="planos" className="py-32 bg-black-main relative z-20">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <motion.div
@@ -79,15 +79,22 @@ export function Pricing() {
               <ul className="space-y-4 mb-8 flex-1">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-gray-300 font-medium">
-                    <CheckCircle2 className="w-5 h-5 text-orange-primary shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-[#34A853] shrink-0" />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               
-              <Button as="a" href="#contato" variant={plan.popular ? "primary" : "outline"} className={`w-full ${plan.popular ? 'bg-orange-primary text-black hover:bg-orange-600 border-none' : 'text-white border-white/20 hover:border-orange-primary hover:text-white hover:bg-orange-primary'}`}>
+              <a 
+                href="#contato" 
+                className={`w-full inline-flex justify-center items-center font-bold uppercase tracking-wider py-4 rounded-full transition-all ${
+                  plan.popular 
+                    ? 'bg-orange-primary text-black hover:bg-[#FF7043] shadow-lg shadow-orange-primary/20 hover:-translate-y-1' 
+                    : 'text-white border border-white/20 hover:border-orange-primary hover:text-orange-primary bg-transparent'
+                }`}
+              >
                 Assinar Plano
-              </Button>
+              </a>
             </motion.div>
           ))}
         </div>

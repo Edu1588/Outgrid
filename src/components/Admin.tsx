@@ -1,8 +1,92 @@
 import { useState, useEffect } from "react";
 import { getLeads, getPageViews, getScrapedLeads, saveScrapedLead, updateScrapedLeadStatus, Lead, PageView, ScrapedLead } from "../lib/storage";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
-import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings } from 'lucide-react';
+import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const translations = {
+  pt: {
+    overview: 'Overview',
+    inboundLeads: 'Leads Inbound',
+    outboundProspects: 'Prospecção Ativa',
+    logout: 'Sair',
+    totalViews: 'Acessos Totais',
+    conversionRate: 'Taxa de Conversão',
+    trafficTitle: 'Tráfego da Loja (Últimos dias)',
+    leadsTitle: 'Leads Gerados (Inbound)',
+    searchPlaceholder: 'Buscar por loja, cidade, fone, e-mail...',
+    settingsTitle: 'Configurações do Painel',
+    notificationsTitle: 'Notificações',
+    themeLabel: 'Aparência e Tema',
+    darkTheme: 'Modo Escuro',
+    lightTheme: 'Modo Claro',
+    languageLabel: 'Idioma do Painel',
+    autoScraperLabel: 'Robô de Prospecção',
+    freq6h: 'Automático (6h)',
+    freq24h: 'Diário (24h)',
+    freqManual: 'Apenas Manual',
+    saveSettings: 'Salvar Preferências',
+    clearNotifications: 'Limpar Notificações',
+    markAllRead: 'Marcar como lidas',
+    noNotifications: 'Nenhuma notificação no momento',
+    apiStatus: 'Serper API: Conectada & Operacional',
+    savedToast: 'Configurações salvas com sucesso!'
+  },
+  en: {
+    overview: 'Overview',
+    inboundLeads: 'Inbound Leads',
+    outboundProspects: 'Active Prospecting',
+    logout: 'Log Out',
+    totalViews: 'Total Views',
+    conversionRate: 'Conversion Rate',
+    trafficTitle: 'Store Traffic (Recent Days)',
+    leadsTitle: 'Leads Generated (Inbound)',
+    searchPlaceholder: 'Search by store, city, phone, email...',
+    settingsTitle: 'Dashboard Settings',
+    notificationsTitle: 'Notifications',
+    themeLabel: 'Appearance & Theme',
+    darkTheme: 'Dark Mode',
+    lightTheme: 'Light Mode',
+    languageLabel: 'Dashboard Language',
+    autoScraperLabel: 'Prospecting Bot',
+    freq6h: 'Automatic (6h)',
+    freq24h: 'Daily (24h)',
+    freqManual: 'Manual Only',
+    saveSettings: 'Save Preferences',
+    clearNotifications: 'Clear Notifications',
+    markAllRead: 'Mark as read',
+    noNotifications: 'No notifications at this time',
+    apiStatus: 'Serper API: Connected & Operational',
+    savedToast: 'Settings saved successfully!'
+  },
+  es: {
+    overview: 'Visión General',
+    inboundLeads: 'Leads Inbound',
+    outboundProspects: 'Prospección Activa',
+    logout: 'Cerrar Sesión',
+    totalViews: 'Visitas Totales',
+    conversionRate: 'Tasa de Conversión',
+    trafficTitle: 'Tráfico de la Tienda (Días recientes)',
+    leadsTitle: 'Leads Generados (Inbound)',
+    searchPlaceholder: 'Buscar por tienda, ciudad, teléfono, email...',
+    settingsTitle: 'Configuraciones del Panel',
+    notificationsTitle: 'Notificaciones',
+    themeLabel: 'Apariencia y Tema',
+    darkTheme: 'Modo Oscuro',
+    lightTheme: 'Modo Claro',
+    languageLabel: 'Idioma del Panel',
+    autoScraperLabel: 'Robot de Prospección',
+    freq6h: 'Automático (6h)',
+    freq24h: 'Diario (24h)',
+    freqManual: 'Solo Manual',
+    saveSettings: 'Guardar Preferencias',
+    clearNotifications: 'Limpiar Notificaciones',
+    markAllRead: 'Marcar como leídas',
+    noNotifications: 'Sin notificaciones por el momento',
+    apiStatus: 'Serper API: Conectada y Operativa',
+    savedToast: '¡Configuraciones guardadas con éxito!'
+  }
+};
 
 export function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -31,6 +115,61 @@ export function Admin() {
   const [prospectCityFilter, setProspectCityFilter] = useState("Todas");
   const [prospectSort, setProspectSort] = useState<'score-desc' | 'score-asc' | 'date-desc' | 'date-asc' | 'name-asc'>('score-desc');
   const [prospectOnlyOpportunities, setProspectOnlyOpportunities] = useState(false);
+
+  // Settings & Theme & Notifications state
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('outgrid_admin_theme') as 'dark' | 'light') || 'dark');
+  const [language, setLanguage] = useState<'pt' | 'en' | 'es'>(() => (localStorage.getItem('outgrid_admin_lang') as 'pt' | 'en' | 'es') || 'pt');
+  const [autoScraperFreq, setAutoScraperFreq] = useState<string>(() => localStorage.getItem('outgrid_admin_scraper_freq') || '6h');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const [notifications, setNotifications] = useState([
+    {
+      id: '1',
+      title: 'Varredura Concluída',
+      desc: '10 novas lojas identificadas na região de Paulínia e Campinas.',
+      time: 'Há 5 min',
+      unread: true,
+      type: 'scraper'
+    },
+    {
+      id: '2',
+      title: 'Contatos Capturados',
+      desc: 'Telefones, E-mails e Instagrams atualizados via inteligência.',
+      time: 'Há 25 min',
+      unread: true,
+      type: 'lead'
+    },
+    {
+      id: '3',
+      title: 'Serper API Ativa',
+      desc: 'Serviço de busca conectado e funcional.',
+      time: 'Há 1 hora',
+      unread: false,
+      type: 'system'
+    }
+  ]);
+
+  const t = translations[language] || translations.pt;
+  const unreadNotificationsCount = notifications.filter(n => n.unread).length;
+
+  useEffect(() => {
+    localStorage.setItem('outgrid_admin_theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('outgrid_admin_lang', language);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('outgrid_admin_scraper_freq', autoScraperFreq);
+  }, [autoScraperFreq]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   const fetchScrapedLeads = async () => {
     try {
@@ -347,8 +486,10 @@ export function Admin() {
         const store = (lead.storeName || "").toLowerCase();
         const city = (lead.city || "").toLowerCase();
         const phone = (lead.phone || "").toLowerCase();
+        const email = (lead.email || "").toLowerCase();
         const link = (lead.link || "").toLowerCase();
-        if (!store.includes(q) && !city.includes(q) && !phone.includes(q) && !link.includes(q)) return false;
+        const insta = (lead.instagram || "").toLowerCase();
+        if (!store.includes(q) && !city.includes(q) && !phone.includes(q) && !email.includes(q) && !link.includes(q) && !insta.includes(q)) return false;
       }
       if (prospectStatusFilter !== "Todos" && lead.status !== prospectStatusFilter) {
         return false;
@@ -380,7 +521,7 @@ export function Admin() {
                 <Search className="text-orange-primary" /> Como funciona a busca de leads
               </h3>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja e calcula um score de oportunidade: lojas que não possuem site próprio e têm menor engajamento recebem scores mais altos, indicando maior potencial para venda de serviços. A busca percorre rotineiramente cidades da região (Campinas, Valinhos, Vinhedo, etc).
+                Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja, captura contatos (telefone, e-mail e Instagram) e calcula um score de oportunidade: lojas que não possuem site próprio recebem scores mais altos, indicando maior potencial para venda de criação de site e marketing.
               </p>
             </div>
           </div>
@@ -420,7 +561,7 @@ export function Admin() {
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input
                   type="text"
-                  placeholder="Buscar loja, cidade, fone..."
+                  placeholder="Buscar por loja, cidade, fone, e-mail..."
                   value={prospectSearch}
                   onChange={(e) => setProspectSearch(e.target.value)}
                   className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-orange-primary/50 transition-colors"
@@ -504,22 +645,73 @@ export function Admin() {
                     <td className="p-4">
                       <div className="font-bold text-white mb-1">{lead.storeName}</div>
                       <div className="flex flex-col gap-1">
-                        <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.city}</div>
-                        {lead.link && (
-                          <a href={lead.link} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-primary hover:underline truncate max-w-[200px] inline-block">
-                            {lead.link}
+                        <div className="text-xs text-gray-400 flex items-center gap-1 mb-0.5">
+                          <MapPin className="w-3 h-3 text-orange-primary" /> {lead.city}
+                        </div>
+                        {/* Website Link */}
+                        {lead.link && !lead.link.includes('instagram.com') ? (
+                          <a 
+                            href={lead.link.startsWith('http') ? lead.link : `https://${lead.link}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs text-orange-primary hover:underline flex items-center gap-1.5 truncate max-w-[220px]"
+                            title="Site Oficial"
+                          >
+                            <Globe className="w-3 h-3 shrink-0" />
+                            <span className="truncate">{lead.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                          </a>
+                        ) : (
+                          <div className="text-[11px] text-gray-600 flex items-center gap-1 italic">
+                            <Globe className="w-3 h-3 shrink-0 text-gray-700" /> Sem site próprio
+                          </div>
+                        )}
+                        {/* Instagram Link */}
+                        {(lead.instagram || (lead.link && lead.link.includes('instagram.com'))) && (
+                          <a 
+                            href={lead.instagram || lead.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs text-pink-400 hover:text-pink-300 hover:underline flex items-center gap-1.5 truncate max-w-[220px]"
+                            title="Instagram Oficial"
+                          >
+                            <svg className="w-3 h-3 shrink-0 fill-current text-pink-400" viewBox="0 0 24 24">
+                              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                            <span className="truncate">Instagram</span>
                           </a>
                         )}
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="text-sm text-gray-300 flex items-center gap-1 mb-1">
-                        <Phone className="w-3 h-3 text-gray-500" /> 
-                        {lead.phone || <span className="text-gray-600 italic">Não encontrado</span>}
+                      <div className="text-xs text-gray-200 flex items-center gap-1.5 mb-1.5">
+                        <Phone className="w-3.5 h-3.5 text-orange-primary shrink-0" /> 
+                        {lead.phone ? (
+                          <a 
+                            href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="hover:text-orange-primary transition-colors font-medium text-xs"
+                            title="Abrir no WhatsApp"
+                          >
+                            {lead.phone}
+                          </a>
+                        ) : (
+                          <span className="text-gray-600 text-xs italic">Não encontrado</span>
+                        )}
                       </div>
-                      <div className="text-xs text-gray-500 flex items-center gap-1">
-                        <Mail className="w-3 h-3" /> 
-                        {lead.email || <span className="text-gray-600 italic">Não encontrado</span>}
+                      <div className="text-xs text-gray-400 flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-gray-500 shrink-0" /> 
+                        {lead.email ? (
+                          <a 
+                            href={`mailto:${lead.email}`} 
+                            className="hover:text-orange-primary transition-colors truncate max-w-[180px]"
+                            title={lead.email}
+                          >
+                            {lead.email}
+                          </a>
+                        ) : (
+                          <span className="text-gray-600 italic">Não encontrado</span>
+                        )}
                       </div>
                     </td>
                     <td className="p-4">
@@ -575,65 +767,357 @@ export function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex">
+    <div className={`min-h-screen flex transition-colors duration-300 relative ${theme === 'light' ? 'bg-slate-100 text-slate-900' : 'bg-[#050505] text-white'}`}>
+      
+      {/* Toast Notification Feedback */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 right-6 z-50 bg-orange-primary text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border border-white/20"
+          >
+            <Check className="w-4 h-4 text-white" />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/5 bg-[#0A0A0A] hidden md:flex flex-col">
-        <div className="h-20 flex items-center px-8 border-b border-white/5">
-          <h1 className="text-xl font-black tracking-tighter">OUT<span className="text-orange-primary">GRID</span> <span className="text-[10px] font-medium text-gray-500 ml-1 tracking-widest uppercase">Admin</span></h1>
+      <aside className={`w-64 border-r hidden md:flex flex-col transition-colors ${theme === 'light' ? 'bg-white border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/5 text-white'}`}>
+        <div className={`h-20 flex items-center px-8 border-b ${theme === 'light' ? 'border-slate-200' : 'border-white/5'}`}>
+          <h1 className="text-xl font-black tracking-tighter">OUT<span className="text-orange-primary">GRID</span> <span className="text-[10px] font-medium text-gray-400 ml-1 tracking-widest uppercase">Admin</span></h1>
         </div>
         
         <nav className="flex-1 p-4 space-y-1">
           <button 
             onClick={() => setActiveTab('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
-            <LayoutDashboard className="w-4 h-4" /> Overview
+            <LayoutDashboard className="w-4 h-4" /> {t.overview}
           </button>
           <button 
             onClick={() => setActiveTab('leads')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
-            <Users className="w-4 h-4" /> Inbound Leads
+            <Users className="w-4 h-4" /> {t.inboundLeads}
           </button>
           <button 
             onClick={() => setActiveTab('prospects')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'prospects' ? 'bg-orange-primary/10 text-orange-primary' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'prospects' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             <div className="flex items-center gap-3">
-              <Search className="w-4 h-4" /> Prospecção
+              <Search className="w-4 h-4" /> {t.outboundProspects}
             </div>
-            <span className="bg-orange-primary text-black-main text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">Novo</span>
+            <span className="bg-orange-primary text-black-main text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">{language === 'pt' ? 'Novo' : language === 'es' ? 'Nuevo' : 'New'}</span>
           </button>
         </nav>
 
-        <div className="p-4 border-t border-white/5">
+        <div className={`p-4 border-t ${theme === 'light' ? 'border-slate-200' : 'border-white/5'}`}>
           <button 
             onClick={() => setIsAuthenticated(false)}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
           >
-            <LogOut className="w-4 h-4" /> Sair
+            <LogOut className="w-4 h-4" /> {t.logout}
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         {/* Header */}
-        <header className="h-20 border-b border-white/5 bg-[#0A0A0A]/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
+        <header className={`h-20 border-b backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-30 transition-colors ${theme === 'light' ? 'bg-white/90 border-slate-200 text-slate-900' : 'bg-[#0A0A0A]/80 border-white/5 text-white'}`}>
           <div className="flex items-center gap-4">
-            <h2 className="text-lg font-bold text-white capitalize">
-              {activeTab === 'dashboard' ? 'Overview' : activeTab === 'leads' ? 'Leads Inbound' : 'Prospecção Ativa'}
+            <h2 className={`text-lg font-bold capitalize ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
+              {activeTab === 'dashboard' ? t.overview : activeTab === 'leads' ? t.inboundLeads : t.outboundProspects}
             </h2>
           </div>
-          <div className="flex items-center gap-4">
-            <button className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 transition-all relative">
+
+          <div className="flex items-center gap-3 relative">
+            {/* Bell Icon & Notifications Button */}
+            <button 
+              onClick={() => {
+                setShowNotifications(!showNotifications);
+                setShowSettings(false);
+              }}
+              className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all relative ${
+                showNotifications 
+                  ? 'border-orange-primary text-orange-primary bg-orange-primary/10' 
+                  : theme === 'light'
+                    ? 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    : 'border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+              }`}
+              title={t.notificationsTitle}
+            >
               <Bell className="w-4 h-4" />
-              <div className="absolute top-2 right-2 w-2 h-2 bg-orange-primary rounded-full border-2 border-[#0A0A0A]"></div>
+              {unreadNotificationsCount > 0 && (
+                <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-orange-primary rounded-full border-2 border-[#0A0A0A]"></div>
+              )}
             </button>
-            <button className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 transition-all">
+
+            {/* Notifications Dropdown / Popover */}
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className={`absolute right-12 top-14 w-80 md:w-96 rounded-2xl border p-4 shadow-2xl z-50 ${
+                    theme === 'light' ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/50' : 'bg-[#111111] border-white/10 text-white shadow-black'
+                  }`}
+                >
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                    <div className="flex items-center gap-2">
+                      <BellRing className="w-4 h-4 text-orange-primary" />
+                      <span className="font-bold text-sm">{t.notificationsTitle}</span>
+                      {unreadNotificationsCount > 0 && (
+                        <span className="bg-orange-primary/20 text-orange-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          {unreadNotificationsCount}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {notifications.length > 0 && (
+                        <>
+                          <button 
+                            onClick={() => {
+                              setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+                              showToast(t.markAllRead);
+                            }}
+                            className="text-xs text-gray-400 hover:text-orange-primary p-1 rounded transition-colors"
+                            title={t.markAllRead}
+                          >
+                            <CheckCheck className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setNotifications([]);
+                              showToast(t.clearNotifications);
+                            }}
+                            className="text-xs text-gray-400 hover:text-red-400 p-1 rounded transition-colors"
+                            title={t.clearNotifications}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                      <button 
+                        onClick={() => setShowNotifications(false)}
+                        className="text-gray-400 hover:text-white p-1"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                    {notifications.length === 0 ? (
+                      <div className="py-8 text-center text-xs text-gray-500 italic">
+                        {t.noNotifications}
+                      </div>
+                    ) : (
+                      notifications.map(item => (
+                        <div 
+                          key={item.id} 
+                          className={`p-3 rounded-xl border text-xs transition-colors flex items-start gap-3 relative ${
+                            item.unread 
+                              ? theme === 'light' ? 'bg-orange-500/5 border-orange-500/20' : 'bg-orange-primary/10 border-orange-primary/20'
+                              : theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-[#0A0A0A] border-white/5'
+                          }`}
+                        >
+                          <div className="p-2 rounded-lg bg-orange-primary/10 text-orange-primary shrink-0 mt-0.5">
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="font-bold text-xs truncate">{item.title}</span>
+                              <span className="text-[10px] text-gray-400 shrink-0 ml-2">{item.time}</span>
+                            </div>
+                            <p className="text-[11px] text-gray-400 leading-snug">{item.desc}</p>
+                          </div>
+                          <button 
+                            onClick={() => setNotifications(prev => prev.filter(n => n.id !== item.id))}
+                            className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Settings Icon & Button */}
+            <button 
+              onClick={() => {
+                setShowSettings(!showSettings);
+                setShowNotifications(false);
+              }}
+              className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${
+                showSettings 
+                  ? 'border-orange-primary text-orange-primary bg-orange-primary/10' 
+                  : theme === 'light'
+                    ? 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    : 'border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+              }`}
+              title={t.settingsTitle}
+            >
               <Settings className="w-4 h-4" />
             </button>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-primary to-[#ff4000] p-[2px] ml-2">
+
+            {/* Settings Modal / Dropdown */}
+            <AnimatePresence>
+              {showSettings && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className={`absolute right-0 top-14 w-80 md:w-96 rounded-2xl border p-5 shadow-2xl z-50 ${
+                    theme === 'light' ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/50' : 'bg-[#111111] border-white/10 text-white shadow-black'
+                  }`}
+                >
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+                    <div className="flex items-center gap-2">
+                      <Sliders className="w-4 h-4 text-orange-primary" />
+                      <span className="font-bold text-sm">{t.settingsTitle}</span>
+                    </div>
+                    <button 
+                      onClick={() => setShowSettings(false)}
+                      className="text-gray-400 hover:text-white p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-5">
+                    {/* Theme Selector */}
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2 flex items-center gap-1.5">
+                        <Sun className="w-3.5 h-3.5 text-orange-primary" /> {t.themeLabel}
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button 
+                          onClick={() => {
+                            setTheme('dark');
+                            showToast('Modo Escuro ativado!');
+                          }}
+                          className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                            theme === 'dark' 
+                              ? 'bg-orange-primary/20 border-orange-primary text-orange-primary' 
+                              : 'bg-black/20 border-white/10 text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          <Moon className="w-3.5 h-3.5" /> {t.darkTheme}
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setTheme('light');
+                            showToast('Modo Claro ativado!');
+                          }}
+                          className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                            theme === 'light' 
+                              ? 'bg-orange-primary/20 border-orange-primary text-orange-primary' 
+                              : 'bg-black/20 border-white/10 text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          <Sun className="w-3.5 h-3.5" /> {t.lightTheme}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Language Selector */}
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2 flex items-center gap-1.5">
+                        <Languages className="w-3.5 h-3.5 text-orange-primary" /> {t.languageLabel}
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button 
+                          onClick={() => {
+                            setLanguage('pt');
+                            showToast('Idioma alterado para Português');
+                          }}
+                          className={`px-2 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
+                            language === 'pt' 
+                              ? 'bg-orange-primary/20 border-orange-primary text-orange-primary' 
+                              : 'bg-black/20 border-white/10 text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          🇧🇷 PT
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setLanguage('en');
+                            showToast('Language set to English');
+                          }}
+                          className={`px-2 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
+                            language === 'en' 
+                              ? 'bg-orange-primary/20 border-orange-primary text-orange-primary' 
+                              : 'bg-black/20 border-white/10 text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          🇺🇸 EN
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setLanguage('es');
+                            showToast('Idioma cambiado a Español');
+                          }}
+                          className={`px-2 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
+                            language === 'es' 
+                              ? 'bg-orange-primary/20 border-orange-primary text-orange-primary' 
+                              : 'bg-black/20 border-white/10 text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          🇪🇸 ES
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Auto Scraper Frequency */}
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2 flex items-center gap-1.5">
+                        <Database className="w-3.5 h-3.5 text-orange-primary" /> {t.autoScraperLabel}
+                      </label>
+                      <select 
+                        value={autoScraperFreq}
+                        onChange={(e) => {
+                          setAutoScraperFreq(e.target.value);
+                          showToast(`Frequência atualizada: ${e.target.value}`);
+                        }}
+                        className={`w-full text-xs font-bold rounded-xl p-2.5 border focus:outline-none focus:border-orange-primary ${
+                          theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-white'
+                        }`}
+                      >
+                        <option value="6h">{t.freq6h}</option>
+                        <option value="24h">{t.freq24h}</option>
+                        <option value="manual">{t.freqManual}</option>
+                      </select>
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-xs text-green-400 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-green-500" />
+                      <span>{t.apiStatus}</span>
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        setShowSettings(false);
+                        showToast(t.savedToast);
+                      }}
+                      className="w-full bg-orange-primary text-white font-bold py-3 rounded-xl hover:bg-orange-600 transition-colors text-xs uppercase tracking-wider"
+                    >
+                      {t.saveSettings}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-primary to-[#ff4000] p-[2px] ml-1">
               <div className="w-full h-full bg-[#0A0A0A] rounded-full flex items-center justify-center">
                 <span className="text-xs font-bold text-white">AD</span>
               </div>

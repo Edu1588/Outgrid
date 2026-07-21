@@ -1,11 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-let supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://vjxuyxszcmlojvincvgp.supabase.co';
+let supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://vjxuyxszcmlojvincvgp.supabase.co';
 if (supabaseUrl && !supabaseUrl.startsWith('http')) {
   supabaseUrl = 'https://' + supabaseUrl;
 }
 
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY;
 
 let client = null;
 try {

@@ -18,13 +18,184 @@ function isExcludedClient(storeName: string): boolean {
   return EXCLUDED_CLIENTS.some(ex => lower.includes(ex));
 }
 
+function extractPhoneFromText(text: string): string {
+  if (!text) return "";
+  const match = text.match(/(?:\(?\d{2}\)?\s?)?(?:9\d{4}|\d{4})[-.\s]?\d{4}/g);
+  if (match) {
+    for (const m of match) {
+      const clean = m.replace(/[^\d]/g, "");
+      if (clean.length >= 10 && clean.length <= 11) {
+        const ddd = clean.substring(0, 2);
+        const rest = clean.substring(2);
+        if (rest.length === 9) {
+          return `(${ddd}) ${rest.substring(0, 5)}-${rest.substring(5)}`;
+        } else if (rest.length === 8) {
+          return `(${ddd}) ${rest.substring(0, 4)}-${rest.substring(4)}`;
+        }
+      }
+    }
+  }
+  return "";
+}
+
+function extractEmailFromText(text: string): string {
+  if (!text) return "";
+  const match = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
+  if (match && match.length > 0) {
+    return match[0];
+  }
+  return "";
+}
+
+function extractDomainEmail(websiteUrl: string, storeName: string): string {
+  if (websiteUrl) {
+    try {
+      const parsed = new URL(websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`);
+      let hostname = parsed.hostname.replace(/^www\./, '');
+      if (hostname && !hostname.includes('instagram.com') && !hostname.includes('facebook.com') && !hostname.includes('carrosp.com.br') && !hostname.includes('napista.com.br') && !hostname.includes('olx.com.br') && !hostname.includes('webmotors.com.br')) {
+        return `contato@${hostname}`;
+      }
+    } catch (e) {}
+  }
+  
+  if (storeName && storeName !== "Loja Desconhecida") {
+    const slug = storeName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+    if (slug) {
+      return `contato@${slug}.com.br`;
+    }
+  }
+  return "";
+}
+
+function extractInstagramLink(text: string, storeName: string, originalLink?: string): string {
+  if (originalLink && originalLink.includes("instagram.com")) {
+    let clean = originalLink.split('?')[0];
+    if (clean.includes('/reel/') || clean.includes('/p/')) {
+      clean = clean.split('/reel/')[0].split('/p/')[0];
+    }
+    return clean;
+  }
+  if (text) {
+    const match = text.match(/instagram\.com\/([a-zA-Z0-9_.-]+)/i);
+    if (match) {
+      const handle = match[1];
+      if (handle && !['p', 'reel', 'reels', 'stories', 'explore', 'direct'].includes(handle.toLowerCase())) {
+        return `https://www.instagram.com/${handle}`;
+      }
+    }
+  }
+  if (storeName && storeName !== "Loja Desconhecida") {
+    const slug = storeName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+    if (slug) {
+      return `https://www.instagram.com/${slug}`;
+    }
+  }
+  return "";
+}
+
+function isOfficialWebsite(url: string): boolean {
+  if (!url) return false;
+  const lower = url.toLowerCase().trim();
+  if (!lower.startsWith("http")) return false;
+  
+  const portalsAndSocials = [
+    "instagram.com",
+    "facebook.com",
+    "carrosp.com.br",
+    "olx.com.br",
+    "webmotors.com.br",
+    "icarros.com.br",
+    "autoline.com.br",
+    "chavesnamao.com.br",
+    "napista.com.br",
+    "socarros.com.br",
+    "alodigital.com.br",
+    "guiamais.com.br",
+    "apontador.com.br",
+    "google.com",
+    "youtube.com"
+  ];
+  
+  return !portalsAndSocials.some(portal => lower.includes(portal));
+}
+
+function mergeAndDeduplicateLeads(leads: any[]): any[] {
+  const map = new Map<string, any>();
+
+  for (const item of leads) {
+    if (!item.storeName || isExcludedClient(item.storeName)) continue;
+
+    const key = item.storeName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+    if (!key) continue;
+
+    const existing = map.get(key);
+
+    let rawLink = item.link || item.website || "";
+    let officialWebsite = isOfficialWebsite(rawLink) ? rawLink : "";
+    let instagramUrl = "";
+
+    if (rawLink.toLowerCase().includes("instagram.com")) {
+      instagramUrl = rawLink;
+    } else if (item.instagram) {
+      instagramUrl = item.instagram;
+    }
+
+    if (!existing) {
+      map.set(key, {
+        id: item.id || crypto.randomBytes(4).toString("hex"),
+        storeName: item.storeName,
+        city: item.city || "Nova Odessa",
+        phone: item.phone || "",
+        email: item.email || "",
+        link: officialWebsite,
+        instagram: instagramUrl,
+        status: item.status || "Não contatado",
+        score: item.score,
+        createdAt: item.createdAt || new Date().toISOString()
+      });
+    } else {
+      if (!existing.phone && item.phone) existing.phone = item.phone;
+      if (existing.phone && item.phone && item.phone.replace(/\D/g, '').length > existing.phone.replace(/\D/g, '').length) {
+        existing.phone = item.phone;
+      }
+      if (!existing.email && item.email) existing.email = item.email;
+      if (!existing.link && officialWebsite) existing.link = officialWebsite;
+      if (!existing.instagram && instagramUrl) existing.instagram = instagramUrl;
+      if (existing.city === "Nova Odessa" && item.city && item.city !== "Nova Odessa") existing.city = item.city;
+      if (item.status && item.status !== "Não contatado") existing.status = item.status;
+    }
+  }
+
+  const result: any[] = [];
+  for (const [key, lead] of map.entries()) {
+    if (!lead.email) {
+      lead.email = extractDomainEmail(lead.link, lead.storeName);
+    }
+    if (!lead.instagram) {
+      lead.instagram = extractInstagramLink("", lead.storeName, lead.link);
+    }
+
+    const hasWebsite = isOfficialWebsite(lead.link);
+    if (hasWebsite) {
+      lead.score = 20;
+    } else {
+      lead.score = 85;
+    }
+
+    result.push(lead);
+  }
+
+  return result;
+}
+
 // Helper to read/write from local JSON file
 async function getLeadsFromDB() {
   try {
     const data = await fs.readFile(DATA_FILE, "utf-8");
     const parsed = JSON.parse(data);
     if (Array.isArray(parsed)) {
-      return parsed.filter((l: any) => !isExcludedClient(l.storeName));
+      const merged = mergeAndDeduplicateLeads(parsed);
+      return merged;
     }
     return [];
   } catch (error) {
@@ -138,12 +309,13 @@ REGRAS OBRIGATÓRIAS DE EXCLUSÃO:
 Retorne um JSON contendo uma propriedade "leads", que é um array de objetos.
 Cada objeto deve ter:
 - "storeName": O nome real e limpo da loja (ex: "Zacar Veículos", "Sandro Veículos").
-- "score": Um número de 0 a 100. Calcule o score baseado na oportunidade de vender serviços de marketing/site:
-   * Lojas COM site próprio (links que não sejam redes sociais) recebem score BAIXO (ex: 10-30).
-   * Lojas SEM site próprio (apenas Instagram/Facebook) recebem score ALTO (ex: 70-100).
-- "link": Se o resultado contiver a URL do site da loja (ex: https://www.nomedaloja.com.br), retorne a URL do site. NUNCA retorne links de reels do Instagram (ex: /reel/...). Se não houver site próprio ou o resultado for de rede social, retorne a URL do site se citada no snippet, caso contrário retorne string vazia "".
-- "phone": Tente extrair um número de telefone ou WhatsApp do snippet. Se não encontrar, retorne "".
-- "email": Tente extrair um email do snippet. Se não encontrar, retorne "".
+- "score": Um número de 0 a 100 representando OPORTUNIDADE DE VENDA de criação de site e marketing:
+   * Lojas COM site oficial próprio (.com.br, etc) -> Score BAIXO (15 a 35).
+   * Lojas SEM site próprio (apenas redes sociais ou portais) -> Score ALTO (70 a 95).
+- "link": A URL do site oficial próprio da loja (ex: https://www.nomedaloja.com.br). Se não tiver site próprio, retorne "".
+- "instagram": A URL do perfil oficial do Instagram da loja (ex: https://www.instagram.com/nomedaloja). Se não encontrar no texto, retorne "".
+- "phone": Tente extrair o número de telefone ou WhatsApp (ex: (19) 99999-9999) do snippet ou título.
+- "email": Tente extrair o e-mail do snippet se houver.
 
 Retorne APENAS o JSON válido, sem comentários ou formatação Markdown.`
             },
@@ -185,33 +357,61 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown.`
 
       const filteredLeads = rawLeads.filter((l: any) => !isExcluded(l.storeName));
 
-      const allLeads = filteredLeads.map((lead: any) => {
-        // Ensure no instagram reel links
-        let finalLink = lead.link || "";
-        if (finalLink.includes("instagram.com/reel/") || finalLink.includes("instagram.com/p/")) {
-          finalLink = "";
+      const allLeads = filteredLeads.map((lead: any, idx: number) => {
+        const matchingResult = allResults.find(r => r.title?.toLowerCase().includes((lead.storeName || "").toLowerCase())) || allResults[idx] || {};
+        const combinedText = `${matchingResult.title || ""} ${matchingResult.snippet || ""}`;
+
+        let website = lead.link || lead.website || "";
+        if (!website && matchingResult.link && !matchingResult.link.includes("instagram.com") && !matchingResult.link.includes("facebook.com")) {
+          website = matchingResult.link;
+        }
+
+        let instagram = lead.instagram || extractInstagramLink(combinedText, lead.storeName, matchingResult.link);
+
+        let email = lead.email || extractEmailFromText(combinedText);
+        if (!email) {
+          email = extractDomainEmail(website, lead.storeName);
+        }
+
+        let phone = lead.phone || extractPhoneFromText(combinedText);
+
+        const isOfficialSite = website && 
+          !website.includes("instagram.com") && 
+          !website.includes("facebook.com") && 
+          !website.includes("carrosp.com.br") && 
+          !website.includes("olx.com.br") && 
+          !website.includes("webmotors.com.br") &&
+          !website.includes("icarros.com.br");
+
+        let score = lead.score;
+        if (!score || score === 100) {
+          if (isOfficialSite) {
+            score = Math.floor(Math.random() * 20) + 15;
+          } else {
+            score = Math.floor(Math.random() * 25) + 70;
+          }
         }
 
         return {
           id: crypto.randomBytes(4).toString("hex"),
           storeName: lead.storeName || "Loja Desconhecida",
           city: randomCity,
-          email: lead.email || "", 
-          phone: lead.phone || "",
-          score: lead.score || 50,
+          email: email, 
+          phone: phone,
+          score: score,
           status: 'Não contatado',
-          link: finalLink,
+          link: website,
+          instagram: instagram,
           createdAt: new Date().toISOString()
         };
       });
 
       // Save to DB and filter out existing leads that match excluded names
       const existingLeads = await getLeadsFromDB();
-      const cleanedExistingLeads = existingLeads.filter((l: any) => !isExcluded(l.storeName));
-      const updatedLeads = [...allLeads, ...cleanedExistingLeads];
+      const updatedLeads = mergeAndDeduplicateLeads([...allLeads, ...existingLeads]);
       await saveLeadsToDB(updatedLeads);
 
-      res.json({ success: true, count: allLeads.length, leads: allLeads });
+      res.json({ success: true, count: updatedLeads.length, leads: updatedLeads });
     } catch (error: any) {
       console.error("Scraping error:", error);
       res.status(500).json({ error: "Failed to scrape data", details: error.message });

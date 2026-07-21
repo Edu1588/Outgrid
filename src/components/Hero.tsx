@@ -41,7 +41,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight text-white mx-0"
           >
-            Pare de depender dos portais. Comece a vender com <Highlight delay={0.6}>o que é seu</Highlight>.
+            Pare de depender dos portais. Comece a vender com <Highlight delay={0.6}>o que é seu</Highlight><span className="inline-block w-6 md:w-8 h-1 md:h-1.5 bg-orange-primary rounded-full ml-2.5 align-middle" />
           </motion.h1>
           
           <motion.p 
@@ -50,7 +50,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl text-gray-300 font-medium leading-relaxed mb-10 max-w-lg mx-0"
           >
-            Seu site pode gerar mais leads qualificados, mais vendas e muito mais autoridade sem depender 100% de terceiros.
+            Você está <strong className="text-orange-primary font-bold">perdendo dinheiro</strong> todos os dias. Seu site lento faz você perder vendas e deixar dinheiro na mesa. Com nossa análise e sistema, sua empresa deixará de perder dinheiro.
           </motion.p>
           
           <motion.div 

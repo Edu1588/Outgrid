@@ -47,7 +47,7 @@ export function Solution() {
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-5xl font-bold mb-6 text-white tracking-tight max-w-3xl mx-auto"
         >
-          Existe um caminho <Highlight delay={0.4}>mais inteligente</Highlight>
+          Existe um caminho <Highlight delay={0.4}>mais inteligente</Highlight><span className="inline-block w-6 md:w-8 h-1 md:h-1.5 bg-orange-primary rounded-full ml-2.5 align-middle" />
         </motion.h2>
         
         <motion.p

@@ -26,7 +26,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm font-medium text-gray-500">
               <li><Link to={getHomeLink("#home")} className="hover:text-orange-primary transition-colors">Home</Link></li>
               <li><Link to={getHomeLink("#problema")} className="hover:text-orange-primary transition-colors">O Problema</Link></li>
-              <li><Link to={getHomeLink("#planos")} className="hover:text-orange-primary transition-colors">Planos e Preços</Link></li>
+              <li><Link to={getHomeLink("#simulador")} className="hover:text-orange-primary transition-colors">Análise do Negócio</Link></li>
               <li><Link to={getHomeLink("#recursos")} className="hover:text-orange-primary transition-colors">Recursos</Link></li>
               <li><Link to={getHomeLink("#como-funciona")} className="hover:text-orange-primary transition-colors">Como funciona</Link></li>
               <li><Link to={getHomeLink("#resultados")} className="hover:text-orange-primary transition-colors">Resultados</Link></li>

@@ -207,12 +207,13 @@ async function saveLeadsToDB(leads: any[]) {
   await fs.writeFile(DATA_FILE, JSON.stringify(leads, null, 2), "utf-8");
 }
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+export const app = express();
+const PORT = 3000;
 
-  app.use(express.json());
-  app.use(cors());
+app.use(express.json());
+app.use(cors());
+
+async function startServer() {
 
   // GET leads
   app.get("/api/leads/scraped", async (req, res) => {
@@ -236,10 +237,10 @@ async function startServer() {
   // CRON or Manual Endpoint to Scrape
   app.post("/api/scrape", async (req, res) => {
     try {
-      const serperApiKey = process.env.SERPER_API_KEY;
+      const serperApiKey = process.env.SERPER_API_KEY || process.env.SERPER;
       
       if (!serperApiKey) {
-        return res.status(500).json({ error: "SERPER_API_KEY not configured" });
+        return res.status(500).json({ error: "SERPER API key not configured (SERPER or SERPER_API_KEY)" });
       }
 
       const regionCities = ["Campinas", "Valinhos", "Vinhedo", "Paulínia", "Sumaré", "Hortolândia", "Indaiatuba", "Americana", "Santa Bárbara d'Oeste", "Nova Odessa", "Jaguariúna"];
@@ -278,9 +279,9 @@ async function startServer() {
       // Truncate to exactly 30 if it exceeded
       allResults = allResults.slice(0, 30);
 
-      const groqApiKey = process.env.GROQ_API_KEY;
+      const groqApiKey = process.env.GROQ_API_KEY || process.env.GROQ;
       if (!groqApiKey) {
-        return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+        return res.status(500).json({ error: "GROQ API key not configured (GROQ or GROQ_API_KEY)" });
       }
 
       // Prepare data for Groq
@@ -433,9 +434,13 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown.`
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  }
 }
 
 startServer();
+
+export default app;

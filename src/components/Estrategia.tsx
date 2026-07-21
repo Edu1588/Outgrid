@@ -692,8 +692,8 @@ export function Estrategia() {
               <span className="sec-num">00</span>
               <div><h2>A ideia central em uma frase</h2></div>
             </div>
-            <p>O Acelerador de Vendas é a frente de mentoria e estratégia do OUTGRID para <strong>lojas de veículos que querem vender mais carros todo mês</strong> usando o digital — sem depender só dos portais.</p>
-            <p>Não vendemos “projeto de tecnologia”. Vendemos <strong>carros vendidos</strong>. Tudo o que fazemos — campanha, leads e estratégias — existe para colocar mais oportunidades na mesa do vendedor e fechar mais negócios. Essa é a sensação que o dono da loja precisa ter:</p>
+            <p>O Acelerador de Vendas é a frente de mentoria e estratégia do OUTGRID para <strong>lojas de veículos que querem vender mais carros todo mês</strong> usando o digital, sem depender só dos portais.</p>
+            <p>Não vendemos “projeto de tecnologia”. Vendemos <strong>carros vendidos</strong>. Tudo o que fazemos (campanha, leads e estratégias) existe para colocar mais oportunidades na mesa do vendedor e fechar mais negócios. Essa é a sensação que o dono da loja precisa ter:</p>
             <div className="quote">
               <div className="say">“O OUTGRID vai montar uma estratégia para a minha loja vender mais carros.”</div>
               <div className="not">Não: “O OUTGRID vai transformar a minha empresa.”</div>
@@ -705,7 +705,7 @@ export function Estrategia() {
             <div className="sec-head">
               <span className="sec-num">01</span>
               <div>
-                <h2>Para quem é — e o que tira o sono dele</h2>
+                <h2>Para quem é (e o que tira o sono dele)</h2>
                 <p className="sec-sub">Dono e gestor de loja de veículos / seminovos que já vende, mas sente que perde oportunidade todos os dias.</p>
               </div>
             </div>
@@ -713,7 +713,7 @@ export function Estrategia() {
             <div className="metrics">
               <div className="metric">
                 <div className="big">70%</div>
-                <p>dos leads chegam fora do horário comercial — a loja fecha às 18h e o cliente só começa a procurar carro depois.</p>
+                <p>dos leads chegam fora do horário comercial: a loja fecha às 18h e o cliente só começa a procurar carro depois.</p>
               </div>
               <div className="metric">
                 <div className="big">18h+</div>
@@ -728,10 +728,10 @@ export function Estrategia() {
             <p style={{marginBottom:'22px',color:'var(--text-muted)',fontSize:'14px',fontFamily:"'JetBrains Mono',monospace",letterSpacing:'1px',textTransform:'uppercase'}}>Os desafios que ele enfrenta hoje</p>
             <ul className="pains">
               <li><span className="x">×</span> Recebe poucos leads e o movimento depende do dia.</li>
-              <li><span className="x">×</span> Os leads que chegam vêm desqualificados — curioso, sem perfil, sem intenção real de compra.</li>
+              <li><span className="x">×</span> Os leads que chegam vêm desqualificados: curioso, sem perfil, sem intenção real de compra.</li>
               <li><span className="x">×</span> Depende de portais, OLX e Marketplace: quem constrói a marca são eles, não a loja.</li>
               <li><span className="x">×</span> Os vendedores não respondem a tempo e deixam a oportunidade esfriar.</li>
-              <li><span className="x">×</span> Já contratou agência e “não funcionou” — teve post bonito, mas não teve carro vendido.</li>
+              <li><span className="x">×</span> Já contratou agência e “não funcionou”: teve post bonito, mas não teve carro vendido.</li>
             </ul>
           </section>
 
@@ -781,7 +781,7 @@ export function Estrategia() {
               <div className="product hero">
                 <div className="tag">Produto 1 · O cérebro</div>
                 <h3>Acelerador de Vendas</h3>
-                <p className="role">A estratégia por trás de tudo — a campanha que realmente vende carros.</p>
+                <p className="role">A estratégia por trás de tudo: a campanha que realmente vende carros.</p>
                 <div className="chips">
                   <span className="chip">Diagnóstico da operação comercial</span>
                   <span className="chip">Planejamento da campanha</span>
@@ -829,15 +829,15 @@ export function Estrategia() {
             <div className="sec-head">
               <span className="sec-num">05</span>
               <div>
-                <h2>Como funciona — o caminho até a venda</h2>
+                <h2>Como funciona: o caminho até a venda</h2>
                 <p className="sec-sub">Do anúncio até o carro vendido, com a máquina trabalhando inclusive fora do horário comercial.</p>
               </div>
             </div>
             <div className="funnel">
               <div className="step"><span className="sn">1</span><div><h4>Anúncio que atrai o comprador certo</h4><p>Meta Ads e Google Ads mirando quem está procurando carro na região.</p></div></div>
               <div className="step"><span className="sn">2</span><div><h4>Qualificação antes do vendedor</h4><p>Aplicação / quiz e landing page filtram o curioso e passam só o lead com perfil de compra.</p></div></div>
-              <div className="step"><span className="sn">3</span><div><h4>Página do veículo e do vendedor</h4><p>O lead vê o carro, o preço e fala com a loja — no site que é seu, não no portal.</p></div></div>
-              <div className="step"><span className="sn">4</span><div><h4>IA de atendimento responde na hora</h4><p>Atende no minuto que o lead chega — inclusive às 22h — e segura a oportunidade até o vendedor assumir.</p></div></div>
+              <div className="step"><span className="sn">3</span><div><h4>Página do veículo e do vendedor</h4><p>O lead vê o carro, o preço e fala com a loja no site que é seu, não no portal.</p></div></div>
+              <div className="step"><span className="sn">4</span><div><h4>IA de atendimento responde na hora</h4><p>Atende no minuto que o lead chega (inclusive às 22h) e segura a oportunidade até o vendedor assumir.</p></div></div>
               <div className="step"><span className="sn">5</span><div><h4>Vendedor fecha o negócio</h4><p>Recebe leads quentes e organizados, com plano de conversão para transformar contato em carro vendido.</p></div></div>
             </div>
           </section>
@@ -847,7 +847,7 @@ export function Estrategia() {
             <div className="sec-head">
               <span className="sec-num">06</span>
               <div>
-                <h2>Comunicação — as palavras importam</h2>
+                <h2>Comunicação: as palavras importam</h2>
                 <p className="sec-sub">O dono de loja quer vender carro, não “transformar a empresa”. Toda copy passa por este filtro.</p>
               </div>
             </div>
@@ -886,7 +886,7 @@ export function Estrategia() {
               <span className="sec-num">07</span>
               <div>
                 <h2>Ângulos de conteúdo e anúncio</h2>
-                <p className="sec-sub">Ganchos prontos para criativos, LP e conteúdo — cada um nasce de uma dor real da seção 01.</p>
+                <p className="sec-sub">Ganchos prontos para criativos, LP e conteúdo (cada um nasce de uma dor real da seção 01).</p>
               </div>
             </div>
             <div className="angles">
@@ -905,7 +905,7 @@ export function Estrategia() {
               <span className="sec-num">08</span>
               <div>
                 <h2>Primeiros 30 dias do projeto</h2>
-                <p className="sec-sub">O plano de ação para tirar o Acelerador do papel — o que construímos a seguir.</p>
+                <p className="sec-sub">O plano de ação para tirar o Acelerador do papel e o que construímos a seguir.</p>
               </div>
             </div>
             <div className="road">
@@ -1090,7 +1090,7 @@ export function Estrategia() {
           <footer>
             <div className="big-cta">Tudo neste documento existe para uma coisa: <span className="g">a loja vender mais carros.</span></div>
             <div className="fnote">
-              OUTGRID · Acelerador de Vendas — Base estratégica<br/>
+              OUTGRID · Acelerador de Vendas (Base estratégica)<br/>
               Documento vivo · atualizar conforme a oferta e os criativos evoluem · Jul / 2026
             </div>
           </footer>

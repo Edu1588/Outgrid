@@ -1,3 +1,5 @@
+import { INITIAL_SCRAPED_LEADS } from './initialScrapedLeads';
+
 export interface Lead {
   id: string;
   name: string;
@@ -87,10 +89,18 @@ export function getPageViews(): PageView[] {
 export function getScrapedLeads(): ScrapedLead[] {
   try {
     const leadsStr = localStorage.getItem('outgrid_scraped_leads');
-    return leadsStr ? JSON.parse(leadsStr) : [];
+    if (leadsStr) {
+      const parsed = JSON.parse(leadsStr);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+    // Initialize localStorage with initial dataset
+    localStorage.setItem('outgrid_scraped_leads', JSON.stringify(INITIAL_SCRAPED_LEADS));
+    return INITIAL_SCRAPED_LEADS;
   } catch (e) {
     console.error('Failed to get scraped leads:', e);
-    return [];
+    return INITIAL_SCRAPED_LEADS;
   }
 }
 

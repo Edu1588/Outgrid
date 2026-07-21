@@ -130,7 +130,7 @@ export function Captacao() {
             Vou te mostrar a estratégia que faz lojas de veículos <Highlight delay={0.4}>venderem mais</Highlight> carros todo mês pela internet
           </h1>
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-            Assista à apresentação abaixo e descubra como atrair leads qualificados pra sua loja — de forma simples, previsível e sem depender só dos portais.
+            Assista à apresentação abaixo e descubra como atrair leads qualificados pra sua loja de forma simples, previsível e sem depender só dos portais.
           </p>
 
           <div className="relative mx-auto max-w-3xl aspect-video bg-[#161618] border border-white/10 rounded-2xl overflow-hidden flex items-center justify-center shadow-2xl">
@@ -171,10 +171,10 @@ export function Captacao() {
           
           <div className="grid gap-4 max-w-3xl mx-auto">
             {[
-              <>Não consegue atrair <b className="text-orange-primary font-bold">leads qualificados</b> — e quando atrai, vêm curiosos ou sem crédito</>,
-              <>Depende de <b className="text-orange-primary font-bold">portais, OLX e Marketplace</b> e não tem controle da geração de leads</>,
+              <>Não consegue atrair <b className="text-orange-primary font-bold">leads qualificados</b>, e quando atrai, vêm curiosos ou sem crédito</>,
+              <>Depende de <b className="text-orange-primary font-bold">portais, OLX, Webmotors e Marketplace</b> e não tem controle da geração de leads</>,
               <>Seus <b className="text-orange-primary font-bold">vendedores demoram pra responder</b> e o lead esfria antes de virar visita</>,
-              <>Tem medo de <b className="text-orange-primary font-bold">investir em tráfego</b> e não ver retorno</>,
+              <>Tem medo de <b className="text-orange-primary font-bold">investir em tráfego Pago</b> e não ver retorno</>,
               <>Não tem uma <b className="text-orange-primary font-bold">estratégia própria e previsível</b> pra vender mais de 10 carros no mês</>,
               <>Já contratou agência que se diz "especialista", mas <b className="text-orange-primary font-bold">só queimou seu dinheiro</b></>
             ].map((text, i) => (
@@ -207,7 +207,7 @@ export function Captacao() {
             O que significa entrar no <span className="text-orange-primary">Acelerador de Vendas</span>
           </h2>
           <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
-            Uma estratégia feita pra sua loja vender mais carros — não pra "ficar bonita na internet".
+            Uma estratégia feita pra sua loja vender mais carros, e não para apenas ficar bonita na internet.
           </p>
           
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
@@ -225,9 +225,9 @@ export function Captacao() {
                 {[
                   <><b className="font-bold text-white">Leads qualificados no WhatsApp do seu vendedor</b> e a cidade agendando visita na sua loja.</>,
                   <>Atrair os <b className="font-bold text-white">melhores leads</b> e vender carro todo dia com campanhas que geram resultado.</>,
-                  <><b className="font-bold text-white">Não depender</b> de marketplaces e portais — com controle total do seu investimento.</>,
+                  <><b className="font-bold text-white">Não depender</b> de marketplaces e portais, com controle total do seu investimento.</>,
                   <>Uma máquina que <b className="font-bold text-white">atende na hora, inclusive fora do horário</b>, e não deixa o lead esfriar.</>,
-                  <>Ser <b className="font-bold text-white">referência na sua cidade</b> — com os concorrentes vendo sua loja como máquina de vendas.</>
+                  <>Ser <b className="font-bold text-white">referência na sua cidade</b>, com os concorrentes vendo sua loja como máquina de vendas.</>
                 ].map((text, i) => (
                   <div key={i} className="flex gap-4 items-start py-5 border-b border-white/10 last:border-0">
                     <div className="w-8 h-8 rounded-full bg-[#34A853] flex items-center justify-center shrink-0 mt-0.5 shadow-lg">
@@ -255,7 +255,7 @@ export function Captacao() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl mx-auto">
             <div className="bg-[#161618] border border-white/10 rounded-2xl p-8">
               <h3 className="text-xl font-extrabold mb-3">Dono de <span className="text-orange-primary">loja de veículos</span></h3>
-              <p className="text-gray-400 leading-relaxed">Novos, usados e seminovos — que querem mais volume de clientes qualificados e vendas com previsibilidade.</p>
+              <p className="text-gray-400 leading-relaxed">Novos, usados e seminovos que querem mais volume de clientes qualificados e vendas com previsibilidade.</p>
             </div>
             <div className="bg-[#161618] border border-white/10 rounded-2xl p-8">
               <h3 className="text-xl font-extrabold mb-3">Quem <span className="text-orange-primary">depende dos portais</span></h3>
@@ -286,7 +286,7 @@ export function Captacao() {
           <div className="text-7xl md:text-8xl font-extrabold text-orange-primary leading-none tracking-tighter mb-3">+60</div>
           <p className="text-xl text-gray-400 font-medium">lojas já vendem mais usando o método</p>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto mt-8 mb-10 leading-relaxed">
-            De lojas de seminovos e de luxo a concessionárias — todas com mais previsibilidade, mais reconhecimento na cidade e leads com crédito, sem curiosos.
+            De lojas de seminovos e de luxo a concessionárias com mais previsibilidade, mais reconhecimento na cidade e leads com crédito, sem curiosos.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             {["Premium Motors", "AutoPrime", "Carros&Cia", "Seminovos Elite", "Nacional Veículos"].map((logo, i) => (
@@ -321,10 +321,13 @@ export function Captacao() {
               </h2>
               <div className="space-y-4 text-gray-400 text-lg leading-relaxed">
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  Pós-graduado e MBA em Marketing, Estratégia e Vendas, com mais de 12 anos de experiência no mercado de comunicação e performance digital.
                 </p>
                 <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  Especialista em estratégia comercial para o mercado automotivo, é certificado em Google Ads, Meta Ads, Google Analytics e Google Business. Atua no planejamento e gestão de campanhas para operações de lojas de veículos que, individualmente, comercializam mais de 350 veículos por mês.
+                </p>
+                <p>
+                  Seu trabalho é focado em desenvolver estratégias de geração de leads qualificados, tráfego pago e funis de vendas que ajudam concessionárias e lojas de seminovos a vender mais com previsibilidade e menor dependência dos portais.
                 </p>
               </div>
             </div>

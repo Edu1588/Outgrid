@@ -15,7 +15,7 @@ export function Header() {
 
   const menuItems = [
     { label: 'O Problema', href: '#problema' },
-    { label: 'Planos', href: '#planos' },
+    { label: 'Análise do Negócio', href: '#simulador' },
     { label: 'Recursos', href: '#recursos' },
     { label: 'Como funciona', href: '#como-funciona' },
     { label: 'Resultados', href: '#resultados' }
@@ -30,7 +30,7 @@ export function Header() {
         >
           <Link to="/" className="flex items-center gap-2">
             <Logo className="text-white h-5 md:h-6" />
-            <span className="text-[10px] md:text-xs font-normal text-white/70 leading-tight border-l border-white/20 pl-2 ml-2">Aceleração<br/>Automotiva</span>
+            <span className="text-[10px] md:text-xs font-normal text-white/70 leading-tight border-l border-white/20 pl-2 ml-2">Inteligência<br/>Automotiva</span>
           </Link>
         </motion.div>
         

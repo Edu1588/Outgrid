@@ -41,7 +41,7 @@ export function Contact() {
     
     const challengeText = data.challenge === 'poucos-leads' ? 'recebo poucos leads' :
                           data.challenge === 'leads-desqualificados' ? 'recebo leads desqualificados' :
-                          data.challenge === 'portais' ? 'dependo de portais, OLX e Marketplace' :
+                          data.challenge === 'portais' ? 'dependo de portais, OLX, Webmotors e Marketplace' :
                           data.challenge === 'vendedores' ? 'meus vendedores não vendem' :
                           data.challenge === 'agencias' ? 'já contratei agências e nada funciona' : 'outros';
 
@@ -151,7 +151,7 @@ export function Contact() {
                     <option value="" disabled>Selecione</option>
                     <option value="poucos-leads">Recebo poucos leads</option>
                     <option value="leads-desqualificados">Recebo leads desqualificados</option>
-                    <option value="portais">Dependo de portais, OLX e Marketplace</option>
+                    <option value="portais">Dependo de portais, OLX, Webmotors e Marketplace</option>
                     <option value="vendedores">Meus vendedores não vendem</option>
                     <option value="agencias">Já contratei agências e nada funciona</option>
                   </select>

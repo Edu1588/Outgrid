@@ -62,7 +62,7 @@ export function Cost() {
           transition={{ delay: 0.3 }}
           className="text-lg text-gray-400"
         >
-          Diferença que vai <Highlight delay={0.6}><span className="text-white">direto para a sua margem</span></Highlight>.
+          Diferença que vai <Highlight delay={0.6}><span className="text-white">direto para a sua margem</span></Highlight><span className="inline-block w-6 md:w-8 h-1 md:h-1.5 bg-orange-primary rounded-full ml-2.5 align-middle" />
         </motion.p>
       </div>
     </section>

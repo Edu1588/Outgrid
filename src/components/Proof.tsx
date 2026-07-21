@@ -31,7 +31,7 @@ export function Proof() {
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-5xl font-bold mb-16 text-white tracking-tight"
         >
-          Lojas com Outgrid <Highlight delay={0.4}>vendem mais</Highlight>
+          Lojas com Outgrid <Highlight delay={0.4}>vendem mais</Highlight><span className="inline-block w-6 md:w-8 h-1 md:h-1.5 bg-orange-primary rounded-full ml-2.5 align-middle" />
         </motion.h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24">

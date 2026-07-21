@@ -14,7 +14,7 @@ const products = [
       "Definição da oferta principal",
       "Estruturação do funil de vendas",
       "Estratégia para aumentar conversão",
-      "Plano de ação — 30 dias"
+      "Plano de ação de 30 dias"
     ]
   },
   {
@@ -35,7 +35,7 @@ const products = [
   {
     number: "03",
     image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&auto=format&fit=crop&q=60",
-    title: "OUTGRID",
+    title: "HUB WEB",
     subtitle: "Tecnologia que converte",
     description: "Mentoria e estratégia completa de vendas com página dos veículos, site do vendedor, IA de atendimento, integração com estoque e ferramentas de conversão.",
     features: [

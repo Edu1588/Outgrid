@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <rect width="512" height="512" rx="128" fill="#0A0A0A"/>
+  <rect x="32" y="32" width="448" height="448" rx="96" fill="#121212" stroke="#E95800" stroke-width="12" stroke-opacity="0.3"/>
+  <!-- Stylized O + GRID icon -->
+  <path d="M120 160 C120 120, 160 100, 220 100 L290 100 C350 100, 390 120, 390 160 L390 350 C390 390, 350 412, 290 412 L220 412 C160 412, 120 390, 120 350 Z" fill="none" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round"/>
+  <!-- Orange GRID Block -->
+  <rect x="230" y="190" width="160" height="130" rx="20" fill="#E95800"/>
+  <!-- Speed lines in grid -->
+  <path d="M260 220 L360 220 M260 255 L360 255 M260 290 L340 290" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+</svg>

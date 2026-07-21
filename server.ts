@@ -144,6 +144,9 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
 
     let rawLink = item.link || item.website || "";
     let officialWebsite = isOfficialWebsite(rawLink) ? formatWebsiteUrl(rawLink) : "";
+
+    // Require an official website link
+    if (!officialWebsite) continue;
     let instagramUrl = "";
 
     if (rawLink.toLowerCase().includes("instagram.com")) {

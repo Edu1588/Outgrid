@@ -813,5 +813,5 @@ const RAW_LEADS: any[] = [
 ];
 
 export const INITIAL_SCRAPED_LEADS: ScrapedLead[] = RAW_LEADS
-  .filter(l => isCarDealership(l.storeName))
+  .filter(l => isCarDealership(l.storeName) && Boolean(l.link && l.link.trim() !== '' && !l.link.includes('instagram.com') && !l.link.includes('facebook.com')))
   .map(calculateRealisticLeadData);

@@ -92,7 +92,12 @@ export function getScrapedLeads(): ScrapedLead[] {
     if (leadsStr) {
       const parsed = JSON.parse(leadsStr);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        const validWithWebsite = parsed.filter(l => l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com'));
+        if (validWithWebsite.length > 0) {
+          // Sync filtered array back to localStorage
+          localStorage.setItem('outgrid_scraped_leads', JSON.stringify(validWithWebsite));
+          return validWithWebsite;
+        }
       }
     }
     // Initialize localStorage with initial dataset

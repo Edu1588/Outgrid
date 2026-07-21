@@ -15,13 +15,12 @@ export function Hero() {
   return (
     <section id="home" ref={ref} className="relative pt-20 pb-32 min-h-[85vh] flex items-center z-10 overflow-hidden">
       <div className="absolute inset-0 z-0">
-         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 bg-gradient-to-r from-black-main via-black-main/70 to-transparent z-10"></div>
-         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black-main to-transparent z-10"></div>
+         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 lg:w-[55%] bg-gradient-to-r from-black-main via-black-main/80 to-transparent z-10 pointer-events-none"></div>
          <motion.div style={{ y }} className="absolute inset-0 -top-[20%] h-[140%] z-0">
            <img 
              src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784652418/HERO_OUTGRID_suvjmq.png"
              alt="Car"
-             className="w-full h-full object-cover object-[25%_center] md:object-center opacity-50 mix-blend-luminosity"
+             className="w-full h-full object-cover object-[25%_center] md:object-center"
            />
          </motion.div>
       </div>

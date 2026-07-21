@@ -3,6 +3,7 @@ import { getLeads, getPageViews, getScrapedLeads, saveScrapedLead, updateScraped
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
 import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UXAuditHoverCard } from './UXAuditHoverCard';
 
 const translations = {
   pt: {
@@ -102,9 +103,11 @@ export function Admin() {
     return EXCLUDED_NAMES.some(ex => lower.includes(ex));
   };
 
+  const hasWebsite = (l: ScrapedLead) => Boolean(l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com'));
+
   const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>(() => {
     const local = getScrapedLeads();
-    return local.filter(l => !isExcluded(l.storeName));
+    return local.filter(l => !isExcluded(l.storeName) && hasWebsite(l));
   });
   
   const [isScraping, setIsScraping] = useState(false);
@@ -176,22 +179,22 @@ export function Admin() {
       const response = await fetch('/api/leads/scraped');
       if (response.ok) {
         const data: ScrapedLead[] = await response.json();
-        const filtered = data.filter(l => !isExcluded(l.storeName));
+        const filtered = data.filter(l => !isExcluded(l.storeName) && hasWebsite(l));
         if (filtered.length > 0) {
           setScrapedLeads(filtered);
           localStorage.setItem('outgrid_scraped_leads', JSON.stringify(filtered));
         } else {
           // If backend returns empty, use local fallback
-          const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
+          const local = getScrapedLeads().filter(l => !isExcluded(l.storeName) && hasWebsite(l));
           setScrapedLeads(local);
         }
       } else {
-        const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
+        const local = getScrapedLeads().filter(l => !isExcluded(l.storeName) && hasWebsite(l));
         setScrapedLeads(local);
       }
     } catch (e) {
       console.error('Error fetching scraped leads', e);
-      const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
+      const local = getScrapedLeads().filter(l => !isExcluded(l.storeName) && hasWebsite(l));
       setScrapedLeads(local);
     }
   };
@@ -481,6 +484,7 @@ export function Admin() {
     const availableCities = Array.from(new Set(scrapedLeads.map(l => l.city).filter(Boolean))).sort();
 
     const filteredScrapedLeads = scrapedLeads.filter(lead => {
+      if (!hasWebsite(lead)) return false;
       if (prospectSearch.trim()) {
         const q = prospectSearch.toLowerCase();
         const store = (lead.storeName || "").toLowerCase();
@@ -720,21 +724,11 @@ export function Admin() {
                     </td>
                     <td className="p-4">
                       {lead.score !== undefined ? (
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${lead.score >= 70 ? 'bg-emerald-400 animate-pulse' : lead.score >= 40 ? 'bg-yellow-400' : 'bg-gray-400'}`}></div>
-                            <span className={`text-sm font-extrabold font-mono ${lead.score >= 70 ? 'text-emerald-400' : lead.score >= 40 ? 'text-yellow-400' : 'text-gray-300'}`}>
-                              {lead.score} <span className="text-gray-500 text-xs font-normal">/ 100</span>
-                            </span>
-                          </div>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider w-fit border ${
-                            lead.score >= 70 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                            lead.score >= 40 ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 
-                            'bg-zinc-800 text-gray-400 border-zinc-700'
-                          }`}>
-                            {lead.score >= 70 ? (lead.link ? 'Score Alto (Aceleração PWA)' : 'Score Alto (Oportunidade)') : lead.score >= 40 ? 'Score Médio' : 'Site Otimizado'}
-                          </span>
-                        </div>
+                        <UXAuditHoverCard 
+                          storeName={lead.storeName} 
+                          url={lead.link || ''} 
+                          score={lead.score} 
+                        />
                       ) : (
                         <span className="text-sm text-gray-500">N/A</span>
                       )}

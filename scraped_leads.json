@@ -84,66 +84,6 @@
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
-    "id": "f247c0d3",
-    "storeName": "Mv Veículos",
-    "city": "Paulínia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/mvveiculos",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:51:02.049Z"
-  },
-  {
-    "id": "e9d52f61",
-    "storeName": "Miami Veículos",
-    "city": "Paulínia",
-    "phone": "(19) 97412-0233",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/miamiveiculos",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:51:02.049Z"
-  },
-  {
-    "id": "f96a55ee",
-    "storeName": "Cássio Veículos",
-    "city": "Paulínia",
-    "phone": "(19) 3874-4002",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/cassioveiculos",
-    "status": "Não contatado",
-    "score": 93,
-    "createdAt": "2026-07-21T18:51:02.049Z"
-  },
-  {
-    "id": "ec8a2639",
-    "storeName": "Alpha Veículos",
-    "city": "Valinhos",
-    "phone": "(19) 98155-9204",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/alphaveiculos",
-    "status": "Não contatado",
-    "score": 91,
-    "createdAt": "2026-07-21T18:06:56.874Z"
-  },
-  {
-    "id": "be97cf6b",
-    "storeName": "EA Motors",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/eamotors",
-    "status": "Não contatado",
-    "score": 95,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
     "id": "564d14bd",
     "storeName": "Zacar Veículos",
     "city": "Valinhos",
@@ -165,30 +105,6 @@
     "instagram": "https://www.instagram.com/sandroveiculos",
     "status": "Não contatado",
     "score": 41,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "9daa6a21",
-    "storeName": "Visual Veículos",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/visualveiculos",
-    "status": "Não contatado",
-    "score": 88,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "16b248ef",
-    "storeName": "Makine Motors",
-    "city": "Valinhos",
-    "phone": "(19) 97411-5616",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/makinemotors",
-    "status": "Não contatado",
-    "score": 79,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -216,30 +132,6 @@
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
-    "id": "5879877b",
-    "storeName": "Vaapty Valinhos",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/vaaptyvalinhos",
-    "status": "Não contatado",
-    "score": 88,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "06051e3b",
-    "storeName": "Sabini Motors",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/sabinimotors",
-    "status": "Não contatado",
-    "score": 85,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
     "id": "f6d64644",
     "storeName": "Font Car Veículos",
     "city": "Valinhos",
@@ -249,126 +141,6 @@
     "instagram": "https://www.instagram.com/fontcarveiculos",
     "status": "Não contatado",
     "score": 28,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "1671c7de",
-    "storeName": "Julio Ferreira Veículos",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/julioferreiraveiculos",
-    "status": "Não contatado",
-    "score": 76,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "e9c7f1f6",
-    "storeName": "Will Motors",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/willmotors",
-    "status": "Não contatado",
-    "score": 89,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "487f18f1",
-    "storeName": "Hypecar Veículos",
-    "city": "Valinhos",
-    "phone": "(19) 99741-2895",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/hypecarveiculos",
-    "status": "Não contatado",
-    "score": 74,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "1367f3b8",
-    "storeName": "Destaque Valinhos",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/destaquevalinhos",
-    "status": "Não contatado",
-    "score": 94,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "70f66132",
-    "storeName": "MD Motors",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/mdmotors",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "5220c69e",
-    "storeName": "Denilson Veículos",
-    "city": "Valinhos",
-    "phone": "(19) 97402-2240",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/denilsonveiculos",
-    "status": "Não contatado",
-    "score": 94,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "a9c3f4ed",
-    "storeName": "Movva Veículos",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/movvaveiculos",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "ce80719d",
-    "storeName": "Independência Veículos",
-    "city": "Valinhos",
-    "phone": "(19) 3871-3180",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/independenciaveiculos",
-    "status": "Não contatado",
-    "score": 75,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "70104d66",
-    "storeName": "Faccini Veículos",
-    "city": "Valinhos",
-    "phone": "(19) 99180-0084",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/facciniveiculos",
-    "status": "Não contatado",
-    "score": 96,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "a1a26670",
-    "storeName": "Chevrolet Codive",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/chevroletcodive",
-    "status": "Não contatado",
-    "score": 93,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -384,18 +156,6 @@
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
-    "id": "39d9b958",
-    "storeName": "MK Veículos",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/mkveiculosno/",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:05:17.062Z"
-  },
-  {
     "id": "ee968c28",
     "storeName": "Pantera Veículos",
     "city": "Nova Odessa",
@@ -405,18 +165,6 @@
     "instagram": "https://www.instagram.com/pantera.veiculos/",
     "status": "Não contatado",
     "score": 38,
-    "createdAt": "2026-07-21T18:05:17.062Z"
-  },
-  {
-    "id": "2fb4b6a4",
-    "storeName": "SR Veículos",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/sr_veiculos/",
-    "status": "Não contatado",
-    "score": 85,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -430,54 +178,6 @@
     "status": "Não contatado",
     "score": 36,
     "createdAt": "2026-07-21T18:05:17.062Z"
-  },
-  {
-    "id": "2c1ceb41",
-    "storeName": "GB Car Veículos",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/gbcar_veiculos2015/",
-    "status": "Não contatado",
-    "score": 97,
-    "createdAt": "2026-07-21T18:05:17.062Z"
-  },
-  {
-    "id": "718b7042",
-    "storeName": "Ampelio Multimarcas",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/ampeliomultimarcas/",
-    "status": "Não contatado",
-    "score": 91,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "5edf5a85",
-    "storeName": "Nova Odessa Carros & Motos",
-    "city": "Nova Odessa",
-    "phone": "(19)9 7407-4795",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/novaodessaveiculos/",
-    "status": "Não contatado",
-    "score": 80,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "43456ddf",
-    "storeName": "Jazz Veículos",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/jazzveiculos/",
-    "status": "Não contatado",
-    "score": 76,
-    "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "0cf929df",
@@ -504,138 +204,6 @@
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
-    "id": "ba7fecc5",
-    "storeName": "DZM Automóveis",
-    "city": "Nova Odessa",
-    "phone": "(19) 3090-3345",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/dzm.automoveis/",
-    "status": "Não contatado",
-    "score": 94,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "7dfb64f4",
-    "storeName": "Mônaco Veículos",
-    "city": "Nova Odessa",
-    "phone": "0800 000 3148",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/monacoveiculosnorte/",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "09c72931",
-    "storeName": "Conseg Veículos",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/consegveiculos/",
-    "status": "Não contatado",
-    "score": 93,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "449f1432",
-    "storeName": "Rika Motors",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/rikamotors/",
-    "status": "Não contatado",
-    "score": 84,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "489693c6",
-    "storeName": "Agência de Carros",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/ousadiaveiculos/",
-    "status": "Não contatado",
-    "score": 91,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "3f1dc12f",
-    "storeName": "Prime Car",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/primecar777/",
-    "status": "Não contatado",
-    "score": 82,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "86d8edaf",
-    "storeName": "DNA Veículos",
-    "city": "Nova Odessa",
-    "phone": "(31) 98467",
-    "email": "",
-    "link": "",
-    "instagram": "",
-    "status": "Não contatado",
-    "score": 94,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "2b5c64b2",
-    "storeName": "Fião Veículos",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/fiaoveiculos/",
-    "status": "Não contatado",
-    "score": 96,
-    "createdAt": "2026-07-21T18:05:17.063Z"
-  },
-  {
-    "id": "d1b90289",
-    "storeName": "Altomani Multimarcas",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/altomanimultimarcas/",
-    "status": "Não contatado",
-    "score": 91,
-    "createdAt": "2026-07-21T18:02:58.483Z"
-  },
-  {
-    "id": "80daf1d4",
-    "storeName": "Nobre Multimarcas",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "",
-    "status": "Não contatado",
-    "score": 80,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "c0a844be",
-    "storeName": "Única Veículos",
-    "city": "Hortolândia",
-    "phone": "(19) 3504-8300 / 3909-0182",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/unica.veiculos/",
-    "status": "Não contatado",
-    "score": 76,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
     "id": "f129a9a2",
     "storeName": "Neri Veiculos",
     "city": "Hortolândia",
@@ -648,54 +216,6 @@
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
-    "id": "b08304c7",
-    "storeName": "Junior Cardoso Vehicles",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "",
-    "status": "Não contatado",
-    "score": 76,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "6b675613",
-    "storeName": "Roberto Veículos",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/robertoveiculos.1/",
-    "status": "Não contatado",
-    "score": 84,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "80ee5085",
-    "storeName": "Mais Veículos",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/maisveiculos_hortolandia/",
-    "status": "Não contatado",
-    "score": 79,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "3ebe77e2",
-    "storeName": "Ockner Motors",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/ocknermotors/",
-    "status": "Não contatado",
-    "score": 81,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
     "id": "1595ad8b",
     "storeName": "A3 Veículos",
     "city": "Hortolândia",
@@ -705,42 +225,6 @@
     "instagram": "https://www.instagram.com/a3veiculos",
     "status": "Não contatado",
     "score": 23,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "cacf71b5",
-    "storeName": "Loja de Veículos",
-    "city": "Hortolândia",
-    "phone": "(19) 99119-7060",
-    "email": "",
-    "link": "",
-    "instagram": "",
-    "status": "Não contatado",
-    "score": 78,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "5c53d494",
-    "storeName": "N5N Veículos",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/n5nveiculos/",
-    "status": "Não contatado",
-    "score": 80,
-    "createdAt": "2026-07-21T18:02:58.484Z"
-  },
-  {
-    "id": "060576cf",
-    "storeName": "Vaapty Hortolândia",
-    "city": "Hortolândia",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/vaaptyhortolandia/",
-    "status": "Não contatado",
-    "score": 88,
     "createdAt": "2026-07-21T18:02:58.484Z"
   }
 ]

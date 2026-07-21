@@ -12,19 +12,48 @@ export function Admin() {
   
   const [leads, setLeads] = useState<Lead[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
-  const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>([]);
+  const EXCLUDED_NAMES = ["unimais", "meta veiculos", "meta veículos", "azul veiculos", "azul veículos", "unimais veiculos", "unimais veículos"];
+  const isExcluded = (name: string) => {
+    const lower = (name || "").toLowerCase();
+    return EXCLUDED_NAMES.some(ex => lower.includes(ex));
+  };
+
+  const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>(() => {
+    const local = getScrapedLeads();
+    return local.filter(l => !isExcluded(l.storeName));
+  });
   
   const [isScraping, setIsScraping] = useState(false);
+
+  // CRM Prospecção Filter & Sort state
+  const [prospectSearch, setProspectSearch] = useState("");
+  const [prospectStatusFilter, setProspectStatusFilter] = useState("Todos");
+  const [prospectCityFilter, setProspectCityFilter] = useState("Todas");
+  const [prospectSort, setProspectSort] = useState<'score-desc' | 'score-asc' | 'date-desc' | 'date-asc' | 'name-asc'>('score-desc');
+  const [prospectOnlyOpportunities, setProspectOnlyOpportunities] = useState(false);
 
   const fetchScrapedLeads = async () => {
     try {
       const response = await fetch('/api/leads/scraped');
       if (response.ok) {
-        const data = await response.json();
-        setScrapedLeads(data);
+        const data: ScrapedLead[] = await response.json();
+        const filtered = data.filter(l => !isExcluded(l.storeName));
+        if (filtered.length > 0) {
+          setScrapedLeads(filtered);
+          localStorage.setItem('outgrid_scraped_leads', JSON.stringify(filtered));
+        } else {
+          // If backend returns empty, use local fallback
+          const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
+          setScrapedLeads(local);
+        }
+      } else {
+        const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
+        setScrapedLeads(local);
       }
     } catch (e) {
       console.error('Error fetching scraped leads', e);
+      const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
+      setScrapedLeads(local);
     }
   };
 
@@ -309,129 +338,241 @@ export function Admin() {
     </div>
   );
 
-  const renderProspects = () => (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
-      {/* Scraper Control Panel */}
-      <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
-        <div className="flex flex-col justify-between items-start gap-6">
-          <div className="max-w-3xl">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
-              <Search className="text-orange-primary" /> Como funciona a busca de leads
-            </h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja e calcula um score de oportunidade: lojas que não possuem site próprio e têm menor engajamento recebem scores mais altos, indicando maior potencial para venda de serviços. A busca percorre rotineiramente cidades da região (Campinas, Valinhos, Vinhedo, etc).
-            </p>
-          </div>
-        </div>
-      </div>
+  const renderProspects = () => {
+    const availableCities = Array.from(new Set(scrapedLeads.map(l => l.city).filter(Boolean))).sort();
 
-      {/* CRM Table */}
-      <div className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-white/5 flex justify-between items-center">
-          <h3 className="text-lg font-bold text-white">CRM de Prospecção</h3>
-          <div className="flex gap-2">
-            <span className="text-xs text-gray-500 bg-[#0A0A0A] px-3 py-1.5 rounded-full border border-white/5 font-medium flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-primary"></div>
-              {scrapedLeads.length} de 30 hoje
-            </span>
+    const filteredScrapedLeads = scrapedLeads.filter(lead => {
+      if (prospectSearch.trim()) {
+        const q = prospectSearch.toLowerCase();
+        const store = (lead.storeName || "").toLowerCase();
+        const city = (lead.city || "").toLowerCase();
+        const phone = (lead.phone || "").toLowerCase();
+        const link = (lead.link || "").toLowerCase();
+        if (!store.includes(q) && !city.includes(q) && !phone.includes(q) && !link.includes(q)) return false;
+      }
+      if (prospectStatusFilter !== "Todos" && lead.status !== prospectStatusFilter) {
+        return false;
+      }
+      if (prospectCityFilter !== "Todas" && lead.city !== prospectCityFilter) {
+        return false;
+      }
+      if (prospectOnlyOpportunities && (lead.score || 0) < 70) {
+        return false;
+      }
+      return true;
+    }).sort((a, b) => {
+      if (prospectSort === 'score-desc') return (b.score || 0) - (a.score || 0);
+      if (prospectSort === 'score-asc') return (a.score || 0) - (b.score || 0);
+      if (prospectSort === 'date-desc') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (prospectSort === 'date-asc') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (prospectSort === 'name-asc') return a.storeName.localeCompare(b.storeName);
+      return 0;
+    });
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        {/* Scraper Control Panel */}
+        <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
+          <div className="flex flex-col justify-between items-start gap-6">
+            <div className="max-w-3xl">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                <Search className="text-orange-primary" /> Como funciona a busca de leads
+              </h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja e calcula um score de oportunidade: lojas que não possuem site próprio e têm menor engajamento recebem scores mais altos, indicando maior potencial para venda de serviços. A busca percorre rotineiramente cidades da região (Campinas, Valinhos, Vinhedo, etc).
+              </p>
+            </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-widest bg-[#0A0A0A]/50">
-                <th className="p-4 font-bold">Loja & Local</th>
-                <th className="p-4 font-bold">Contato</th>
-                <th className="p-4 font-bold">Score de Oportunidade</th>
-                <th className="p-4 font-bold">Status</th>
-                <th className="p-4 font-bold text-right">Data</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {scrapedLeads.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="p-12 text-center text-gray-500">
-                    <div className="flex flex-col items-center justify-center">
-                      <Search className="w-12 h-12 mb-4 opacity-20" />
-                      <p>Nenhuma loja prospectada ainda. Use a busca acima.</p>
-                    </div>
-                  </td>
+
+        {/* CRM Table */}
+        <div className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden">
+          {/* CRM Header & Filters */}
+          <div className="p-6 border-b border-white/5 space-y-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-lg font-bold text-white">CRM de Prospecção</h3>
+                <span className="text-xs text-gray-400 bg-[#0A0A0A] px-3 py-1.5 rounded-full border border-white/5 font-medium flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-orange-primary"></div>
+                  {filteredScrapedLeads.length} de {scrapedLeads.length} lojas
+                </span>
+              </div>
+
+              {/* Quick Toggle for Opportunities */}
+              <button
+                onClick={() => setProspectOnlyOpportunities(!prospectOnlyOpportunities)}
+                className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                  prospectOnlyOpportunities 
+                    ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-sm' 
+                    : 'bg-[#0A0A0A] text-gray-400 border-white/10 hover:border-gray-500'
+                }`}
+              >
+                <div className={`w-2 h-2 rounded-full ${prospectOnlyOpportunities ? 'bg-red-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                Apenas Oportunidades (Score ≥ 70)
+              </button>
+            </div>
+
+            {/* Filter Bar Controls */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+              {/* Search input */}
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Buscar loja, cidade, fone..."
+                  value={prospectSearch}
+                  onChange={(e) => setProspectSearch(e.target.value)}
+                  className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-orange-primary/50 transition-colors"
+                />
+              </div>
+
+              {/* Status Filter */}
+              <div className="relative">
+                <select
+                  value={prospectStatusFilter}
+                  onChange={(e) => setProspectStatusFilter(e.target.value)}
+                  className="w-full appearance-none bg-[#0A0A0A] border border-white/10 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-300 focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors"
+                >
+                  <option value="Todos">Status: Todos</option>
+                  <option value="Não contatado">Não contatado</option>
+                  <option value="Em contato">Em contato</option>
+                  <option value="Reunião agendada">Reunião agendada</option>
+                  <option value="Fechado">Fechado (Ganho)</option>
+                  <option value="Perdido">Perdido</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+              </div>
+
+              {/* City Filter */}
+              <div className="relative">
+                <select
+                  value={prospectCityFilter}
+                  onChange={(e) => setProspectCityFilter(e.target.value)}
+                  className="w-full appearance-none bg-[#0A0A0A] border border-white/10 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-300 focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors"
+                >
+                  <option value="Todas">Cidade: Todas ({availableCities.length})</option>
+                  {availableCities.map(cidade => (
+                    <option key={cidade} value={cidade}>{cidade}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+              </div>
+
+              {/* Sort Order */}
+              <div className="relative">
+                <select
+                  value={prospectSort}
+                  onChange={(e) => setProspectSort(e.target.value as any)}
+                  className="w-full appearance-none bg-[#0A0A0A] border border-white/10 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-300 focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors"
+                >
+                  <option value="score-desc">Ordenar: Maior Score (Oportunidade)</option>
+                  <option value="score-asc">Ordenar: Menor Score</option>
+                  <option value="date-desc">Ordenar: Mais Recentes</option>
+                  <option value="date-asc">Ordenar: Mais Antigos</option>
+                  <option value="name-asc">Ordenar: Nome (A-Z)</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-widest bg-[#0A0A0A]/50">
+                  <th className="p-4 font-bold">Loja & Local</th>
+                  <th className="p-4 font-bold">Contato</th>
+                  <th className="p-4 font-bold">Score de Oportunidade</th>
+                  <th className="p-4 font-bold">Status</th>
+                  <th className="p-4 font-bold text-right">Data</th>
                 </tr>
-              )}
-              {[...scrapedLeads].reverse().map(lead => (
-                <tr key={lead.id} className="hover:bg-white/5 transition-colors group">
-                  <td className="p-4">
-                    <div className="font-bold text-white mb-1">{lead.storeName}</div>
-                    <div className="flex flex-col gap-1">
-                      <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.city}</div>
-                      {lead.link && (
-                        <a href={lead.link} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-primary hover:underline truncate max-w-[200px] inline-block">
-                          {lead.link}
-                        </a>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-sm text-gray-300 flex items-center gap-1 mb-1">
-                      <Phone className="w-3 h-3 text-gray-500" /> 
-                      {lead.phone || <span className="text-gray-600 italic">Não encontrado</span>}
-                    </div>
-                    <div className="text-xs text-gray-500 flex items-center gap-1">
-                      <Mail className="w-3 h-3" /> 
-                      {lead.email || <span className="text-gray-600 italic">Não encontrado</span>}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    {lead.score !== undefined ? (
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${lead.score >= 70 ? 'bg-red-500' : lead.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
-                        <span className={`text-sm font-bold ${lead.score >= 70 ? 'text-red-400' : lead.score >= 40 ? 'text-yellow-400' : 'text-green-400'}`}>
-                          {lead.score} <span className="text-gray-500 text-xs font-normal">/ 100</span>
-                        </span>
-                        {lead.score >= 70 && (
-                          <span className="text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full ml-2 uppercase font-bold tracking-wider">
-                            Oportunidade
-                          </span>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredScrapedLeads.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="p-12 text-center text-gray-500">
+                      <div className="flex flex-col items-center justify-center">
+                        <Search className="w-12 h-12 mb-4 opacity-20" />
+                        <p>Nenhuma loja encontrada para os filtros selecionados.</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                {filteredScrapedLeads.map(lead => (
+                  <tr key={lead.id} className="hover:bg-white/5 transition-colors group">
+                    <td className="p-4">
+                      <div className="font-bold text-white mb-1">{lead.storeName}</div>
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.city}</div>
+                        {lead.link && (
+                          <a href={lead.link} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-primary hover:underline truncate max-w-[200px] inline-block">
+                            {lead.link}
+                          </a>
                         )}
                       </div>
-                    ) : (
-                      <span className="text-sm text-gray-500">N/A</span>
-                    )}
-                  </td>
-                  <td className="p-4">
-                    <div className="relative inline-block">
-                      <select 
-                        value={lead.status}
-                        onChange={(e) => handleStatusChange(lead.id, e.target.value as any)}
-                        className={`appearance-none bg-[#0A0A0A] border text-xs font-bold rounded-lg pl-3 pr-8 py-2 focus:outline-none cursor-pointer transition-colors ${
-                          lead.status === 'Não contatado' ? 'border-gray-700 text-gray-400 hover:border-gray-500' :
-                          lead.status === 'Em contato' ? 'border-blue-500/30 text-blue-400 bg-blue-500/5' :
-                          lead.status === 'Reunião agendada' ? 'border-orange-primary/50 text-orange-primary bg-orange-primary/10' :
-                          lead.status === 'Fechado' ? 'border-green-500/50 text-green-400 bg-green-500/10' :
-                          'border-red-500/30 text-red-400 bg-red-500/5'
-                        }`}
-                      >
-                        <option value="Não contatado">Não contatado</option>
-                        <option value="Em contato">Em contato</option>
-                        <option value="Reunião agendada">Reunião agendada</option>
-                        <option value="Fechado">Fechado (Ganho)</option>
-                        <option value="Perdido">Perdido</option>
-                      </select>
-                      <ChevronDown className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
-                    </div>
-                  </td>
-                  <td className="p-4 text-right text-sm text-gray-500">
-                    {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-sm text-gray-300 flex items-center gap-1 mb-1">
+                        <Phone className="w-3 h-3 text-gray-500" /> 
+                        {lead.phone || <span className="text-gray-600 italic">Não encontrado</span>}
+                      </div>
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <Mail className="w-3 h-3" /> 
+                        {lead.email || <span className="text-gray-600 italic">Não encontrado</span>}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      {lead.score !== undefined ? (
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${lead.score >= 70 ? 'bg-red-500' : lead.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
+                          <span className={`text-sm font-bold ${lead.score >= 70 ? 'text-red-400' : lead.score >= 40 ? 'text-yellow-400' : 'text-green-400'}`}>
+                            {lead.score} <span className="text-gray-500 text-xs font-normal">/ 100</span>
+                          </span>
+                          {lead.score >= 70 && (
+                            <span className="text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full ml-2 uppercase font-bold tracking-wider">
+                              Oportunidade
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <div className="relative inline-block">
+                        <select 
+                          value={lead.status}
+                          onChange={(e) => handleStatusChange(lead.id, e.target.value as any)}
+                          className={`appearance-none bg-[#0A0A0A] border text-xs font-bold rounded-lg pl-3 pr-8 py-2 focus:outline-none cursor-pointer transition-colors ${
+                            lead.status === 'Não contatado' ? 'border-gray-700 text-gray-400 hover:border-gray-500' :
+                            lead.status === 'Em contato' ? 'border-blue-500/30 text-blue-400 bg-blue-500/5' :
+                            lead.status === 'Reunião agendada' ? 'border-orange-primary/50 text-orange-primary bg-orange-primary/10' :
+                            lead.status === 'Fechado' ? 'border-green-500/50 text-green-400 bg-green-500/10' :
+                            'border-red-500/30 text-red-400 bg-red-500/5'
+                          }`}
+                        >
+                          <option value="Não contatado">Não contatado</option>
+                          <option value="Em contato">Em contato</option>
+                          <option value="Reunião agendada">Reunião agendada</option>
+                          <option value="Fechado">Fechado (Ganho)</option>
+                          <option value="Perdido">Perdido</option>
+                        </select>
+                        <ChevronDown className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                      </div>
+                    </td>
+                    <td className="p-4 text-right text-sm text-gray-500">
+                      {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex">

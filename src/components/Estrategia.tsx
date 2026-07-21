@@ -18,9 +18,38 @@ interface ReferenceLink {
 
 export function Estrategia() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [links, setLinks] = useState<ReferenceLink[]>([]);
+  const [links, setLinks] = useState<ReferenceLink[]>(() => {
+    const saved = localStorage.getItem('outgrid_reference_links');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved links', e);
+      }
+    }
+    return [];
+  });
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('outgrid_reference_links', JSON.stringify(links));
+    if (supabase) {
+      supabase.from('reference_links').select('*').then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setLinks(data.map((item: any) => ({
+            id: String(item.id),
+            title: item.title,
+            url: item.url
+          })));
+        }
+      }).catch(err => console.warn('Supabase links fetch error:', err));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('outgrid_reference_links', JSON.stringify(links));
+  }, [links]);
   const [images, setImages] = useState<MoodboardImage[]>(() => {
     const saved = localStorage.getItem('outgrid_moodboard_images');
     if (saved) {
@@ -176,10 +205,19 @@ export function Estrategia() {
     setLinks([...links, newLink]);
     setNewLinkTitle('');
     setNewLinkUrl('');
+
+    if (supabase) {
+      supabase.from('reference_links').insert([
+        { id: newLink.id, title: newLink.title, url: newLink.url }
+      ]).catch(err => console.warn('Supabase link insert error:', err));
+    }
   };
 
   const handleRemoveLink = (id: string) => {
     setLinks(links.filter(link => link.id !== id));
+    if (supabase) {
+      supabase.from('reference_links').delete().eq('id', id).catch(err => console.warn('Supabase link delete error:', err));
+    }
   };
 
   const toggleTheme = () => {

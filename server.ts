@@ -10,11 +10,23 @@ dotenv.config();
 
 const DATA_FILE = path.join(process.cwd(), "scraped_leads.json");
 
+const EXCLUDED_CLIENTS = ["unimais", "meta veiculos", "meta veículos", "azul veiculos", "azul veículos", "unimais veiculos", "unimais veículos"];
+
+function isExcludedClient(storeName: string): boolean {
+  if (!storeName) return false;
+  const lower = storeName.toLowerCase();
+  return EXCLUDED_CLIENTS.some(ex => lower.includes(ex));
+}
+
 // Helper to read/write from local JSON file
 async function getLeadsFromDB() {
   try {
     const data = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((l: any) => !isExcludedClient(l.storeName));
+    }
+    return [];
   } catch (error) {
     return [];
   }
@@ -62,7 +74,7 @@ async function startServer() {
       const regionCities = ["Campinas", "Valinhos", "Vinhedo", "Paulínia", "Sumaré", "Hortolândia", "Indaiatuba", "Americana", "Santa Bárbara d'Oeste", "Nova Odessa", "Jaguariúna"];
       const randomCity = regionCities[Math.floor(Math.random() * regionCities.length)];
 
-      const query = `concessionárias de veículos em ${randomCity} instagram`;
+      const query = `concessionárias de seminovos e veículos em ${randomCity}`;
       
       let allResults: any[] = [];
       let page = 1;
@@ -92,7 +104,7 @@ async function startServer() {
         page++;
       }
 
-      // Truncate to exactly 30 if it exceeded somehow
+      // Truncate to exactly 30 if it exceeded
       allResults = allResults.slice(0, 30);
 
       const groqApiKey = process.env.GROQ_API_KEY;
@@ -118,19 +130,22 @@ async function startServer() {
           messages: [
             {
               role: "system",
-              content: `Você é um analista de inteligência de mercado. A partir dos resultados de busca (título, snippet e link) do Google sobre concessionárias, extraia informações estruturadas.
+              content: `Você é um analista de inteligência de mercado. A partir dos resultados de busca do Google sobre concessionárias de carros, extraia informações estruturadas.
+
+REGRAS OBRIGATÓRIAS DE EXCLUSÃO:
+- DESCARTE e NUNCA INCLUA as seguintes lojas (já são nossos clientes): "Unimais Veículos" (ou "Unimais"), "Meta Veículos" (ou "Meta") e "Azul Veículos" (ou "Azul").
+
 Retorne um JSON contendo uma propriedade "leads", que é um array de objetos.
 Cada objeto deve ter:
-- "storeName": O nome real e limpo da loja. Se o título for muito genérico (como "Loja de veículos" ou "Instagram photo"), extraia o nome da loja a partir do nome de usuário no link do Instagram (ex: instagram.com/nomedaloja -> Nome da Loja) ou do snippet. Evite nomes genéricos.
+- "storeName": O nome real e limpo da loja (ex: "Zacar Veículos", "Sandro Veículos").
 - "score": Um número de 0 a 100. Calcule o score baseado na oportunidade de vender serviços de marketing/site:
-   * Lojas COM site próprio (links que não sejam de redes sociais) recebem score BAIXO (ex: 10-30).
-   * Lojas SEM site próprio (links de Instagram/Facebook/portais) recebem score ALTO (ex: 70-100).
-   * Se o snippet indicar poucos seguidores ou curtidas, aumente o score.
-- "link": Tente extrair o link do SITE OFICIAL da loja a partir do snippet (ex: www.loja.com.br). Não retorne o link do Instagram. Se não encontrar o site oficial no snippet, retorne uma string vazia "".
-- "phone": Tente extrair um número de telefone ou WhatsApp do snippet. Se não encontrar, retorne uma string vazia "".
-- "email": Tente extrair um email do snippet. Se não encontrar, retorne uma string vazia "".
+   * Lojas COM site próprio (links que não sejam redes sociais) recebem score BAIXO (ex: 10-30).
+   * Lojas SEM site próprio (apenas Instagram/Facebook) recebem score ALTO (ex: 70-100).
+- "link": Se o resultado contiver a URL do site da loja (ex: https://www.nomedaloja.com.br), retorne a URL do site. NUNCA retorne links de reels do Instagram (ex: /reel/...). Se não houver site próprio ou o resultado for de rede social, retorne a URL do site se citada no snippet, caso contrário retorne string vazia "".
+- "phone": Tente extrair um número de telefone ou WhatsApp do snippet. Se não encontrar, retorne "".
+- "email": Tente extrair um email do snippet. Se não encontrar, retorne "".
 
-Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do JSON.`
+Retorne APENAS o JSON válido, sem comentários ou formatação Markdown.`
             },
             {
               role: "user",
@@ -159,9 +174,24 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do
         throw new Error("Invalid JSON from Groq");
       }
 
-      const extractedLeads = parsedContent.leads || [];
+      const excludedNames = ["unimais", "meta veiculos", "meta veículos", "azul veiculos", "azul veículos", "unimais veiculos", "unimais veículos"];
+      
+      const isExcluded = (name: string) => {
+        const lower = (name || "").toLowerCase();
+        return excludedNames.some(ex => lower.includes(ex));
+      };
 
-      const allLeads = extractedLeads.map((lead: any) => {
+      const rawLeads = parsedContent.leads || [];
+
+      const filteredLeads = rawLeads.filter((l: any) => !isExcluded(l.storeName));
+
+      const allLeads = filteredLeads.map((lead: any) => {
+        // Ensure no instagram reel links
+        let finalLink = lead.link || "";
+        if (finalLink.includes("instagram.com/reel/") || finalLink.includes("instagram.com/p/")) {
+          finalLink = "";
+        }
+
         return {
           id: crypto.randomBytes(4).toString("hex"),
           storeName: lead.storeName || "Loja Desconhecida",
@@ -170,14 +200,15 @@ Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do
           phone: lead.phone || "",
           score: lead.score || 50,
           status: 'Não contatado',
-          link: lead.link || "",
+          link: finalLink,
           createdAt: new Date().toISOString()
         };
       });
 
-      // Save to DB
+      // Save to DB and filter out existing leads that match excluded names
       const existingLeads = await getLeadsFromDB();
-      const updatedLeads = [...allLeads, ...existingLeads];
+      const cleanedExistingLeads = existingLeads.filter((l: any) => !isExcluded(l.storeName));
+      const updatedLeads = [...allLeads, ...cleanedExistingLeads];
       await saveLeadsToDB(updatedLeads);
 
       res.json({ success: true, count: allLeads.length, leads: allLeads });

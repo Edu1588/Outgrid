@@ -64,10 +64,10 @@ async function startServer() {
 
       const query = `concessionárias de veículos em ${randomCity} instagram`;
       
-      let allLeads: any[] = [];
+      let allResults: any[] = [];
       let page = 1;
       
-      while (allLeads.length < 30 && page <= 3) {
+      while (allResults.length < 30 && page <= 3) {
         const response = await fetch("https://google.serper.dev/search", {
           method: "POST",
           headers: {
@@ -88,34 +88,88 @@ async function startServer() {
         }
 
         const data = await response.json();
-        const results = data.organic || [];
-        
-        const pageLeads = results.map((result: any) => {
-          let name = result.title.split('-')[0].trim();
-          if (name.length > 30) name = name.substring(0, 30) + '...';
-          
-          let likesMatch = result.snippet.match(/(\d+)\s+curtidas/i);
-          let likes = likesMatch ? parseInt(likesMatch[1]) : Math.floor(Math.random() * 150);
-
-          return {
-            id: crypto.randomBytes(4).toString("hex"),
-            storeName: name || "Loja Desconhecida",
-            city: randomCity,
-            email: "contato@loja.com.br", 
-            phone: "(00) 0000-0000",
-            instagramLikes: likes,
-            status: 'Não contatado',
-            link: result.link,
-            createdAt: new Date().toISOString()
-          };
-        });
-
-        allLeads = [...allLeads, ...pageLeads];
+        allResults = [...allResults, ...(data.organic || [])];
         page++;
       }
 
       // Truncate to exactly 30 if it exceeded somehow
-      allLeads = allLeads.slice(0, 30);
+      allResults = allResults.slice(0, 30);
+
+      const groqApiKey = process.env.GROQ_API_KEY;
+      if (!groqApiKey) {
+        return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+      }
+
+      // Prepare data for Groq
+      const promptData = allResults.map(r => ({
+        title: r.title,
+        snippet: r.snippet,
+        link: r.link
+      }));
+
+      const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqApiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama3-70b-8192",
+          messages: [
+            {
+              role: "system",
+              content: `Você é um analista de inteligência de mercado. A partir dos resultados de busca (título, snippet e link) do Google sobre concessionárias, extraia informações estruturadas.
+Retorne um JSON contendo uma propriedade "leads", que é um array de objetos.
+Cada objeto deve ter:
+- "storeName": O nome real e limpo da loja (sem arrobas, sufixos desnecessários ou textos da rede social).
+- "score": Um número de 0 a 100. Calcule o score baseado na oportunidade de vender serviços de marketing/site:
+   * Lojas COM site próprio (links que não sejam de redes sociais) recebem score BAIXO (ex: 10-30).
+   * Lojas SEM site próprio (links de Instagram/Facebook/portais) recebem score ALTO (ex: 70-100).
+   * Se o snippet indicar poucos seguidores ou curtidas, aumente o score.
+- "link": O mesmo link original fornecido.
+
+Retorne APENAS o JSON válido, sem comentários ou formatação Markdown fora do JSON.`
+            },
+            {
+              role: "user",
+              content: JSON.stringify(promptData)
+            }
+          ],
+          response_format: { type: "json_object" }
+        })
+      });
+
+      if (!groqResponse.ok) {
+        throw new Error(`Groq API responded with status: ${groqResponse.status}`);
+      }
+
+      const groqData = await groqResponse.json();
+      let content = groqData.choices[0].message.content;
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(content);
+      } catch (e) {
+        console.error("Failed to parse Groq response:", content);
+        throw new Error("Invalid JSON from Groq");
+      }
+
+      const extractedLeads = parsedContent.leads || [];
+
+      const allLeads = extractedLeads.map((lead: any) => {
+        return {
+          id: crypto.randomBytes(4).toString("hex"),
+          storeName: lead.storeName || "Loja Desconhecida",
+          city: randomCity,
+          email: "contato@loja.com.br", 
+          phone: "(00) 0000-0000",
+          score: lead.score || 50,
+          status: 'Não contatado',
+          link: lead.link,
+          createdAt: new Date().toISOString()
+        };
+      });
 
       // Save to DB
       const existingLeads = await getLeadsFromDB();

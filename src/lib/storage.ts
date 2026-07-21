@@ -21,8 +21,9 @@ export interface ScrapedLead {
   city: string;
   email: string;
   phone: string;
-  instagramLikes?: number;
+  score: number;
   status: 'Não contatado' | 'Em contato' | 'Reunião agendada' | 'Fechado' | 'Perdido';
+  link?: string;
   createdAt: string;
 }
 

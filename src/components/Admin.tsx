@@ -317,10 +317,10 @@ export function Admin() {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="max-w-2xl">
             <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
-              <Search className="text-orange-primary" /> Raspagem Ativa (Integração Serper.dev)
+              <Search className="text-orange-primary" /> Raspagem Ativa (Integração Serper + Groq)
             </h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Busque concessionárias de pequeno e médio porte no Google na região de Campinas. Analisa volume de curtidas no Instagram (necessita de integração com API de terceiros para redes sociais). Salve até 30 leads por dia nesta planilha para prospectar. A busca seleciona automaticamente cidades da região (Campinas, Valinhos, Vinhedo, etc).
+              Busque concessionárias de pequeno e médio porte no Google na região de Campinas. A inteligência artificial (Groq) analisa os resultados, limpa o nome real da loja e calcula um score de oportunidade (lojas sem site próprio e com menor engajamento ganham scores mais altos). A busca seleciona automaticamente cidades da região (Campinas, Valinhos, Vinhedo, etc).
             </p>
           </div>
           
@@ -357,7 +357,7 @@ export function Admin() {
               <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-widest bg-[#0A0A0A]/50">
                 <th className="p-4 font-bold">Loja & Local</th>
                 <th className="p-4 font-bold">Contato</th>
-                <th className="p-4 font-bold">Instagram (Média Likes)</th>
+                <th className="p-4 font-bold">Score de Oportunidade</th>
                 <th className="p-4 font-bold">Status</th>
                 <th className="p-4 font-bold text-right">Data</th>
               </tr>
@@ -384,13 +384,13 @@ export function Admin() {
                     <div className="text-xs text-gray-500 flex items-center gap-1"><Mail className="w-3 h-3" /> {lead.email}</div>
                   </td>
                   <td className="p-4">
-                    {lead.instagramLikes !== undefined ? (
+                    {lead.score !== undefined ? (
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${lead.instagramLikes < 50 ? 'bg-red-500' : 'bg-green-500'}`}></div>
-                        <span className={`text-sm font-medium ${lead.instagramLikes < 50 ? 'text-red-400' : 'text-green-400'}`}>
-                          {lead.instagramLikes} likes <span className="text-gray-500 text-xs font-normal">/ foto</span>
+                        <div className={`w-2 h-2 rounded-full ${lead.score >= 70 ? 'bg-red-500' : lead.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
+                        <span className={`text-sm font-bold ${lead.score >= 70 ? 'text-red-400' : lead.score >= 40 ? 'text-yellow-400' : 'text-green-400'}`}>
+                          {lead.score} <span className="text-gray-500 text-xs font-normal">/ 100</span>
                         </span>
-                        {lead.instagramLikes < 50 && (
+                        {lead.score >= 70 && (
                           <span className="text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full ml-2 uppercase font-bold tracking-wider">
                             Oportunidade
                           </span>

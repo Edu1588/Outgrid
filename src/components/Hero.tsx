@@ -26,7 +26,7 @@ export function Hero() {
          </motion.div>
       </div>
       <div className="max-w-7xl mx-auto px-6 w-full relative z-20">
-        <div className="max-w-2xl text-center md:text-left mx-auto md:mx-0">
+        <div className="max-w-2xl text-left md:text-left mx-0">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -39,7 +39,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight text-white mx-auto md:mx-0"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight text-white mx-0"
           >
             Pare de depender dos portais. Comece a vender com <Highlight delay={0.6}>o que é seu</Highlight>.
           </motion.h1>
@@ -48,7 +48,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl text-gray-300 font-medium leading-relaxed mb-10 max-w-lg mx-auto md:mx-0"
+            className="text-xl text-gray-300 font-medium leading-relaxed mb-10 max-w-lg mx-0"
           >
             Seu site pode gerar mais leads qualificados, mais vendas e muito mais autoridade sem depender 100% de terceiros.
           </motion.p>
@@ -57,7 +57,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4"
+            className="flex flex-col sm:flex-row items-start md:items-start justify-start md:justify-start gap-4"
           >
             <a href="#contato" className="w-full sm:w-auto bg-orange-primary hover:bg-[#FF7043] text-white font-extrabold text-base tracking-wider py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-orange-primary/30 flex items-center justify-center gap-3 uppercase group hover:-translate-y-1">
               Fazer minha aplicação

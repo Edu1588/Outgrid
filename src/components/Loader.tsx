@@ -45,9 +45,10 @@ export function Loader({ onComplete }: { onComplete: () => void }) {
           <div className="absolute top-0 left-0 w-[300px] h-[150px] overflow-hidden">
             {/* Gauge Arc */}
             <div className="absolute top-0 left-0 w-[300px] h-[300px] rounded-full border-[15px] border-[#222] border-b-transparent border-r-transparent rotate-45 box-border shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] before:content-[''] before:absolute before:-top-[15px] before:-left-[15px] before:-right-[15px] before:-bottom-[15px] before:rounded-full before:border-[15px] before:border-transparent before:border-t-[rgba(255,140,0,0.1)] before:border-l-[rgba(255,140,0,0.1)] before:-rotate-45 before:pointer-events-none"></div>
+          </div>
             
-            {/* Ticks */}
-            <div className="absolute w-full h-full top-0 left-0 pointer-events-none">
+          {/* Ticks */}
+          <div className="absolute w-[300px] h-[150px] top-0 left-0 pointer-events-none">
               {ticks.map((tickVal) => {
                 const tickPercent = tickVal / 100;
                 const tickAngle = -90 + (tickPercent * 180);
@@ -86,7 +87,6 @@ export function Loader({ onComplete }: { onComplete: () => void }) {
                 );
               })}
             </div>
-          </div>
 
           {/* Value Display */}
           <div className="absolute top-[95px] left-1/2 -translate-x-1/2 text-2xl font-light text-[#eee] z-10 text-center">

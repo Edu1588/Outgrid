@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function SpeedometerHover() {
+export function SpeedometerHover({ theme = 'dark' }: { theme?: 'light' | 'dark' }) {
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -47,9 +47,10 @@ export function SpeedometerHover() {
       <div className="absolute top-0 left-0 w-[300px] h-[150px] overflow-hidden">
         {/* Gauge Arc */}
         <div className="absolute top-0 left-0 w-[300px] h-[300px] rounded-full border-[15px] border-[#222] border-b-transparent border-r-transparent rotate-45 box-border shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] before:content-[''] before:absolute before:-top-[15px] before:-left-[15px] before:-right-[15px] before:-bottom-[15px] before:rounded-full before:border-[15px] before:border-transparent before:border-t-[rgba(255,140,0,0.1)] before:border-l-[rgba(255,140,0,0.1)] before:-rotate-45 before:pointer-events-none transition-all duration-300 group-hover:border-t-orange-primary/20 group-hover:border-l-orange-primary/20"></div>
+      </div>
         
-        {/* Ticks */}
-        <div className="absolute w-full h-full top-0 left-0 pointer-events-none">
+      {/* Ticks */}
+      <div className="absolute w-full h-[150px] top-0 left-0 pointer-events-none">
           {ticks.map((tickVal) => {
             const tickPercent = tickVal / 100;
             const tickAngle = -90 + (tickPercent * 180);
@@ -75,7 +76,11 @@ export function SpeedometerHover() {
                 
                 {/* Tick label (absolute position) */}
                 <div 
-                  className={`absolute text-[0.85rem] font-light flex items-center justify-center transition-colors duration-100 ${isReached ? 'text-white' : 'text-[#aaa]'}`}
+                  className={`absolute text-[0.85rem] font-light flex items-center justify-center transition-colors duration-100 ${
+                    isReached 
+                      ? theme === 'light' ? 'text-black-main font-bold' : 'text-white' 
+                      : theme === 'light' ? 'text-[#bbb]' : 'text-[#aaa]'
+                  }`}
                   style={{ 
                      left: `${textX}px`, 
                      top: `${textY}px`,
@@ -90,12 +95,19 @@ export function SpeedometerHover() {
             );
           })}
         </div>
-      </div>
 
       {/* Value Display */}
-      <div className="absolute top-[95px] left-1/2 -translate-x-1/2 text-2xl font-light text-[#eee] z-10 text-center">
+      <div className={`absolute top-[95px] left-1/2 -translate-x-1/2 text-2xl font-light z-10 text-center transition-colors duration-300 ${
+        isHovered
+          ? theme === 'light' ? 'text-black-main' : 'text-[#eee]'
+          : theme === 'light' ? 'text-[#ccc]' : 'text-[#eee]'
+      }`}>
         <div className="font-bold">{Math.round(progress)}</div>
-        <span className="text-[0.8rem] text-[#888]">%</span>
+        <span className={`text-[0.8rem] transition-colors duration-300 ${
+          isHovered
+            ? theme === 'light' ? 'text-black-main/70' : 'text-[#888]'
+            : theme === 'light' ? 'text-[#ccc]' : 'text-[#888]'
+        }`}>%</span>
       </div>
 
       {/* Needle */}

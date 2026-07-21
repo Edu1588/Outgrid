@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { ProtectedPage } from './ProtectedPage';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
-import { ImagePlus, Loader2 } from 'lucide-react';
+import { ImagePlus, Loader2, X, Plus, ExternalLink, Trash2 } from 'lucide-react';
 
 interface MoodboardImage {
   id: string;
@@ -10,8 +10,17 @@ interface MoodboardImage {
   name: string;
 }
 
+interface ReferenceLink {
+  id: string;
+  url: string;
+  title: string;
+}
+
 export function Estrategia() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [links, setLinks] = useState<ReferenceLink[]>([]);
+  const [newLinkTitle, setNewLinkTitle] = useState('');
+  const [newLinkUrl, setNewLinkUrl] = useState('');
   const [images, setImages] = useState<MoodboardImage[]>([
     {
       id: 'default-1',
@@ -25,6 +34,7 @@ export function Estrategia() {
     }
   ]);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const compressImage = (file: File): Promise<File> => {
@@ -123,6 +133,29 @@ export function Estrategia() {
         fileInputRef.current.value = '';
       }
     }
+  };
+
+  const handleAddLink = () => {
+    if (!newLinkTitle.trim() || !newLinkUrl.trim()) return;
+    
+    let formattedUrl = newLinkUrl.trim();
+    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+      formattedUrl = 'https://' + formattedUrl;
+    }
+
+    const newLink: ReferenceLink = {
+      id: Date.now().toString(),
+      title: newLinkTitle.trim(),
+      url: formattedUrl
+    };
+
+    setLinks([...links, newLink]);
+    setNewLinkTitle('');
+    setNewLinkUrl('');
+  };
+
+  const handleRemoveLink = (id: string) => {
+    setLinks(links.filter(link => link.id !== id));
   };
 
   const toggleTheme = () => {
@@ -856,10 +889,82 @@ export function Estrategia() {
             </div>
           </section>
 
-          {/* 10 MOODBOARD */}
+          {/* 10 LINKS GERAIS */}
           <section className="block" id="s10">
             <div className="sec-head">
               <span className="sec-num">10</span>
+              <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2>Links & Referências</h2>
+                  <p className="sec-sub">Links úteis, benchmarks e referências gerais do projeto.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-[var(--surface-2)] rounded-xl border border-[var(--border)] p-4 md:p-6 mt-8">
+              <div className="flex flex-col md:flex-row gap-4 mb-6">
+                <input 
+                  type="text"
+                  placeholder="Título do link (ex: Referência gringa)"
+                  value={newLinkTitle}
+                  onChange={(e) => setNewLinkTitle(e.target.value)}
+                  className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
+                />
+                <input 
+                  type="url"
+                  placeholder="URL (ex: https://...)"
+                  value={newLinkUrl}
+                  onChange={(e) => setNewLinkUrl(e.target.value)}
+                  className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddLink()}
+                />
+                <button
+                  onClick={handleAddLink}
+                  disabled={!newLinkTitle.trim() || !newLinkUrl.trim()}
+                  className="flex items-center justify-center gap-2 px-6 py-2 bg-orange-primary hover:bg-[#FF7043] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Adicionar</span>
+                </button>
+              </div>
+
+              {links.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {links.map((link) => (
+                    <div key={link.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 group relative pr-12">
+                      <h4 className="text-[var(--text)] font-bold mb-2 pr-4 truncate">{link.title}</h4>
+                      <a 
+                        href={link.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-orange-primary hover:text-[#FF7043] text-sm flex items-center gap-1.5 transition-colors truncate"
+                      >
+                        <ExternalLink className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{link.url}</span>
+                      </a>
+                      
+                      <button
+                        onClick={() => handleRemoveLink(link.id)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-soft)] hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-2 rounded-full hover:bg-red-500/10"
+                        title="Remover link"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-[var(--text-soft)] text-sm border-2 border-dashed border-[var(--border)] rounded-lg">
+                  Nenhum link adicionado ainda. Use os campos acima para salvar suas referências.
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* 11 MOODBOARD */}
+          <section className="block" id="s11">
+            <div className="sec-head">
+              <span className="sec-num">11</span>
               <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h2>Moodboard & Referências</h2>
@@ -889,15 +994,15 @@ export function Estrategia() {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              {images.map((img) => (
-                <div key={img.id} className="bg-[var(--surface-2)] rounded-xl overflow-hidden border border-[var(--border)] p-4 flex flex-col gap-4">
-                  <div className="aspect-[4/3] rounded-lg overflow-hidden bg-black-main relative group">
-                    <img src={img.url} alt={img.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  </div>
-                  <div>
-                    <h4 className="text-[var(--text)] font-bold mb-1">{img.name}</h4>
-                  </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8 auto-rows-[200px]">
+              {images.map((img, idx) => (
+                <div 
+                  key={img.id} 
+                  className={`rounded-xl overflow-hidden bg-black-main relative group cursor-pointer ${idx === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}
+                  onClick={() => setSelectedImage(img.url)}
+                >
+                  <img src={img.url} alt={img.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </div>
               ))}
             </div>
@@ -914,6 +1019,30 @@ export function Estrategia() {
 
         </div>
       </div>
+      
+      {/* Lightbox / Popup */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm transition-opacity"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-orange-primary transition-colors bg-black/50 p-2 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(null);
+            }}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img 
+            src={selectedImage} 
+            alt="Moodboard Zoom" 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </ProtectedPage>
   );
 }

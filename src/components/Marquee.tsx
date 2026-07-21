@@ -29,7 +29,7 @@ export function Marquee() {
         transition={{
           repeat: Infinity,
           ease: "linear",
-          duration: 40,
+          duration: 80,
         }}
       >
         {content}

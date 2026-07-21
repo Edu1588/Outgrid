@@ -19,7 +19,7 @@ export function Hero() {
          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black-main to-transparent z-10"></div>
          <motion.div style={{ y }} className="absolute inset-0 -top-[20%] h-[140%] z-0">
            <img 
-             src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784647657/Outgrid_HERO_biup8l.png"
+             src="https://res.cloudinary.com/ifuatk2z/image/upload/v1784652418/HERO_OUTGRID_suvjmq.png"
              alt="Car"
              className="w-full h-full object-cover opacity-50 mix-blend-luminosity"
            />

@@ -100,7 +100,7 @@ export function Comparison() {
           transition={{ delay: 0.4 }}
           className="mt-16 text-center flex flex-col items-center justify-center gap-4"
         >
-          <SpeedometerHover />
+          <SpeedometerHover theme="light" />
           <a href="#contato" className="inline-flex items-center justify-center gap-2 bg-black-main text-white hover:bg-gray-800 hover:-translate-y-1 transition-all shadow-xl px-12 py-4 rounded-full font-bold text-lg tracking-widest uppercase">
             Quero acelerar agora
           </a>

@@ -193,7 +193,7 @@ export function Captacao() {
               <>Depende de <b className="text-orange-primary font-bold">portais, OLX, Webmotors e Marketplace</b> e não tem controle da geração de leads</>,
               <>Seus <b className="text-orange-primary font-bold">vendedores demoram pra responder</b> e o lead esfria antes de virar visita</>,
               <>Tem medo de <b className="text-orange-primary font-bold">investir em tráfego Pago</b> e não ver retorno</>,
-              <>Não tem uma <b className="text-orange-primary font-bold">estratégia própria e previsível</b> pra vender mais de 10 carros no mês</>,
+              <>Não tem uma <b className="text-orange-primary font-bold">estratégia própria e previsível</b> pra vender mais de 50 carros no mês</>,
               <>Já contratou agência que se diz "especialista", mas <b className="text-orange-primary font-bold">só queimou seu dinheiro</b></>
             ].map((text, i) => (
               <div key={i} className="flex gap-5 items-start bg-[#161618] border border-white/10 rounded-2xl p-6 hover:border-orange-primary/50 transition-colors">
@@ -357,8 +357,8 @@ export function Captacao() {
       <section id="quero" className="py-24 relative z-10 bg-black-main">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-primary px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider mb-4">
-            <Flame className="w-4 h-4 text-orange-primary animate-pulse" />
-            Exclusivo: 50 Primeiras Lojas (Apenas 7 Vagas Restantes)
+            <Flame className="w-4 h-4 text-orange-primary" />
+            Análise de Negócio + Mentoria Gratuita
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-balance">
             Garanta sua <span className="text-orange-primary">Análise de Negócio + Mentoria Gratuita</span>
@@ -401,7 +401,7 @@ export function Captacao() {
                     <span><strong className="text-white">{clientsCount} lojas</strong> já aceleraram seus negócios</span>
                   </div>
                   <Seals />
-                  <p className="text-center text-xs text-gray-400 mt-4 font-medium">Apenas 7 vagas disponíveis para mentoria gratuita · Resposta em até 24h</p>
+                  <p className="text-center text-xs text-gray-400 mt-4 font-medium">Análise e mentoria gratuita · Resposta e contato em até 24h</p>
                 </div>
               </form>
             ) : (

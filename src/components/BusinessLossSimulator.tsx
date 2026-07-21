@@ -32,38 +32,6 @@ interface Scenario {
 
 const scenarios: Scenario[] = [
   {
-    name: "Loja Média (3.000 acessos/mês)",
-    visitors: 3000,
-    slowSiteTime: "4.8s",
-    slowBounceRate: 80,
-    slowLeads: 36,
-    slowSales: 4,
-    slowRevenue: 20000,
-    hubSiteTime: "0.6s",
-    hubBounceRate: 15,
-    hubLeads: 165,
-    hubSales: 17,
-    hubRevenue: 85000,
-    monthlyLoss: 65000,
-    yearlyLoss: 780000,
-  },
-  {
-    name: "Loja Pequena (1.200 acessos/mês)",
-    visitors: 1200,
-    slowSiteTime: "5.2s",
-    slowBounceRate: 85,
-    slowLeads: 14,
-    slowSales: 1,
-    slowRevenue: 5000,
-    hubSiteTime: "0.5s",
-    hubBounceRate: 12,
-    hubLeads: 66,
-    hubSales: 7,
-    hubRevenue: 35000,
-    monthlyLoss: 30000,
-    yearlyLoss: 360000,
-  },
-  {
     name: "Grande Operação (8.000 acessos/mês)",
     visitors: 8000,
     slowSiteTime: "4.2s",
@@ -82,21 +50,11 @@ const scenarios: Scenario[] = [
 ];
 
 export function BusinessLossSimulator() {
-  const [scenarioIndex, setScenarioIndex] = useState(0);
+  const [scenarioIndex] = useState(0);
   const [liveLossCounter, setLiveLossCounter] = useState(0);
-  const [animKey, setAnimKey] = useState(0);
   const clientsCount = getAcceleratedClientsCount();
 
-  const current = scenarios[scenarioIndex];
-
-  // Auto-cycle scenarios every 6 seconds endlessly
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setScenarioIndex((prev) => (prev + 1) % scenarios.length);
-      setAnimKey((prev) => prev + 1);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+  const current = scenarios[0];
 
   // Real-time ticking loss counter animation
   useEffect(() => {
@@ -119,7 +77,7 @@ export function BusinessLossSimulator() {
     }, stepTime);
 
     return () => clearInterval(timer);
-  }, [scenarioIndex, animKey]);
+  }, [current]);
 
   const handleContactClick = () => {
     const message = encodeURIComponent(
@@ -170,37 +128,17 @@ export function BusinessLossSimulator() {
           </motion.p>
         </div>
 
-        {/* Scenario Indicator Badges (Automated Showcase) */}
+        {/* Scenario Indicator Badge */}
         <div className="flex justify-center mb-10">
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {scenarios.map((sc, idx) => (
-              <div
-                key={idx}
-                className={`py-2 px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 border relative overflow-hidden select-none ${
-                  scenarioIndex === idx
-                    ? 'bg-orange-primary text-black border-orange-primary shadow-lg shadow-orange-primary/20'
-                    : 'bg-zinc-900/60 text-gray-500 border-white/5 opacity-60'
-                }`}
-              >
-                <BarChart2 className="w-3.5 h-3.5" />
-                {sc.name}
-                {scenarioIndex === idx && (
-                  <motion.div
-                    key={`tab-progress-${scenarioIndex}-${animKey}`}
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 6, ease: "linear" }}
-                    className="absolute bottom-0 left-0 h-1 bg-black/40"
-                  />
-                )}
-              </div>
-            ))}
+          <div className="py-2.5 px-6 rounded-full text-xs md:text-sm font-bold bg-orange-primary text-black border border-orange-primary shadow-lg shadow-orange-primary/20 flex items-center gap-2">
+            <BarChart2 className="w-4 h-4" />
+            <span>Grande Operação (8.000 acessos/mês)</span>
           </div>
         </div>
 
         {/* Simulation Display */}
         <motion.div
-          key={`sim-${scenarioIndex}-${animKey}`}
+          key="sim-grande-operacao"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
@@ -231,7 +169,7 @@ export function BusinessLossSimulator() {
                   </div>
                   <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden relative">
                     <motion.div 
-                      key={`slow-${scenarioIndex}-${animKey}`}
+                      key={`slow-${scenarioIndex}`}
                       initial={{ width: "0%" }}
                       animate={{ width: ["0%", "85%", "85%", "0%"] }}
                       transition={{ 
@@ -290,7 +228,7 @@ export function BusinessLossSimulator() {
                   </div>
                   <div className="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden relative">
                     <motion.div 
-                      key={`hub-${scenarioIndex}-${animKey}`}
+                      key={`hub-${scenarioIndex}`}
                       initial={{ width: "0%" }}
                       animate={{ width: ["0%", "15%", "15%", "0%"] }}
                       transition={{ 

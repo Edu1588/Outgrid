@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import fs from "fs/promises";
 import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
@@ -213,13 +214,33 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
 }
 
 // Helper to read/write from local JSON file
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+let supabaseClient = null;
+if (supabaseUrl && supabaseKey) {
+  let url = supabaseUrl;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  supabaseClient = createClient(url, supabaseKey);
+}
+
 async function getLeadsFromDB() {
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.from('scraped_leads').select('*').order('createdAt', { ascending: false });
+      if (!error && data) {
+        return mergeAndDeduplicateLeads(data);
+      }
+    } catch (e) {
+      console.error("Supabase getLeads error:", e);
+    }
+  }
+
   try {
     const data = await fs.readFile(DATA_FILE, "utf-8");
     const parsed = JSON.parse(data);
     if (Array.isArray(parsed)) {
-      const merged = mergeAndDeduplicateLeads(parsed);
-      return merged;
+      return mergeAndDeduplicateLeads(parsed);
     }
     return [];
   } catch (error) {
@@ -227,7 +248,19 @@ async function getLeadsFromDB() {
   }
 }
 
-async function saveLeadsToDB(leads: any[]) {
+async function saveLeadsToDB(leads) {
+  if (supabaseClient && leads && leads.length > 0) {
+    try {
+      // Upsert leads based on 'id'
+      const { error } = await supabaseClient.from('scraped_leads').upsert(leads, { onConflict: 'id' });
+      if (error) {
+        console.error("Supabase upsert error:", error);
+      }
+    } catch (e) {
+      console.error("Supabase saveLeads error:", e);
+    }
+  }
+
   await fs.writeFile(DATA_FILE, JSON.stringify(leads, null, 2), "utf-8");
 }
 
@@ -426,10 +459,18 @@ async function startServer() {
 
   // UPDATE lead status
   app.put("/api/leads/scraped/:id", async (req, res) => {
+    const { status } = req.body;
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('scraped_leads').update({ status }).eq('id', req.params.id);
+      if (!error) {
+         const leads = await getLeadsFromDB();
+         return res.json(leads.find(l => l.id === req.params.id) || { id: req.params.id, status });
+      }
+    }
     const leads = await getLeadsFromDB();
     const index = leads.findIndex((l: any) => l.id === req.params.id);
     if (index !== -1) {
-      leads[index].status = req.body.status;
+      leads[index].status = status;
       await saveLeadsToDB(leads);
       res.json(leads[index]);
     } else {

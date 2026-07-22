@@ -4,6 +4,7 @@ import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import cors from "cors";
 import fs from "fs/promises";
+import initialLeadsData from "./scraped_leads.json";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
@@ -229,11 +230,10 @@ async function getLeadsFromDB() {
     try {
       const { data, error } = await supabaseClient.from('scraped_leads').select('*').order('createdAt', { ascending: false });
       if (!error && data) {
-        if (data.length === 0) {
+        if (data.length < 30) {
           // Seed from local json file
           try {
-            const localData = await fs.readFile(DATA_FILE, "utf-8");
-            const parsed = JSON.parse(localData);
+            const parsed = initialLeadsData;
             if (Array.isArray(parsed) && parsed.length > 0) {
               const deduped = mergeAndDeduplicateLeads(parsed);
               await supabaseClient.from('scraped_leads').upsert(deduped, { onConflict: 'id' });
@@ -241,7 +241,7 @@ async function getLeadsFromDB() {
             }
           } catch(e) {}
         }
-        return mergeAndDeduplicateLeads(data);
+        console.log("Returned from Supabase"); return mergeAndDeduplicateLeads(data);
       }
     } catch (e) {
       console.error("Supabase getLeads error:", e);
@@ -252,7 +252,7 @@ async function getLeadsFromDB() {
     const data = await fs.readFile(DATA_FILE, "utf-8");
     const parsed = JSON.parse(data);
     if (Array.isArray(parsed)) {
-      return mergeAndDeduplicateLeads(parsed);
+      console.log("Returned from fs.readFile"); return mergeAndDeduplicateLeads(parsed);
     }
     return [];
   } catch (error) {

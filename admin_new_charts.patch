@@ -1,0 +1,134 @@
+--- src/components/Admin.tsx
++++ src/components/Admin.tsx
+@@ -494,6 +494,117 @@
+         </div>
+       </div>
+ 
++      {/* New Analytics Row: Bar Chart & Pie Chart */}
++      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
++        <div className={`border rounded-2xl p-6 lg:col-span-2 ${
++          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
++        }`}>
++          <h3 className={`text-lg font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Distribuição mensal por página</h3>
++          <div className="h-[250px] w-full">
++            <ResponsiveContainer width="100%" height="100%">
++              <BarChart data={pieData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
++                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'light' ? '#e2e8f0' : '#333'} vertical={false} />
++                <XAxis dataKey="name" stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
++                <YAxis stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
++                <RechartsTooltip 
++                  cursor={{fill: theme === 'light' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)'}}
++                  contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
++                />
++                <Bar dataKey="value" name="Acessos" radius={[4, 4, 0, 0]}>
++                  {pieData.map((entry, index) => (
++                    <Cell key={`cell-${index}`} fill={entry.color} />
++                  ))}
++                </Bar>
++              </BarChart>
++            </ResponsiveContainer>
++          </div>
++        </div>
++        
++        <div className={`border rounded-2xl p-6 ${
++          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
++        }`}>
++          <div className="h-[200px] w-full flex items-center justify-center relative">
++            <ResponsiveContainer width="100%" height="100%">
++              <PieChart>
++                <Pie
++                  data={pieData}
++                  innerRadius={60}
++                  outerRadius={80}
++                  paddingAngle={5}
++                  dataKey="value"
++                  stroke="none"
++                >
++                  {pieData.map((entry, index) => (
++                    <Cell key={`cell-${index}`} fill={entry.color} />
++                  ))}
++                </Pie>
++                <RechartsTooltip 
++                  contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
++                  itemStyle={{ color: theme === 'light' ? '#0f172a' : '#fff' }}
++                />
++              </PieChart>
++            </ResponsiveContainer>
++          </div>
++          <div className="mt-4 space-y-2">
++            {pieData.map((entry, idx) => (
++              <div key={idx} className="flex items-center justify-between text-sm">
++                <div className="flex items-center gap-2">
++                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></span>
++                  <span className={theme === 'light' ? 'text-slate-600' : 'text-gray-400'}>{entry.name}</span>
++                </div>
++                <span className={`font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{entry.value}</span>
++              </div>
++            ))}
++          </div>
++        </div>
++      </div>
++
++      {/* Heatmap Row */}
++      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
++        <div className={`border rounded-2xl p-6 lg:col-span-2 ${
++          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
++        }`}>
++          <div className="flex justify-between items-center mb-6">
++            <div>
++              <h3 className={`text-lg font-bold flex items-center gap-2 uppercase tracking-wide ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
++                <TrendingUp className="w-4 h-4 text-purple-500" /> Atividade por Horário
++              </h3>
++              <p className={`text-xs mt-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>Quando seus visitantes estão mais ativos</p>
++            </div>
++          </div>
++          <div className="flex gap-2">
++            <div className="flex flex-col gap-2 pt-6 text-xs text-gray-500 justify-around">
++              {daysOfWeek.filter((_,i) => i%2!==0).map(d => <span key={d}>{d}</span>)}
++            </div>
++            <div className="flex-1">
++              <div className="flex justify-between text-xs text-gray-500 mb-2 px-2">
++                {hours.map(h => <span key={h}>{h}h</span>)}
++              </div>
++              <div className="grid grid-rows-7 gap-1">
++                {daysOfWeek.map(d => (
++                  <div key={d} className="flex gap-1">
++                    {hours.map(h => (
++                      <div 
++                        key={`${d}-${h}`} 
++                        className="flex-1 rounded-md aspect-square"
++                        style={{ backgroundColor: getHeatColor(heatmapMap[`${d}-${h}`]) }}
++                        title={`${d} às ${h}h: ${heatmapMap[`${d}-${h}`]} acessos`}
++                      ></div>
++                    ))}
++                  </div>
++                ))}
++              </div>
++            </div>
++          </div>
++        </div>
++        
++        <div className={`border rounded-2xl p-6 ${
++          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
++        }`}>
++          <h3 className={`text-lg font-bold mb-6 flex items-center gap-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}><Mail className="w-4 h-4 text-green-500" /> Leads Recentes</h3>
++          {filteredLeads.length === 0 ? (
++            <div className={`flex flex-col items-center justify-center py-10 ${theme === 'light' ? 'text-slate-400' : 'text-gray-600'}`}>
++              <Users className="w-10 h-10 mb-3 opacity-20" />
++              <p className="text-sm">Nenhum lead ainda</p>
++            </div>
++          ) : (
++            <div className="space-y-4">
++              {filteredLeads.slice(0, 4).map(l => (
++                <div key={l.id} className={`p-3 rounded-xl border ${theme === 'light' ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/5'}`}>
++                  <p className={`text-sm font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{l.name}</p>
++                  <p className="text-xs text-gray-500">{l.store}</p>
++                </div>
++              ))}
++            </div>
++          )}
++        </div>
++      </div>
++
+       {/* Settings Config Area Placeholder */}
+       <div className={`mt-6 border rounded-2xl p-6 ${

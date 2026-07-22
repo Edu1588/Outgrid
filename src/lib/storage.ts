@@ -71,6 +71,13 @@ export function trackPageView(path: string) {
     });
     
     localStorage.setItem('outgrid_page_views', JSON.stringify(currentViews));
+
+    // Also send to backend
+    fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path })
+    }).catch(e => console.error("Failed to sync analytics", e));
   } catch (e) {
     console.error('Failed to track page view:', e);
   }

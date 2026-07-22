@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getLeads, getPageViews, getScrapedLeads, saveScrapedLead, updateScrapedLeadStatus, Lead, PageView, ScrapedLead } from "../lib/storage";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UXAuditHoverCard } from './UXAuditHoverCard';
@@ -94,6 +94,7 @@ export function Admin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"dashboard" | "leads" | "prospects">("dashboard");
+  const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month" | "year">("all");
   
   const [leads, setLeads] = useState<Lead[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
@@ -202,7 +203,15 @@ export function Admin() {
   useEffect(() => {
     if (isAuthenticated) {
       setLeads(getLeads());
-      setPageViews(getPageViews());
+      fetch('/api/analytics')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) setPageViews(data);
+        })
+        .catch(e => {
+          console.error("Failed to fetch analytics:", e);
+          setPageViews(getPageViews());
+        });
       fetchScrapedLeads();
     }
   }, [isAuthenticated]);
@@ -266,7 +275,26 @@ export function Admin() {
   };
 
   // Prepare Analytics Data
-  const viewsByDay = pageViews.reduce((acc, view) => {
+  const now = new Date();
+  const filteredViews = pageViews.filter(view => {
+    const d = new Date(view.timestamp);
+    if (dateFilter === 'today') return d.toDateString() === now.toDateString();
+    if (dateFilter === 'week') return now.getTime() - d.getTime() <= 7 * 24 * 60 * 60 * 1000;
+    if (dateFilter === 'month') return now.getTime() - d.getTime() <= 30 * 24 * 60 * 60 * 1000;
+    if (dateFilter === 'year') return now.getTime() - d.getTime() <= 365 * 24 * 60 * 60 * 1000;
+    return true;
+  });
+  
+  const filteredLeads = leads.filter(lead => {
+    const d = new Date(lead.createdAt);
+    if (dateFilter === 'today') return d.toDateString() === now.toDateString();
+    if (dateFilter === 'week') return now.getTime() - d.getTime() <= 7 * 24 * 60 * 60 * 1000;
+    if (dateFilter === 'month') return now.getTime() - d.getTime() <= 30 * 24 * 60 * 60 * 1000;
+    if (dateFilter === 'year') return now.getTime() - d.getTime() <= 365 * 24 * 60 * 60 * 1000;
+    return true;
+  });
+
+  const viewsByDay = filteredViews.reduce((acc, view) => {
     const date = new Date(view.timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
     if (!acc[date]) {
       acc[date] = { name: date, total: 0, home: 0, captacao: 0, outros: 0 };
@@ -280,7 +308,7 @@ export function Admin() {
   
   const chartData = Object.values(viewsByDay).slice(-14); // Last 14 days
 
-  const leadsByDay = leads.reduce((acc, lead) => {
+  const leadsByDay = filteredLeads.reduce((acc, lead) => {
     const date = new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
     if (!acc[date]) acc[date] = { name: date, leads: 0 };
     acc[date].leads++;
@@ -288,6 +316,53 @@ export function Admin() {
   }, {} as Record<string, any>);
   
   const leadsChartData = Object.values(leadsByDay).slice(-14);
+
+  // Data for Pie Chart & Bar Chart
+  const pageDistributionMap = filteredViews.reduce((acc, view) => {
+    let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
+    pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
+    if (!acc[pathName]) acc[pathName] = 0;
+    acc[pathName]++;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const COLORS = ['#e11d48', '#0ea5e9', '#8b5cf6', '#f59e0b', '#10b981'];
+  const pieData = Object.entries(pageDistributionMap)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, value], index) => ({
+      name,
+      value,
+      color: COLORS[index % COLORS.length]
+    }));
+
+  // Heatmap Data (Days of Week vs Hours)
+  const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const hours = [0, 3, 6, 9, 12, 15, 18, 21];
+  const heatmapMap: Record<string, number> = {};
+  daysOfWeek.forEach(d => {
+    hours.forEach(h => heatmapMap[`${d}-${h}`] = 0);
+  });
+  
+  filteredViews.forEach(view => {
+    const d = new Date(view.timestamp);
+    const dayStr = daysOfWeek[d.getDay()];
+    const hr = d.getHours();
+    let bucket = 0;
+    for (let i=0; i<hours.length; i++) {
+      if (hr >= hours[i]) bucket = hours[i];
+    }
+    heatmapMap[`${dayStr}-${bucket}`]++;
+  });
+  
+  const maxHeat = Math.max(1, ...Object.values(heatmapMap));
+  const getHeatColor = (val: number) => {
+    if (val === 0) return theme === 'light' ? '#f1f5f9' : '#1e1b4b';
+    const ratio = val / maxHeat;
+    if (ratio < 0.2) return theme === 'light' ? '#d8b4fe' : '#3730a3';
+    if (ratio < 0.5) return theme === 'light' ? '#c084fc' : '#4338ca';
+    if (ratio < 0.8) return theme === 'light' ? '#a855f7' : '#4f46e5';
+    return theme === 'light' ? '#9333ea' : '#6366f1';
+  };
 
   if (!isAuthenticated) {
     return (
@@ -319,6 +394,17 @@ export function Admin() {
 
   const renderDashboard = () => (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Visão Geral</h2>
+        <div className="flex gap-2 bg-white/5 p-1 rounded-lg border border-white/10">
+          <button onClick={() => setDateFilter('today')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateFilter === 'today' ? 'bg-orange-primary text-black-main' : 'text-gray-400 hover:text-white'}`}>Hoje</button>
+          <button onClick={() => setDateFilter('week')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateFilter === 'week' ? 'bg-orange-primary text-black-main' : 'text-gray-400 hover:text-white'}`}>7 Dias</button>
+          <button onClick={() => setDateFilter('month')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateFilter === 'month' ? 'bg-orange-primary text-black-main' : 'text-gray-400 hover:text-white'}`}>30 Dias</button>
+          <button onClick={() => setDateFilter('year')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateFilter === 'year' ? 'bg-orange-primary text-black-main' : 'text-gray-400 hover:text-white'}`}>1 Ano</button>
+          <button onClick={() => setDateFilter('all')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateFilter === 'all' ? 'bg-orange-primary text-black-main' : 'text-gray-400 hover:text-white'}`}>Tudo</button>
+        </div>
+      </div>
+      
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
@@ -328,7 +414,7 @@ export function Admin() {
             <LayoutDashboard className="w-16 h-16 text-orange-primary" />
           </div>
           <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Acessos Totais</p>
-          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{pageViews.length}</h3>
+          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{filteredViews.length}</h3>
           <p className="text-xs text-green-500 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +12% esta semana</p>
         </div>
         <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
@@ -338,7 +424,7 @@ export function Admin() {
             <Users className="w-16 h-16 text-orange-primary" />
           </div>
           <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Leads Inbound</p>
-          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{leads.length}</h3>
+          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{filteredLeads.length}</h3>
           <p className="text-xs text-green-500 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +3% esta semana</p>
         </div>
         <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
@@ -359,7 +445,7 @@ export function Admin() {
           </div>
           <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Taxa de Conversão</p>
           <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
-            {pageViews.length > 0 ? ((leads.length / pageViews.length) * 100).toFixed(1) : 0}%
+            {filteredViews.length > 0 ? ((filteredLeads.length / filteredViews.length) * 100).toFixed(1) : 0}%
           </h3>
           <p className={`text-xs flex items-center gap-1 ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Visitas vs Leads</p>
         </div>
@@ -416,6 +502,135 @@ export function Admin() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* New Analytics Row: Bar Chart & Pie Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className={`border rounded-2xl p-6 lg:col-span-2 ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
+          <h3 className={`text-lg font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Distribuição mensal por página</h3>
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={pieData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'light' ? '#e2e8f0' : '#333'} vertical={false} />
+                <XAxis dataKey="name" stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
+                <YAxis stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
+                <RechartsTooltip 
+                  cursor={{fill: theme === 'light' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)'}}
+                  contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                />
+                <Bar dataKey="value" name="Acessos" radius={[4, 4, 0, 0]}>
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        
+        <div className={`border rounded-2xl p-6 flex flex-col ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
+          <div className="h-[200px] w-full flex items-center justify-center relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <RechartsTooltip 
+                  contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
+                  itemStyle={{ color: theme === 'light' ? '#0f172a' : '#fff' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-auto space-y-2 pt-4">
+            {pieData.map((entry, idx) => (
+              <div key={idx} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></span>
+                  <span className={theme === 'light' ? 'text-slate-600' : 'text-gray-400'}>{entry.name}</span>
+                </div>
+                <span className={`font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{entry.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Heatmap Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className={`border rounded-2xl p-6 lg:col-span-2 ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className={`text-lg font-bold flex items-center gap-2 uppercase tracking-wide ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
+                <TrendingUp className="w-4 h-4 text-purple-500" /> Atividade por Horário
+              </h3>
+              <p className={`text-xs mt-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>Quando seus visitantes estão mais ativos</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <div className="flex flex-col gap-2 pt-6 text-xs text-gray-500 justify-around">
+              {daysOfWeek.filter((_,i) => i%2!==0).map(d => <span key={d}>{d}</span>)}
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between text-xs text-gray-500 mb-2 px-2">
+                {hours.map(h => <span key={h}>{h}h</span>)}
+              </div>
+              <div className="grid grid-rows-7 gap-1">
+                {daysOfWeek.map(d => (
+                  <div key={d} className="flex gap-1">
+                    {hours.map(h => (
+                      <div 
+                        key={`${d}-${h}`} 
+                        className="flex-1 rounded-md aspect-square"
+                        style={{ backgroundColor: getHeatColor(heatmapMap[`${d}-${h}`]) }}
+                        title={`${d} às ${h}h: ${heatmapMap[`${d}-${h}`]} acessos`}
+                      ></div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className={`border rounded-2xl p-6 ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className={`text-lg font-bold flex items-center gap-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}><Mail className="w-4 h-4 text-green-500" /> Leads Recentes</h3>
+            <span className="text-xs text-gray-500 cursor-pointer hover:text-white transition-colors">Ver todos &gt;</span>
+          </div>
+          {filteredLeads.length === 0 ? (
+            <div className={`flex flex-col items-center justify-center py-10 ${theme === 'light' ? 'text-slate-400' : 'text-gray-600'}`}>
+              <Users className="w-10 h-10 mb-3 opacity-20" />
+              <p className="text-sm">Nenhum lead ainda</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredLeads.slice(0, 4).map(l => (
+                <div key={l.id} className={`p-3 rounded-xl border ${theme === 'light' ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/5'}`}>
+                  <p className={`text-sm font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{l.name}</p>
+                  <p className="text-xs text-gray-500">{l.store}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

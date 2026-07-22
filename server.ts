@@ -11,6 +11,7 @@ import { createClient } from "@supabase/supabase-js";
 dotenv.config();
 
 const DATA_FILE = path.join(process.cwd(), "scraped_leads.json");
+const ANALYTICS_FILE = path.join(process.cwd(), "analytics.json");
 
 const EXCLUDED_CLIENTS = ["unimais", "meta veiculos", "meta veículos", "azul veiculos", "azul veículos", "unimais veiculos", "unimais veículos"];
 
@@ -334,6 +335,24 @@ app.options("*", cors());
 
 import cron from "node-cron";
 
+async function getAnalyticsFromDB() {
+  try {
+    const data = await fs.readFile(ANALYTICS_FILE, "utf-8");
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+async function saveAnalyticsToDB(analytics: any[]) {
+  try {
+    await fs.writeFile(ANALYTICS_FILE, JSON.stringify(analytics, null, 2));
+  } catch (error) {
+    console.error("Failed to save analytics locally:", error);
+  }
+}
+
 async function performScrape() {
   const serperApiKey = process.env.SERPER_API_KEY || process.env.SERPER;
   
@@ -543,6 +562,27 @@ async function startServer() {
   // Version endpoint to check deployment status
   app.get("/api/version", (req, res) => {
     res.json({ version: "1.0.1", lastUpdated: new Date().toISOString() });
+  });
+
+  // Analytics endpoints
+  app.get("/api/analytics", async (req, res) => {
+    const analytics = await getAnalyticsFromDB();
+    res.json(analytics);
+  });
+
+  app.post("/api/analytics/track", express.json(), async (req, res) => {
+    const { path } = req.body;
+    if (!path) return res.status(400).json({ error: "Path required" });
+    
+    const views = await getAnalyticsFromDB();
+    views.push({
+      id: crypto.randomBytes(4).toString("hex"),
+      path,
+      timestamp: new Date().toISOString()
+    });
+    
+    await saveAnalyticsToDB(views);
+    res.json({ success: true });
   });
 
   // CRON or Manual Endpoint to Scrape (Supports GET for Vercel Crons and POST for Manual Triggers)

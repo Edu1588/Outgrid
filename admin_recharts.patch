@@ -1,0 +1,10 @@
+--- src/components/Admin.tsx
++++ src/components/Admin.tsx
+@@ -1,6 +1,6 @@
+ import { useState, useEffect } from "react";
+ import { getLeads, getPageViews, getScrapedLeads, saveScrapedLead, updateScrapedLeadStatus, Lead, PageView, ScrapedLead } from "../lib/storage";
+-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
++import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
+ import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle } from 'lucide-react';
+ import { motion, AnimatePresence } from 'motion/react';
+ import { UXAuditHoverCard } from './UXAuditHoverCard';

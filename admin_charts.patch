@@ -1,0 +1,96 @@
+--- src/components/Admin.tsx
++++ src/components/Admin.tsx
+@@ -274,8 +274,45 @@
+   const t = translations[language as keyof typeof translations];
+ 
+   // Prepare Analytics Data
+-  const viewsByDay = pageViews.reduce((acc, view) => {
++  const now = new Date();
++  const filteredViews = pageViews.filter(view => {
++    const d = new Date(view.timestamp);
++    if (dateFilter === 'today') return d.toDateString() === now.toDateString();
++    if (dateFilter === 'week') return now.getTime() - d.getTime() <= 7 * 24 * 60 * 60 * 1000;
++    if (dateFilter === 'month') return now.getTime() - d.getTime() <= 30 * 24 * 60 * 60 * 1000;
++    if (dateFilter === 'year') return now.getTime() - d.getTime() <= 365 * 24 * 60 * 60 * 1000;
++    return true;
++  });
++  
++  const filteredLeads = leads.filter(lead => {
++    const d = new Date(lead.createdAt);
++    if (dateFilter === 'today') return d.toDateString() === now.toDateString();
++    if (dateFilter === 'week') return now.getTime() - d.getTime() <= 7 * 24 * 60 * 60 * 1000;
++    if (dateFilter === 'month') return now.getTime() - d.getTime() <= 30 * 24 * 60 * 60 * 1000;
++    if (dateFilter === 'year') return now.getTime() - d.getTime() <= 365 * 24 * 60 * 60 * 1000;
++    return true;
++  });
++
++  // Data for Pie Chart & Bar Chart
++  const pageDistributionMap = filteredViews.reduce((acc, view) => {
++    let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
++    pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
++    if (!acc[pathName]) acc[pathName] = 0;
++    acc[pathName]++;
++    return acc;
++  }, {} as Record<string, number>);
++  
++  const COLORS = ['#e11d48', '#0ea5e9', '#8b5cf6', '#f59e0b', '#10b981'];
++  const pieData = Object.entries(pageDistributionMap)
++    .sort((a, b) => b[1] - a[1])
++    .map(([name, value], index) => ({
++      name,
++      value,
++      color: COLORS[index % COLORS.length]
++    }));
++
++  const viewsByDay = filteredViews.reduce((acc, view) => {
+     const date = new Date(view.timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+     if (!acc[date]) {
+       acc[date] = { name: date, total: 0, home: 0, captacao: 0, outros: 0 };
+@@ -288,14 +325,48 @@
+   
+   const chartData = Object.values(viewsByDay).slice(-14); // Last 14 days
+ 
+-  const leadsByDay = leads.reduce((acc, lead) => {
++  const leadsByDay = filteredLeads.reduce((acc, lead) => {
+     const date = new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+     if (!acc[date]) acc[date] = { name: date, leads: 0 };
+     acc[date].leads++;
+     return acc;
+   }, {} as Record<string, any>);
+   
+   const leadsChartData = Object.values(leadsByDay).slice(-14);
++  
++  // Heatmap Data (Days of Week vs Hours: 0h, 3h, 6h, 9h, 12h, 15h, 18h, 21h)
++  const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
++  const hours = [0, 3, 6, 9, 12, 15, 18, 21];
++  
++  // Init heatmap grid
++  const heatmapMap: Record<string, number> = {};
++  daysOfWeek.forEach(d => {
++    hours.forEach(h => heatmapMap[`${d}-${h}`] = 0);
++  });
++  
++  filteredViews.forEach(view => {
++    const d = new Date(view.timestamp);
++    const dayStr = daysOfWeek[d.getDay()];
++    const hr = d.getHours();
++    // Find closest bucket
++    let bucket = 0;
++    for (let i=0; i<hours.length; i++) {
++      if (hr >= hours[i]) bucket = hours[i];
++    }
++    heatmapMap[`${dayStr}-${bucket}`]++;
++  });
++  
++  const maxHeat = Math.max(1, ...Object.values(heatmapMap));
++  const getHeatColor = (val: number) => {
++    if (val === 0) return theme === 'light' ? '#f1f5f9' : '#1e1b4b'; // minimal purple/slate
++    const ratio = val / maxHeat;
++    if (ratio < 0.2) return theme === 'light' ? '#d8b4fe' : '#3730a3';
++    if (ratio < 0.5) return theme === 'light' ? '#c084fc' : '#4338ca';
++    if (ratio < 0.8) return theme === 'light' ? '#a855f7' : '#4f46e5';
++    return theme === 'light' ? '#9333ea' : '#6366f1';
++  };
+ 
+   if (!isAuthenticated) {
+     return (

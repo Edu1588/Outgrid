@@ -299,9 +299,10 @@ async function getLeadsFromDB() {
       console.log("Returned from fs.readFile");
       return mergeAndDeduplicateLeads(parsed);
     }
-    return [];
+    return mergeAndDeduplicateLeads(initialLeadsData);
   } catch (error) {
-    return [];
+    console.log("Returned from initialLeadsData fallback");
+    return mergeAndDeduplicateLeads(initialLeadsData);
   }
 }
 

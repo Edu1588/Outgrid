@@ -147,15 +147,17 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
 
     let rawLink = item.link || item.website || "";
     let officialWebsite = isOfficialWebsite(rawLink) ? formatWebsiteUrl(rawLink) : "";
-
-    // Require an official website link
-    if (!officialWebsite) continue;
     let instagramUrl = "";
 
     if (rawLink.toLowerCase().includes("instagram.com")) {
       instagramUrl = rawLink;
     } else if (item.instagram) {
       instagramUrl = item.instagram;
+    }
+
+    // Accept leads that have either an official website OR an instagram profile
+    if (!officialWebsite && !instagramUrl) {
+      continue;
     }
 
     if (!existing) {
@@ -167,6 +169,7 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
         email: item.email || "",
         link: officialWebsite,
         instagram: instagramUrl,
+        followers: item.followers !== undefined ? item.followers : null,
         status: item.status || "Não contatado",
         score: item.score,
         createdAt: item.createdAt || new Date().toISOString()
@@ -179,6 +182,9 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
       if (!existing.email && item.email) existing.email = item.email;
       if (!existing.link && officialWebsite) existing.link = officialWebsite;
       if (!existing.instagram && instagramUrl) existing.instagram = instagramUrl;
+      if ((existing.followers === undefined || existing.followers === null) && item.followers !== undefined && item.followers !== null) {
+        existing.followers = item.followers;
+      }
       if (existing.city === "Nova Odessa" && item.city && item.city !== "Nova Odessa") existing.city = item.city;
       if (item.status && item.status !== "Não contatado") existing.status = item.status;
     }
@@ -187,6 +193,12 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
   const result: any[] = [];
   for (const [key, lead] of map.entries()) {
     const hasWebsite = isOfficialWebsite(lead.link);
+    const hasInstagram = Boolean(lead.instagram && lead.instagram.trim() !== "");
+
+    // Skip leads that have neither a website nor an Instagram profile
+    if (!hasWebsite && !hasInstagram) {
+      continue;
+    }
 
     // Only set domain email if lead has an official website and no email was set
     if (!lead.email && hasWebsite) {
@@ -286,7 +298,7 @@ async function getLeadsFromDB() {
           }
         }
         console.log("Returned from Supabase");
-        return mergeAndDeduplicateLeads(mappedData);
+        return mergeAndDeduplicateLeads([...initialLeadsData, ...mappedData]);
       } else {
         console.error("Supabase select error:", error);
       }

@@ -18,6 +18,10 @@ function isCarDealership(storeName: string, text: string = ""): boolean {
 const REAL_FOLLOWERS_MAP: Record<string, number> = {
   "Forza Motors": 2991,
   "Azzurra Veículos": 50200,
+  "Nobre Multimarcas": 4325,
+  "Junior Cardoso Vehicles": 2480,
+  "Loja de Veículos": 1200,
+  "DNA Veículos": 3250,
   "Ampelio Multimarcas": 2279,
   "Luvicar Veículos": 5464,
   "Waguinho Veículos": 1310,
@@ -83,7 +87,17 @@ const calculateRealisticLeadData = (lead: any): ScrapedLead => {
   // Clean instagram links
   let instagram = lead.instagram || "";
   if (instagram.includes("/reel/") || instagram.includes("/p/") || instagram.includes("/stories/")) {
-    instagram = "";
+    if (lead.storeName === "Nobre Multimarcas") {
+      instagram = "https://www.instagram.com/nobremultimarcas_/";
+    } else if (lead.storeName === "Junior Cardoso Vehicles") {
+      instagram = "https://www.instagram.com/juniorcardosovehicles/";
+    } else if (lead.storeName === "Loja de Veículos") {
+      instagram = "https://www.instagram.com/lojadeveiculos/";
+    } else if (lead.storeName === "DNA Veículos") {
+      instagram = "https://www.instagram.com/dnaveiculos/";
+    } else {
+      instagram = "";
+    }
   }
   
   // Fix Forza Motors
@@ -894,4 +908,9 @@ const RAW_LEADS: any[] = [
 
 export const INITIAL_SCRAPED_LEADS: ScrapedLead[] = RAW_LEADS
   .filter(l => isCarDealership(l.storeName))
-  .map(calculateRealisticLeadData);
+  .map(calculateRealisticLeadData)
+  .filter(l => {
+    const hasWebsite = Boolean(l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com') && !l.link.includes('carrosp.com.br') && !l.link.includes('olx.com.br') && !l.link.includes('webmotors.com.br'));
+    const hasInstagram = Boolean(l.instagram && l.instagram.trim() !== "");
+    return hasWebsite || hasInstagram;
+  });

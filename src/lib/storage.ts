@@ -161,8 +161,19 @@ export function getScrapedLeads(): ScrapedLead[] {
           localStorage.removeItem('outgrid_scraped_leads');
           return INITIAL_SCRAPED_LEADS;
         }
+
+        // Invalidate if Nobre Multimarcas is present but has no instagram link (to apply fix for all users)
+        const nobre = parsed.find(l => l.storeName === 'Nobre Multimarcas');
+        if (nobre && !nobre.instagram) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
         
-        return parsed;
+        return parsed.filter((l: any) => {
+          const hasWebsite = Boolean(l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com') && !l.link.includes('carrosp.com.br') && !l.link.includes('olx.com.br') && !l.link.includes('webmotors.com.br'));
+          const hasInstagram = Boolean(l.instagram && l.instagram.trim() !== "");
+          return hasWebsite || hasInstagram;
+        });
       }
     }
     // Initialize localStorage with initial dataset

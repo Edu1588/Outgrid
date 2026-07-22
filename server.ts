@@ -539,6 +539,11 @@ async function startServer() {
     }
   });
 
+  // Version endpoint to check deployment status
+  app.get("/api/version", (req, res) => {
+    res.json({ version: "1.0.1", lastUpdated: new Date().toISOString() });
+  });
+
   // CRON or Manual Endpoint to Scrape (Supports GET for Vercel Crons and POST for Manual Triggers)
   app.all("/api/scrape", async (req, res) => {
     try {

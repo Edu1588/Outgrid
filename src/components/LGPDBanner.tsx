@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export function LGPDBanner() {
   const [isVisible, setIsVisible] = useState(false);
+  const location = useLocation();
+
+  const hiddenRoutes = ["/admin", "/estrategia", "/apresentacao-comercial"];
 
   useEffect(() => {
     const consent = localStorage.getItem("lgpd_consent");
@@ -16,7 +19,7 @@ export function LGPDBanner() {
     setIsVisible(false);
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || hiddenRoutes.includes(location.pathname)) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-white/10 p-4 md:p-6 z-50 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">

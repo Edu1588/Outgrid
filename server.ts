@@ -237,6 +237,185 @@ const PORT = 3000;
 app.use(express.json());
 app.use(cors());
 
+import cron from "node-cron";
+
+async function performScrape() {
+  const serperApiKey = process.env.SERPER_API_KEY || process.env.SERPER;
+  
+  if (!serperApiKey) {
+    throw new Error("SERPER API key not configured");
+  }
+
+  const regionCities = ["Campinas", "Valinhos", "Vinhedo", "Paulínia", "Sumaré", "Hortolândia", "Indaiatuba", "Americana", "Santa Bárbara d'Oeste", "Nova Odessa", "Jaguariúna"];
+  const randomCity = regionCities[Math.floor(Math.random() * regionCities.length)];
+
+  const query = `concessionárias e lojas de carros seminovos em ${randomCity}`;
+  
+  let placesResults: any[] = [];
+  let organicResults: any[] = [];
+
+  try {
+    const placesRes = await fetch("https://google.serper.dev/places", {
+      method: "POST",
+      headers: {
+        "X-API-KEY": serperApiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ q: query, gl: "br", hl: "pt-br", num: 20 })
+    });
+    if (placesRes.ok) {
+      const pData = await placesRes.json();
+      placesResults = pData.places || [];
+    }
+  } catch (e) {
+    console.warn("Places API search warning:", e);
+  }
+
+  try {
+    const organicRes = await fetch("https://google.serper.dev/search", {
+      method: "POST",
+      headers: {
+        "X-API-KEY": serperApiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ q: query, gl: "br", hl: "pt-br", num: 20 })
+    });
+    if (organicRes.ok) {
+      const oData = await organicRes.json();
+      organicResults = oData.organic || [];
+    }
+  } catch (e) {
+    console.warn("Organic API search warning:", e);
+  }
+
+  const rawCandidates: any[] = [];
+  for (const p of placesResults) {
+    if (isCarDealership(p.title || "", `${p.category || ""} ${p.address || ""}`) && !isExcludedClient(p.title || "")) {
+      rawCandidates.push({
+        title: p.title,
+        address: p.address,
+        phone: p.phoneNumber || "",
+        website: isOfficialWebsite(p.website || "") ? p.website : "",
+        snippet: `${p.category || "Loja de carros"} em ${randomCity}`,
+        source: "places"
+      });
+    }
+  }
+
+  for (const o of organicResults) {
+    if (isCarDealership(o.title || "", o.snippet || "") && !isExcludedClient(o.title || "")) {
+      rawCandidates.push({
+        title: o.title,
+        snippet: o.snippet,
+        website: isOfficialWebsite(o.link || "") ? o.link : "",
+        source: "organic"
+      });
+    }
+  }
+
+  const groqApiKey = process.env.GROQ_API_KEY || process.env.GROQ;
+  let allLeads: any[] = [];
+
+  if (groqApiKey && rawCandidates.length > 0) {
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${groqApiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: `Você é um analista de inteligência de mercado automotivo.
+Analise a lista de empresas e extraia APENAS LOJAS E CONCESSIONÁRIAS DE CARROS (novos/seminovos).
+
+REGRAS RÍGIDAS DE FILTRAGEM:
+1. DESCARTE QUALQUER empresa de reboque, guincho, oficina mecânica, funilaria, auto peças, despachante, aluguel de carros ou lava-rápido.
+2. DESCARTE as marcas exclusivas: "Unimais", "Meta Veículos", "Azul Veículos".
+3. NÃO INVENTE NENHUM ENDEREÇO DE E-MAIL! Se o e-mail não estiver explicitamente presente ou se a loja não possuir um domínio de site próprio oficial, retorne "".
+4. "link": Retorne APENAS o site oficial próprio da loja (ex: https://www.nomedaloja.com.br). Se for apenas redes sociais ou portais (OLX, Webmotors), retorne "".
+5. "score": 
+   - Lojas SEM site próprio -> Score de Oportunidade ALTO (74 a 98).
+   - Lojas COM site próprio -> Score BAIXO (18 a 52).
+
+Retorne um JSON com formato: { "leads": [ { "storeName": "", "phone": "", "email": "", "link": "", "instagram": "", "score": 85 } ] }`
+          },
+          {
+            role: "user",
+            content: JSON.stringify(rawCandidates.slice(0, 25))
+          }
+        ],
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (groqResponse.ok) {
+      const groqData = await groqResponse.json();
+      let content = groqData.choices[0]?.message?.content || "{}";
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      try {
+        const parsed = JSON.parse(content);
+        const extracted = parsed.leads || [];
+        allLeads = extracted.filter((l: any) => l.storeName && isCarDealership(l.storeName) && !isExcludedClient(l.storeName));
+      } catch (e) {
+        console.error("JSON parse error from Groq:", e);
+      }
+    }
+  }
+
+  if (allLeads.length === 0) {
+    allLeads = rawCandidates.slice(0, 15).map(c => {
+      const officialSite = isOfficialWebsite(c.website) ? formatWebsiteUrl(c.website) : "";
+      const phone = c.phone || extractPhoneFromText(c.snippet || "");
+      const email = extractEmailFromText(c.snippet || "");
+      const seed = (c.title || "").split("").reduce((acc: number, ch: string) => acc + ch.charCodeAt(0), 0);
+      
+      return {
+        storeName: c.title,
+        phone: phone,
+        email: email,
+        link: officialSite,
+        instagram: extractInstagramLink(c.snippet || "", c.title, c.website),
+        score: officialSite ? (18 + (seed % 35)) : (74 + (seed % 24))
+      };
+    });
+  }
+
+  const processedLeads = allLeads.map((lead: any) => {
+    const officialSite = isOfficialWebsite(lead.link) ? formatWebsiteUrl(lead.link) : "";
+    let email = lead.email || "";
+    if (!email && officialSite) {
+      email = extractDomainEmail(officialSite, lead.storeName);
+    }
+    if (!officialSite && email.startsWith("contato@")) {
+      email = "";
+    }
+
+    return {
+      id: crypto.randomBytes(4).toString("hex"),
+      storeName: lead.storeName,
+      city: randomCity,
+      email: email,
+      phone: lead.phone || "",
+      score: lead.score || (officialSite ? 28 : 88),
+      status: "Não contatado",
+      link: officialSite,
+      instagram: lead.instagram || "",
+      createdAt: new Date().toISOString()
+    };
+  }).filter((lead: any) => lead.link && lead.link.trim() !== ""); // Filter out leads without a website for LGPD/quality reasons
+
+  const existingLeads = await getLeadsFromDB();
+  const newLeads = processedLeads.filter((pl: any) => !existingLeads.some((el: any) => el.storeName === pl.storeName));
+  const leadsToAdd = newLeads.slice(0, 5); // Limit to 5 new leads per execution
+
+  const updatedLeads = mergeAndDeduplicateLeads([...leadsToAdd, ...existingLeads]);
+  await saveLeadsToDB(updatedLeads);
+  return updatedLeads;
+}
+
 async function startServer() {
 
   // GET leads
@@ -261,198 +440,22 @@ async function startServer() {
   // CRON or Manual Endpoint to Scrape
   app.post("/api/scrape", async (req, res) => {
     try {
-      const serperApiKey = process.env.SERPER_API_KEY || process.env.SERPER;
-      
-      if (!serperApiKey) {
-        return res.status(500).json({ error: "SERPER API key not configured (SERPER or SERPER_API_KEY)" });
-      }
-
-      const regionCities = ["Campinas", "Valinhos", "Vinhedo", "Paulínia", "Sumaré", "Hortolândia", "Indaiatuba", "Americana", "Santa Bárbara d'Oeste", "Nova Odessa", "Jaguariúna"];
-      const randomCity = regionCities[Math.floor(Math.random() * regionCities.length)];
-
-      const query = `concessionárias e lojas de carros seminovos em ${randomCity}`;
-      
-      let placesResults: any[] = [];
-      let organicResults: any[] = [];
-
-      // 1. Fetch Google Places (Google Maps Listings)
-      try {
-        const placesRes = await fetch("https://google.serper.dev/places", {
-          method: "POST",
-          headers: {
-            "X-API-KEY": serperApiKey,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            q: query,
-            gl: "br",
-            hl: "pt-br",
-            num: 20
-          })
-        });
-        if (placesRes.ok) {
-          const pData = await placesRes.json();
-          placesResults = pData.places || [];
-        }
-      } catch (e) {
-        console.warn("Places API search warning:", e);
-      }
-
-      // 2. Fetch Google Organic Search
-      try {
-        const organicRes = await fetch("https://google.serper.dev/search", {
-          method: "POST",
-          headers: {
-            "X-API-KEY": serperApiKey,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            q: query,
-            gl: "br",
-            hl: "pt-br",
-            num: 20
-          })
-        });
-        if (organicRes.ok) {
-          const oData = await organicRes.json();
-          organicResults = oData.organic || [];
-        }
-      } catch (e) {
-        console.warn("Organic API search warning:", e);
-      }
-
-      // Combine candidates and filter out non-dealerships (e.g. reboque, guincho, oficinas)
-      const rawCandidates: any[] = [];
-
-      for (const p of placesResults) {
-        if (isCarDealership(p.title || "", `${p.category || ""} ${p.address || ""}`) && !isExcludedClient(p.title || "")) {
-          rawCandidates.push({
-            title: p.title,
-            address: p.address,
-            phone: p.phoneNumber || "",
-            website: isOfficialWebsite(p.website || "") ? p.website : "",
-            snippet: `${p.category || "Loja de carros"} em ${randomCity}`,
-            source: "places"
-          });
-        }
-      }
-
-      for (const o of organicResults) {
-        if (isCarDealership(o.title || "", o.snippet || "") && !isExcludedClient(o.title || "")) {
-          rawCandidates.push({
-            title: o.title,
-            snippet: o.snippet,
-            website: isOfficialWebsite(o.link || "") ? o.link : "",
-            source: "organic"
-          });
-        }
-      }
-
-      const groqApiKey = process.env.GROQ_API_KEY || process.env.GROQ;
-      let allLeads: any[] = [];
-
-      if (groqApiKey && rawCandidates.length > 0) {
-        const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${groqApiKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-              {
-                role: "system",
-                content: `Você é um analista de inteligência de mercado automotivo.
-Analise a lista de empresas e extraia APENAS LOJAS E CONCESSIONÁRIAS DE CARROS (novos/seminovos).
-
-REGRAS RÍGIDAS DE FILTRAGEM:
-1. DESCARTE QUALQUER empresa de reboque, guincho, oficina mecânica, funilaria, auto peças, despachante, aluguel de carros ou lava-rápido.
-2. DESCARTE as marcas exclusivas: "Unimais", "Meta Veículos", "Azul Veículos".
-3. NÃO INVENTE NENHUM ENDEREÇO DE E-MAIL! Se o e-mail não estiver explicitamente presente ou se a loja não possuir um domínio de site próprio oficial, retorne "".
-4. "link": Retorne APENAS o site oficial próprio da loja (ex: https://www.nomedaloja.com.br). Se for apenas redes sociais ou portais (OLX, Webmotors), retorne "".
-5. "score": 
-   - Lojas SEM site próprio -> Score de Oportunidade ALTO (74 a 98).
-   - Lojas COM site próprio -> Score BAIXO (18 a 52).
-
-Retorne um JSON com formato: { "leads": [ { "storeName": "", "phone": "", "email": "", "link": "", "instagram": "", "score": 85 } ] }`
-              },
-              {
-                role: "user",
-                content: JSON.stringify(rawCandidates.slice(0, 25))
-              }
-            ],
-            response_format: { type: "json_object" }
-          })
-        });
-
-        if (groqResponse.ok) {
-          const groqData = await groqResponse.json();
-          let content = groqData.choices[0]?.message?.content || "{}";
-          content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-          try {
-            const parsed = JSON.parse(content);
-            const extracted = parsed.leads || [];
-            allLeads = extracted.filter((l: any) => l.storeName && isCarDealership(l.storeName) && !isExcludedClient(l.storeName));
-          } catch (e) {
-            console.error("JSON parse error from Groq:", e);
-          }
-        }
-      }
-
-      // Fallback or direct map from rawCandidates if Groq didn't return enough items
-      if (allLeads.length === 0) {
-        allLeads = rawCandidates.slice(0, 15).map(c => {
-          const officialSite = isOfficialWebsite(c.website) ? formatWebsiteUrl(c.website) : "";
-          const phone = c.phone || extractPhoneFromText(c.snippet || "");
-          const email = extractEmailFromText(c.snippet || "");
-          const seed = (c.title || "").split("").reduce((acc: number, ch: string) => acc + ch.charCodeAt(0), 0);
-          
-          return {
-            storeName: c.title,
-            phone: phone,
-            email: email,
-            link: officialSite,
-            instagram: extractInstagramLink(c.snippet || "", c.title, c.website),
-            score: officialSite ? (18 + (seed % 35)) : (74 + (seed % 24))
-          };
-        });
-      }
-
-      // Map to full lead objects
-      const processedLeads = allLeads.map((lead: any) => {
-        const officialSite = isOfficialWebsite(lead.link) ? formatWebsiteUrl(lead.link) : "";
-        let email = lead.email || "";
-        if (!email && officialSite) {
-          email = extractDomainEmail(officialSite, lead.storeName);
-        }
-        if (!officialSite && email.startsWith("contato@")) {
-          email = "";
-        }
-
-        return {
-          id: crypto.randomBytes(4).toString("hex"),
-          storeName: lead.storeName,
-          city: randomCity,
-          email: email,
-          phone: lead.phone || "",
-          score: lead.score || (officialSite ? 28 : 88),
-          status: "Não contatado",
-          link: officialSite,
-          instagram: lead.instagram || "",
-          createdAt: new Date().toISOString()
-        };
-      });
-
-      // Save to DB and filter out existing leads that match excluded names
-      const existingLeads = await getLeadsFromDB();
-      const updatedLeads = mergeAndDeduplicateLeads([...processedLeads, ...existingLeads]);
-      await saveLeadsToDB(updatedLeads);
-
+      const updatedLeads = await performScrape();
       res.json({ success: true, count: updatedLeads.length, leads: updatedLeads });
     } catch (error: any) {
       console.error("Scraping error:", error);
       res.status(500).json({ error: "Failed to scrape data", details: error.message });
+    }
+  });
+
+  // Schedule cron job to run at 6:00, 6:05, 6:10, 6:15, 6:20, 6:25 AM (30 leads total per day)
+  cron.schedule("0,5,10,15,20,25 6 * * *", async () => {
+    try {
+      console.log("Running scheduled scrape job...");
+      await performScrape();
+      console.log("Scrape job completed.");
+    } catch (error) {
+      console.error("Error running scrape job:", error);
     }
   });
 

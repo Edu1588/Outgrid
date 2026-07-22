@@ -25,6 +25,7 @@ import { ApresentacaoComercial } from "./components/ApresentacaoComercial";
 import { Estrategia } from "./components/Estrategia";
 import { Captacao } from "./components/Captacao";
 import { Admin } from "./components/Admin";
+import { LGPDBanner } from "./components/LGPDBanner";
 import { trackPageView } from "./lib/storage";
 
 function smoothScroll(targetY: number, duration: number) {
@@ -143,6 +144,7 @@ export default function App() {
         <Route path="/captacao" element={<Captacao />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
+      <LGPDBanner />
     </BrowserRouter>
   );
 }

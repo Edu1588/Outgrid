@@ -107,7 +107,7 @@ export function Admin() {
 
   const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>(() => {
     const local = getScrapedLeads();
-    return local.filter(l => !isExcluded(l.storeName) && hasWebsite(l));
+    return local.filter(l => !isExcluded(l.storeName));
   });
   
   const [isScraping, setIsScraping] = useState(false);
@@ -179,22 +179,22 @@ export function Admin() {
       const response = await fetch('/api/leads/scraped');
       if (response.ok) {
         const data: ScrapedLead[] = await response.json();
-        const filtered = data.filter(l => !isExcluded(l.storeName) && hasWebsite(l));
+        const filtered = data.filter(l => !isExcluded(l.storeName));
         if (filtered.length > 0) {
           setScrapedLeads(filtered);
           localStorage.setItem('outgrid_scraped_leads', JSON.stringify(filtered));
         } else {
           // If backend returns empty, use local fallback
-          const local = getScrapedLeads().filter(l => !isExcluded(l.storeName) && hasWebsite(l));
+          const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
           setScrapedLeads(local);
         }
       } else {
-        const local = getScrapedLeads().filter(l => !isExcluded(l.storeName) && hasWebsite(l));
+        const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
         setScrapedLeads(local);
       }
     } catch (e) {
       console.error('Error fetching scraped leads', e);
-      const local = getScrapedLeads().filter(l => !isExcluded(l.storeName) && hasWebsite(l));
+      const local = getScrapedLeads().filter(l => !isExcluded(l.storeName));
       setScrapedLeads(local);
     }
   };
@@ -506,7 +506,6 @@ export function Admin() {
     const availableCities = Array.from(new Set(scrapedLeads.map(l => l.city).filter(Boolean))).sort();
 
     const filteredScrapedLeads = scrapedLeads.filter(lead => {
-      if (!hasWebsite(lead)) return false;
       if (prospectSearch.trim()) {
         const q = prospectSearch.toLowerCase();
         const store = (lead.storeName || "").toLowerCase();

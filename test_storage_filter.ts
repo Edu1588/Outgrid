@@ -1,0 +1,14 @@
+import { INITIAL_SCRAPED_LEADS } from './src/lib/initialScrapedLeads';
+
+const parsed = INITIAL_SCRAPED_LEADS;
+const validWithWebsite = parsed.filter(l => l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com'));
+
+const EXCLUDED_CLIENTS = ["unimais", "meta veiculos", "meta veículos", "azul veiculos", "azul veículos", "unimais veiculos", "unimais veículos"];
+function isExcludedClient(storeName: string): boolean {
+  if (!storeName) return false;
+  const lower = storeName.toLowerCase();
+  return EXCLUDED_CLIENTS.some(ex => lower.includes(ex));
+}
+
+const final = validWithWebsite.filter(l => !isExcludedClient(l.storeName));
+console.log(final.length);

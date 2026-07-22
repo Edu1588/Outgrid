@@ -229,6 +229,18 @@ async function getLeadsFromDB() {
     try {
       const { data, error } = await supabaseClient.from('scraped_leads').select('*').order('createdAt', { ascending: false });
       if (!error && data) {
+        if (data.length === 0) {
+          // Seed from local json file
+          try {
+            const localData = await fs.readFile(DATA_FILE, "utf-8");
+            const parsed = JSON.parse(localData);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              const deduped = mergeAndDeduplicateLeads(parsed);
+              await supabaseClient.from('scraped_leads').upsert(deduped, { onConflict: 'id' });
+              return deduped;
+            }
+          } catch(e) {}
+        }
         return mergeAndDeduplicateLeads(data);
       }
     } catch (e) {
@@ -261,7 +273,11 @@ async function saveLeadsToDB(leads) {
     }
   }
 
-  await fs.writeFile(DATA_FILE, JSON.stringify(leads, null, 2), "utf-8");
+  try {
+    await fs.writeFile(DATA_FILE, JSON.stringify(leads, null, 2), "utf-8");
+  } catch (e) {
+    console.error("Failed to write to local fs (expected on Vercel):", e);
+  }
 }
 
 export const app = express();
@@ -269,6 +285,7 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(cors());
+app.options("*", cors());
 
 import cron from "node-cron";
 

@@ -4,5 +4,15 @@
       "path": "/api/scrape",
       "schedule": "0,5,10,15,20,25 6 * * *"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

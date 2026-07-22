@@ -221,27 +221,69 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_A
 let supabaseClient = null;
 if (supabaseUrl && supabaseKey) {
   let url = supabaseUrl;
-  if (!url.startsWith('http')) url = 'https://' + url;
+  if (!url.includes('.')) {
+    url = `https://${url}.supabase.co`;
+  } else if (!url.startsWith('http')) {
+    url = 'https://' + url;
+  }
   supabaseClient = createClient(url, supabaseKey);
+}
+
+// Convert camelCase lead to snake_case db record (safe with missing instagram column)
+function mapLeadToDB(lead: any) {
+  return {
+    id: lead.id,
+    store_name: lead.storeName,
+    city: lead.city || null,
+    email: lead.email || null,
+    phone: lead.phone || null,
+    score: lead.score !== undefined ? lead.score : null,
+    status: lead.status || null,
+    link: lead.link || null,
+    created_at: lead.createdAt || new Date().toISOString()
+  };
+}
+
+// Convert snake_case db record to camelCase lead
+function mapLeadFromDB(dbLead: any) {
+  return {
+    id: dbLead.id,
+    storeName: dbLead.store_name || "",
+    city: dbLead.city || "",
+    email: dbLead.email || "",
+    phone: dbLead.phone || "",
+    score: dbLead.score !== null ? dbLead.score : undefined,
+    status: dbLead.status || "Não contatado",
+    link: dbLead.link || "",
+    instagram: dbLead.instagram || "", // Handles missing instagram column in DB gracefully
+    createdAt: dbLead.created_at || dbLead.createdAt || new Date().toISOString()
+  };
 }
 
 async function getLeadsFromDB() {
   if (supabaseClient) {
     try {
-      const { data, error } = await supabaseClient.from('scraped_leads').select('*').order('createdAt', { ascending: false });
+      const { data, error } = await supabaseClient.from('scraped_leads').select('*').order('created_at', { ascending: false });
       if (!error && data) {
-        if (data.length < 30) {
+        const mappedData = data.map(mapLeadFromDB);
+        if (mappedData.length < 30) {
           // Seed from local json file
           try {
             const parsed = initialLeadsData;
             if (Array.isArray(parsed) && parsed.length > 0) {
               const deduped = mergeAndDeduplicateLeads(parsed);
-              await supabaseClient.from('scraped_leads').upsert(deduped, { onConflict: 'id' });
+              const mappedSeed = deduped.map(mapLeadToDB);
+              await supabaseClient.from('scraped_leads').upsert(mappedSeed, { onConflict: 'id' });
               return deduped;
             }
-          } catch(e) {}
+          } catch(e) {
+            console.error("Failed to seed to Supabase:", e);
+          }
         }
-        console.log("Returned from Supabase"); return mergeAndDeduplicateLeads(data);
+        console.log("Returned from Supabase");
+        return mergeAndDeduplicateLeads(mappedData);
+      } else {
+        console.error("Supabase select error:", error);
       }
     } catch (e) {
       console.error("Supabase getLeads error:", e);
@@ -252,7 +294,8 @@ async function getLeadsFromDB() {
     const data = await fs.readFile(DATA_FILE, "utf-8");
     const parsed = JSON.parse(data);
     if (Array.isArray(parsed)) {
-      console.log("Returned from fs.readFile"); return mergeAndDeduplicateLeads(parsed);
+      console.log("Returned from fs.readFile");
+      return mergeAndDeduplicateLeads(parsed);
     }
     return [];
   } catch (error) {
@@ -263,8 +306,9 @@ async function getLeadsFromDB() {
 async function saveLeadsToDB(leads) {
   if (supabaseClient && leads && leads.length > 0) {
     try {
-      // Upsert leads based on 'id'
-      const { error } = await supabaseClient.from('scraped_leads').upsert(leads, { onConflict: 'id' });
+      // Upsert leads based on 'id' after converting to snake_case
+      const mappedLeads = leads.map(mapLeadToDB);
+      const { error } = await supabaseClient.from('scraped_leads').upsert(mappedLeads, { onConflict: 'id' });
       if (error) {
         console.error("Supabase upsert error:", error);
       }
@@ -495,8 +539,8 @@ async function startServer() {
     }
   });
 
-  // CRON or Manual Endpoint to Scrape
-  app.post("/api/scrape", async (req, res) => {
+  // CRON or Manual Endpoint to Scrape (Supports GET for Vercel Crons and POST for Manual Triggers)
+  app.all("/api/scrape", async (req, res) => {
     try {
       const updatedLeads = await performScrape();
       res.json({ success: true, count: updatedLeads.length, leads: updatedLeads });

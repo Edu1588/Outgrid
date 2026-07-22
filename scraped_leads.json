@@ -1,27 +1,243 @@
 [
   {
-    "id": "76e58401",
-    "storeName": "1º Opção Veículos",
-    "city": "Hortolândia",
-    "phone": "(19) 99899-4912",
-    "email": "vendas@1opcaoveiculos.com.br",
-    "link": "https://1opcaoveiculos.com.br/",
+    "id": "d49f83ca",
+    "storeName": "Car Champions Multimarcas",
+    "city": "Valinhos",
+    "phone": "(19) 3299-3837",
+    "email": "contato@carchampions.com",
+    "link": "https://carchampions.com.br/",
     "instagram": "",
     "status": "Não contatado",
-    "score": 35,
-    "createdAt": "2026-07-22T13:28:09.000Z"
+    "score": 29,
+    "createdAt": "2026-07-22T15:33:55.008Z"
   },
   {
-    "id": "d6b7493d",
-    "storeName": "Dacar Multimarcas",
-    "city": "Hortolândia",
-    "phone": "(19) 99484-6880",
-    "email": "contato@grupodacarmultimarcas.com.br",
-    "link": "https://grupodacarmultimarcas.com.br/",
+    "id": "e501f173",
+    "storeName": "Fiat SIM",
+    "city": "Valinhos",
+    "phone": "",
+    "email": "contato@fiatsim.com.br",
+    "link": "https://www.fiatsim.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 41,
+    "createdAt": "2026-07-22T15:33:55.008Z"
+  },
+  {
+    "id": "9743209a",
+    "storeName": "Pantera Veículos",
+    "city": "Nova Odessa",
+    "phone": "(19) 3466-2917",
+    "email": "contato@panteraveiculos.com.br",
+    "link": "https://www.panteraveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 39,
+    "createdAt": "2026-07-22T15:25:26.571+00:00"
+  },
+  {
+    "id": "8217405d",
+    "storeName": "Fiat Valverde Jaguariúna",
+    "city": "Jaguariúna",
+    "phone": "(19) 3847-7777",
+    "email": "contato@fiatvalverde.com.br",
+    "link": "https://www.fiatvalverde.com.br/fiat-valverde-jaguariuna/seminovos",
     "instagram": "",
     "status": "Não contatado",
     "score": 25,
-    "createdAt": "2026-07-22T13:28:09.001Z"
+    "createdAt": "2026-07-22T15:25:18.939+00:00"
+  },
+  {
+    "id": "5f6f6e63",
+    "storeName": "Família Veículos",
+    "city": "Jaguariúna",
+    "phone": "(19) 99855-4141",
+    "email": "contato@familiaveiculos.com.br",
+    "link": "https://www.familiaveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 27,
+    "createdAt": "2026-07-22T15:25:18.939+00:00"
+  },
+  {
+    "id": "faab8ec0",
+    "storeName": "Forza Motors — Seminovos em Paulínia",
+    "city": "Paulínia",
+    "phone": "(19) 2221-5570",
+    "email": "contato@forzamotor.com.br",
+    "link": "https://forzamotor.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 52,
+    "createdAt": "2026-07-22T15:25:12.399+00:00"
+  },
+  {
+    "id": "a59595ee",
+    "storeName": "Vendas de Carros Chevrolet 0km e Seminovos em Paulínia | Automec",
+    "city": "Paulínia",
+    "phone": "",
+    "email": "contato@automecchevrolet.com.br",
+    "link": "https://www.automecchevrolet.com.br/automec-paulinia",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 52,
+    "createdAt": "2026-07-22T15:25:12.399+00:00"
+  },
+  {
+    "id": "13bf264f",
+    "storeName": "Autodon Paulínia -",
+    "city": "Paulínia",
+    "phone": "(19) 3363-4000",
+    "email": "autodon@terra.com.br",
+    "link": "https://autodon.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 23,
+    "createdAt": "2026-07-22T15:25:12.399+00:00"
+  },
+  {
+    "id": "df132e05",
+    "storeName": "Azzurra Veículos | Na Azzurra Veículos você compra carros novos ...",
+    "city": "Paulínia",
+    "phone": "",
+    "email": "contato@azzurraveiculos.com.br",
+    "link": "https://www.azzurraveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 29,
+    "createdAt": "2026-07-22T15:25:12.399+00:00"
+  },
+  {
+    "id": "4b0ee5c5",
+    "storeName": "Vivas Car",
+    "city": "Jaguariúna",
+    "phone": "",
+    "email": "contato@vivacarjaguariuna.com.br",
+    "link": "https://vivacarjaguariuna.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 30,
+    "createdAt": "2026-07-22T15:25:04.894+00:00"
+  },
+  {
+    "id": "d45e8456",
+    "storeName": "Point Car Multimarcas",
+    "city": "Jaguariúna",
+    "phone": "(19) 3837-3888",
+    "email": "contato@pointcarjaguariuna.com.br",
+    "link": "https://pointcarjaguariuna.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 30,
+    "createdAt": "2026-07-22T15:25:04.894+00:00"
+  },
+  {
+    "id": "1e791a70",
+    "storeName": "Selecting Cars Veiculos Seminovos Jaguariuna",
+    "city": "Jaguariúna",
+    "phone": "(19) 99899-7047",
+    "email": "contato@selectingcars.com.br",
+    "link": "https://selectingcars.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 30,
+    "createdAt": "2026-07-22T15:25:04.894+00:00"
+  },
+  {
+    "id": "8dcb5482",
+    "storeName": "Carros Seminovos à venda em Campinas | Chevrolet Dahruj",
+    "city": "Campinas",
+    "phone": "",
+    "email": "contato@dahrujchevrolet.com.br",
+    "link": "https://www.dahrujchevrolet.com.br/seminovos",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 18,
+    "createdAt": "2026-07-22T15:24:46.45+00:00"
+  },
+  {
+    "id": "359708d9",
+    "storeName": "Estoque Seminovos | Campinas",
+    "city": "Campinas",
+    "phone": "",
+    "email": "contato@forte-fiat.com.br",
+    "link": "https://www.forte-fiat.com.br/seminovos",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 32,
+    "createdAt": "2026-07-22T15:24:46.45+00:00"
+  },
+  {
+    "id": "956c38b1",
+    "storeName": "Fiat Valverde Campinas | Home | Concessionária Fiat",
+    "city": "Campinas",
+    "phone": "",
+    "email": "contato@fiatvalverde.com.br",
+    "link": "https://www.fiatvalverde.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 19,
+    "createdAt": "2026-07-22T15:24:46.45+00:00"
+  },
+  {
+    "id": "fc314c04",
+    "storeName": "Átria Veículos | Carros Seminovos e Usados em Campinas SP",
+    "city": "Campinas",
+    "phone": "",
+    "email": "contato@atriaveiculos.com.br",
+    "link": "https://www.atriaveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 24,
+    "createdAt": "2026-07-22T15:24:46.45+00:00"
+  },
+  {
+    "id": "7099c064",
+    "storeName": "Sim Seminovos: Seminovos com Garantia em Campinas",
+    "city": "Campinas",
+    "phone": "",
+    "email": "contato@simseminovos.com.br",
+    "link": "https://www.simseminovos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 22,
+    "createdAt": "2026-07-22T15:24:46.45+00:00"
+  },
+  {
+    "id": "98f18a0f",
+    "storeName": "Família Veículos - Jaguariúna",
+    "city": "Jaguariúna",
+    "phone": "",
+    "email": "contato@familiaveiculos.com.br",
+    "link": "https://www.familiaveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 40,
+    "createdAt": "2026-07-22T15:24:09.156+00:00"
+  },
+  {
+    "id": "c75dbf29",
+    "storeName": "Vivas Car: Início",
+    "city": "Jaguariúna",
+    "phone": "",
+    "email": "contato@vivacarjaguariuna.com.br",
+    "link": "https://vivacarjaguariuna.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 29,
+    "createdAt": "2026-07-22T15:24:09.156+00:00"
+  },
+  {
+    "id": "9f3afe28",
+    "storeName": "Point Car Multimarcas - Nosso Estoque",
+    "city": "Jaguariúna",
+    "phone": "",
+    "email": "contato@pointcarjaguariuna.com.br",
+    "link": "https://pointcarjaguariuna.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 19,
+    "createdAt": "2026-07-22T15:24:09.155+00:00"
   },
   {
     "id": "408b9284",
@@ -33,19 +249,19 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 30,
-    "createdAt": "2026-07-22T13:28:09.001Z"
+    "createdAt": "2026-07-22T13:28:09.001+00:00"
   },
   {
-    "id": "e48776f2",
-    "storeName": "Neri Veículos Hortolândia",
+    "id": "d6b7493d",
+    "storeName": "Dacar Multimarcas",
     "city": "Hortolândia",
-    "phone": "(19) 3833-2463",
-    "email": "contato@neriveiculoshortolandia.com.br",
-    "link": "https://neriveiculoshortolandia.com.br/",
+    "phone": "(19) 99484-6880",
+    "email": "contato@grupodacarmultimarcas.com.br",
+    "link": "https://grupodacarmultimarcas.com.br/",
     "instagram": "",
     "status": "Não contatado",
-    "score": 40,
-    "createdAt": "2026-07-22T13:28:09.001Z"
+    "score": 25,
+    "createdAt": "2026-07-22T13:28:09.001+00:00"
   },
   {
     "id": "68560883",
@@ -57,31 +273,31 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 46,
-    "createdAt": "2026-07-22T13:28:09.001Z"
+    "createdAt": "2026-07-22T13:28:09.001+00:00"
   },
   {
-    "id": "0498c89d",
-    "storeName": "NOVA ODESSA VEICULOS LTDA",
-    "city": "Nova Odessa",
-    "phone": "",
-    "email": "contato@noveiculos.com.br",
-    "link": "https://noveiculos.com.br/",
+    "id": "e48776f2",
+    "storeName": "Neri Veículos Hortolândia",
+    "city": "Hortolândia",
+    "phone": "(19) 3833-2463",
+    "email": "contato@neriveiculoshortolandia.com.br",
+    "link": "https://neriveiculoshortolandia.com.br/",
     "instagram": "",
     "status": "Não contatado",
-    "score": 28,
-    "createdAt": "2026-07-22T13:27:59.972Z"
+    "score": 40,
+    "createdAt": "2026-07-22T13:28:09.001+00:00"
   },
   {
-    "id": "3f1c0afd",
-    "storeName": "Neris Automóveis",
-    "city": "Nova Odessa",
-    "phone": "(19) 2210-4128",
-    "email": "contato@nerisautomoveis.com.br",
-    "link": "https://nerisautomoveis.com.br/",
+    "id": "76e58401",
+    "storeName": "1º Opção Veículos",
+    "city": "Hortolândia",
+    "phone": "(19) 99899-4912",
+    "email": "vendas@1opcaoveiculos.com.br",
+    "link": "https://1opcaoveiculos.com.br/",
     "instagram": "",
     "status": "Não contatado",
-    "score": 32,
-    "createdAt": "2026-07-22T13:27:59.972Z"
+    "score": 35,
+    "createdAt": "2026-07-22T13:28:09+00:00"
   },
   {
     "id": "9fdfc1e0",
@@ -93,7 +309,19 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 22,
-    "createdAt": "2026-07-22T13:27:59.972Z"
+    "createdAt": "2026-07-22T13:27:59.972+00:00"
+  },
+  {
+    "id": "3f1c0afd",
+    "storeName": "Neris Automóveis",
+    "city": "Nova Odessa",
+    "phone": "(19) 2210-4128",
+    "email": "contato@nerisautomoveis.com.br",
+    "link": "https://nerisautomoveis.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 32,
+    "createdAt": "2026-07-22T13:27:59.972+00:00"
   },
   {
     "id": "36268a6e",
@@ -105,7 +333,19 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 25,
-    "createdAt": "2026-07-22T13:27:59.972Z"
+    "createdAt": "2026-07-22T13:27:59.972+00:00"
+  },
+  {
+    "id": "0498c89d",
+    "storeName": "NOVA ODESSA VEICULOS LTDA",
+    "city": "Nova Odessa",
+    "phone": "",
+    "email": "contato@noveiculos.com.br",
+    "link": "https://noveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 28,
+    "createdAt": "2026-07-22T13:27:59.972+00:00"
   },
   {
     "id": "66053669",
@@ -114,10 +354,10 @@
     "phone": "(19) 99209-5626",
     "email": "contato@zacarveiculos.com.br",
     "link": "https://zacarveiculos.com.br/",
-    "instagram": "https://www.instagram.com/zacarveiculos",
+    "instagram": "",
     "status": "Não contatado",
     "score": 24,
-    "createdAt": "2026-07-22T13:07:14.459Z"
+    "createdAt": "2026-07-22T13:07:14.459+00:00"
   },
   {
     "id": "b929b6fb",
@@ -129,43 +369,7 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 26,
-    "createdAt": "2026-07-22T13:07:14.459Z"
-  },
-  {
-    "id": "df84a6e8",
-    "storeName": "Sim Seminovos",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "contato@simseminovos.com.br",
-    "link": "https://www.simseminovos.com.br/",
-    "instagram": "",
-    "status": "Não contatado",
-    "score": 32,
-    "createdAt": "2026-07-22T12:36:32.807Z"
-  },
-  {
-    "id": "a397cb33",
-    "storeName": "Chevrolet Codive",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "contato@codivechevroletvalinhos.com.br",
-    "link": "https://www.codivechevroletvalinhos.com.br/seminovos",
-    "instagram": "",
-    "status": "Não contatado",
-    "score": 28,
-    "createdAt": "2026-07-22T12:36:32.808Z"
-  },
-  {
-    "id": "c58453d9",
-    "storeName": "Sandro Veiculos",
-    "city": "Valinhos",
-    "phone": "(19) 3869-5446",
-    "email": "sandroveiculosvalinhos@gmail.com",
-    "link": "https://sandroveiculosvalinhos.com.br/",
-    "instagram": "https://www.instagram.com/sandroveiculos",
-    "status": "Não contatado",
-    "score": 41,
-    "createdAt": "2026-07-22T12:36:32.808Z"
+    "createdAt": "2026-07-22T13:07:14.459+00:00"
   },
   {
     "id": "0a0481f9",
@@ -177,7 +381,7 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 35,
-    "createdAt": "2026-07-22T12:36:32.808Z"
+    "createdAt": "2026-07-22T12:36:32.808+00:00"
   },
   {
     "id": "3035293e",
@@ -189,67 +393,43 @@
     "instagram": "",
     "status": "Não contatado",
     "score": 39,
-    "createdAt": "2026-07-22T12:36:32.808Z"
+    "createdAt": "2026-07-22T12:36:32.808+00:00"
   },
   {
-    "id": "0cb840e5",
-    "storeName": "Forza Motors",
-    "city": "Paulínia",
-    "phone": "(19) 2221-5570",
-    "email": "contato@forzamotor.com.br",
-    "link": "https://forzamotor.com.br/",
-    "instagram": "https://www.instagram.com/forzamotors",
+    "id": "c58453d9",
+    "storeName": "Sandro Veiculos",
+    "city": "Valinhos",
+    "phone": "(19) 3869-5446",
+    "email": "sandroveiculosvalinhos@gmail.com",
+    "link": "https://sandroveiculosvalinhos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 41,
+    "createdAt": "2026-07-22T12:36:32.808+00:00"
+  },
+  {
+    "id": "a397cb33",
+    "storeName": "Chevrolet Codive",
+    "city": "Valinhos",
+    "phone": "",
+    "email": "contato@codivechevroletvalinhos.com.br",
+    "link": "https://www.codivechevroletvalinhos.com.br/seminovos",
+    "instagram": "",
     "status": "Não contatado",
     "score": 28,
-    "createdAt": "2026-07-21T18:51:02.047Z"
+    "createdAt": "2026-07-22T12:36:32.808+00:00"
   },
   {
-    "id": "c751752f",
-    "storeName": "Luvicar Veículos",
-    "city": "Paulínia",
-    "phone": "(19) 3217-3287",
-    "email": "contato@luvicar.com.br",
-    "link": "https://luvicar.com.br/",
-    "instagram": "https://www.instagram.com/luvicarveiculos",
-    "status": "Não contatado",
-    "score": 34,
-    "createdAt": "2026-07-21T18:51:02.048Z"
-  },
-  {
-    "id": "f5507951",
-    "storeName": "Azzurra Veículos",
-    "city": "Paulínia",
+    "id": "df84a6e8",
+    "storeName": "Sim Seminovos",
+    "city": "Valinhos",
     "phone": "",
-    "email": "contato@azzurraveiculos.com.br",
-    "link": "https://www.azzurraveiculos.com.br/",
-    "instagram": "https://www.instagram.com/azzurraveiculos",
+    "email": "contato@simseminovos.com.br",
+    "link": "https://www.simseminovos.com.br/",
+    "instagram": "",
     "status": "Não contatado",
-    "score": 23,
-    "createdAt": "2026-07-21T18:51:02.048Z"
-  },
-  {
-    "id": "9e9af0f4",
-    "storeName": "Waguinho Veículos",
-    "city": "Paulínia",
-    "phone": "(19) 3844-0297",
-    "email": "contato@waguinhoveiculos.com.br",
-    "link": "https://waguinhoveiculos.com.br/",
-    "instagram": "https://www.instagram.com/waguinhoveiculos",
-    "status": "Não contatado",
-    "score": 45,
-    "createdAt": "2026-07-21T18:51:02.048Z"
-  },
-  {
-    "id": "3cecd31c",
-    "storeName": "Autodon",
-    "city": "Paulínia",
-    "phone": "",
-    "email": "contato@autodon.com.br",
-    "link": "https://autodon.com.br/",
-    "instagram": "https://www.instagram.com/autodon",
-    "status": "Não contatado",
-    "score": 23,
-    "createdAt": "2026-07-21T18:51:02.049Z"
+    "score": 32,
+    "createdAt": "2026-07-22T12:36:32.807+00:00"
   },
   {
     "id": "8bc7f2b2",
@@ -258,10 +438,22 @@
     "phone": "(19) 99927-7685",
     "email": "contato@abaveiculos.com.br",
     "link": "https://abaveiculos.com.br/",
-    "instagram": "https://www.instagram.com/abaveiculos",
+    "instagram": "",
     "status": "Não contatado",
     "score": 23,
-    "createdAt": "2026-07-21T18:51:02.049Z"
+    "createdAt": "2026-07-21T18:51:02.049+00:00"
+  },
+  {
+    "id": "3cecd31c",
+    "storeName": "Autodon",
+    "city": "Paulínia",
+    "phone": "",
+    "email": "contato@autodon.com.br",
+    "link": "https://autodon.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 23,
+    "createdAt": "2026-07-21T18:51:02.049+00:00"
   },
   {
     "id": "bf74b749",
@@ -270,10 +462,58 @@
     "phone": "",
     "email": "contato@ricavelmultimarcas.com",
     "link": "https://ricavelmultimarcas.com/",
-    "instagram": "https://www.instagram.com/ricavelmultimarcas",
+    "instagram": "",
     "status": "Não contatado",
     "score": 40,
-    "createdAt": "2026-07-21T18:51:02.049Z"
+    "createdAt": "2026-07-21T18:51:02.049+00:00"
+  },
+  {
+    "id": "f5507951",
+    "storeName": "Azzurra Veículos",
+    "city": "Paulínia",
+    "phone": "",
+    "email": "contato@azzurraveiculos.com.br",
+    "link": "https://www.azzurraveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 23,
+    "createdAt": "2026-07-21T18:51:02.048+00:00"
+  },
+  {
+    "id": "9e9af0f4",
+    "storeName": "Waguinho Veículos",
+    "city": "Paulínia",
+    "phone": "(19) 3844-0297",
+    "email": "contato@waguinhoveiculos.com.br",
+    "link": "https://waguinhoveiculos.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 45,
+    "createdAt": "2026-07-21T18:51:02.048+00:00"
+  },
+  {
+    "id": "c751752f",
+    "storeName": "Luvicar Veículos",
+    "city": "Paulínia",
+    "phone": "(19) 3217-3287",
+    "email": "contato@luvicar.com.br",
+    "link": "https://luvicar.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 34,
+    "createdAt": "2026-07-21T18:51:02.048+00:00"
+  },
+  {
+    "id": "0cb840e5",
+    "storeName": "Forza Motors",
+    "city": "Paulínia",
+    "phone": "(19) 2221-5570",
+    "email": "contato@forzamotor.com.br",
+    "link": "https://forzamotor.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 28,
+    "createdAt": "2026-07-21T18:51:02.047+00:00"
   },
   {
     "id": "72d15cfb",
@@ -282,22 +522,10 @@
     "phone": "",
     "email": "contato@codivechevroletvalinhos.com.br",
     "link": "https://www.codivechevroletvalinhos.com.br/",
-    "instagram": "https://www.instagram.com/concessionariacodive",
+    "instagram": "",
     "status": "Não contatado",
     "score": 25,
-    "createdAt": "2026-07-21T18:06:56.875Z"
-  },
-  {
-    "id": "d82751d4",
-    "storeName": "Destaque Motors",
-    "city": "Valinhos",
-    "phone": "",
-    "email": "contato@destaquemotors.com.br",
-    "link": "https://destaquemotors.com.br/",
-    "instagram": "https://www.instagram.com/destaquemotors",
-    "status": "Não contatado",
-    "score": 26,
-    "createdAt": "2026-07-21T18:06:56.875Z"
+    "createdAt": "2026-07-21T18:06:56.875+00:00"
   },
   {
     "id": "f6d64644",
@@ -306,46 +534,22 @@
     "phone": "(19) 3869-2066",
     "email": "contato@fontcarveiculos.com.br",
     "link": "https://fontcarveiculos.com.br/",
-    "instagram": "https://www.instagram.com/fontcarveiculos",
+    "instagram": "",
     "status": "Não contatado",
     "score": 28,
-    "createdAt": "2026-07-21T18:06:56.875Z"
+    "createdAt": "2026-07-21T18:06:56.875+00:00"
   },
   {
-    "id": "e31701d8",
-    "storeName": "Alvorada Automóveis",
-    "city": "Nova Odessa",
-    "phone": "(19) 2221-7298",
-    "email": "atendimento@alvoradaautomoveisno.com.br",
-    "link": "https://alvoradaautomoveisno.com.br/",
-    "instagram": "https://www.instagram.com/alvorada_automoveis/",
-    "status": "Não contatado",
-    "score": 23,
-    "createdAt": "2026-07-21T18:05:17.062Z"
-  },
-  {
-    "id": "ee968c28",
-    "storeName": "Pantera Veículos",
-    "city": "Nova Odessa",
-    "phone": "(19)3466-2917",
-    "email": "contato@panteraveiculos.com.br",
-    "link": "https://www.panteraveiculos.com.br/",
-    "instagram": "https://www.instagram.com/pantera.veiculos/",
-    "status": "Não contatado",
-    "score": 38,
-    "createdAt": "2026-07-21T18:05:17.062Z"
-  },
-  {
-    "id": "ab66cfbd",
-    "storeName": "Nova Odessa Veículos",
-    "city": "Nova Odessa",
+    "id": "d82751d4",
+    "storeName": "Destaque Motors",
+    "city": "Valinhos",
     "phone": "",
-    "email": "contato@noveiculos.com.br",
-    "link": "https://noveiculos.com.br/",
-    "instagram": "https://www.instagram.com/novaodessaveiculos",
+    "email": "contato@destaquemotors.com.br",
+    "link": "https://destaquemotors.com.br/",
+    "instagram": "",
     "status": "Não contatado",
-    "score": 36,
-    "createdAt": "2026-07-21T18:05:17.062Z"
+    "score": 26,
+    "createdAt": "2026-07-21T18:06:56.875+00:00"
   },
   {
     "id": "0cf929df",
@@ -354,10 +558,10 @@
     "phone": "(19) 3829-8000",
     "email": "contato@vessachevrolet.com.br",
     "link": "https://www.vessachevrolet.com.br/",
-    "instagram": "https://www.instagram.com/vessa.veiculos/",
+    "instagram": "",
     "status": "Não contatado",
     "score": 44,
-    "createdAt": "2026-07-21T18:05:17.063Z"
+    "createdAt": "2026-07-21T18:05:17.063+00:00"
   },
   {
     "id": "1c6012a2",
@@ -366,22 +570,34 @@
     "phone": "",
     "email": "contato@paschoalinmotors.com.br",
     "link": "https://paschoalinmotors.com.br/",
-    "instagram": "https://www.instagram.com/paschoalinmotors",
+    "instagram": "",
     "status": "Não contatado",
     "score": 38,
-    "createdAt": "2026-07-21T18:05:17.063Z"
+    "createdAt": "2026-07-21T18:05:17.063+00:00"
   },
   {
-    "id": "f129a9a2",
-    "storeName": "Neri Veiculos",
-    "city": "Hortolândia",
+    "id": "e31701d8",
+    "storeName": "Alvorada Automóveis",
+    "city": "Nova Odessa",
+    "phone": "(19) 2221-7298",
+    "email": "atendimento@alvoradaautomoveisno.com.br",
+    "link": "https://alvoradaautomoveisno.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 23,
+    "createdAt": "2026-07-21T18:05:17.062+00:00"
+  },
+  {
+    "id": "ab66cfbd",
+    "storeName": "Nova Odessa Veículos",
+    "city": "Nova Odessa",
     "phone": "",
-    "email": "contato@neriveiculoshortolandia.com.br",
-    "link": "https://neriveiculoshortolandia.com.br/",
-    "instagram": "https://www.instagram.com/neriveiculos_hortolandia/",
+    "email": "contato@noveiculos.com.br",
+    "link": "https://noveiculos.com.br/",
+    "instagram": "",
     "status": "Não contatado",
     "score": 36,
-    "createdAt": "2026-07-21T18:02:58.484Z"
+    "createdAt": "2026-07-21T18:05:17.062+00:00"
   },
   {
     "id": "1595ad8b",
@@ -390,9 +606,21 @@
     "phone": "",
     "email": "contato@a3veiculosoficial.com.br",
     "link": "https://a3veiculosoficial.com.br/",
-    "instagram": "https://www.instagram.com/a3veiculos",
+    "instagram": "",
     "status": "Não contatado",
     "score": 23,
-    "createdAt": "2026-07-21T18:02:58.484Z"
+    "createdAt": "2026-07-21T18:02:58.484+00:00"
+  },
+  {
+    "id": "f129a9a2",
+    "storeName": "Neri Veiculos",
+    "city": "Hortolândia",
+    "phone": "",
+    "email": "contato@neriveiculoshortolandia.com.br",
+    "link": "https://neriveiculoshortolandia.com.br/",
+    "instagram": "",
+    "status": "Não contatado",
+    "score": 36,
+    "createdAt": "2026-07-21T18:02:58.484+00:00"
   }
 ]

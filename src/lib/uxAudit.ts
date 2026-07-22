@@ -39,23 +39,23 @@ const speedProblems = [
   }
 ];
 
-// 2. Clareza de Informações do Veículo & Transparência
+// 2. Ficha Técnica e Destaque Visual do Veículo
 const infoProblems = [
   {
-    problem: "Omissão de preços e parcelas estimadas em vários carros, exibindo 'Consulte o Preço' e gerando abandono imediato.",
-    howItShouldBe: "Exibir o valor à vista em destaque, estimativa de parcela inicial e selo de laudo cautelar aprovado."
+    problem: "Falta de simulação de parcelas e calculadora de financiamento direto no anúncio do carro.",
+    howItShouldBe: "Exibir o valor à vista e estimativa de parcela inicial para facilitar a decisão do comprador."
   },
   {
-    problem: "Informações essenciais como Quilometragem (KM), Ano/Modelo e Opcionais estão escondidas ou em letras muito pequenas.",
-    howItShouldBe: "Organizar ficha técnica do seminovo em ícones claros de leitura rápida: Ano, KM, Combustível e Câmbio."
+    problem: "Informações de opcionais e laudo cautelar em blocos de texto denso ao invés de ícones dinâmicos.",
+    howItShouldBe: "Organizar ficha técnica do seminovo em ícones visuais de rápida leitura: Ano, KM, Combustível e Câmbio."
   },
   {
-    problem: "Falta de detalhes sobre garantia de motor/câmbio e procedência do veículo no card da vitrine.",
-    howItShouldBe: "Adicionar badges visuais no card indicando 'Único Dono', 'Laudo Cautelar 100%' e 'Garantia da Loja'."
+    problem: "Ausência de selos em destaque para laudo cautelar aprovado e garantia de procedência na vitrine.",
+    howItShouldBe: "Adicionar badges visuais no card indicando 'Único Dono', 'Laudo Cautelar 100%' e 'Garantia de Loja'."
   },
   {
-    problem: "Inconsistência nas fotos da vitrine, com ângulos escuros e falta de padrão na ordem das imagens do interior do carro.",
-    howItShouldBe: "Padronizar sequência da galeria: 1ª Foto Frente 3/4, 2ª Traseira, 3ª Painel/KM, 4ª Bancos, com fundo limpo."
+    problem: "Sequência de fotos do veículo no mobile sem padrão definido de navegação rápida.",
+    howItShouldBe: "Padronizar sequência da galeria: 1ª Foto Frente 3/4, 2ª Traseira, 3ª Painel/KM, 4ª Bancos."
   }
 ];
 
@@ -122,37 +122,37 @@ const locationProblems = [
 // Specific Store Custom Overrides for precise realistic diagnostics
 const STORE_CUSTOM_AUDITS: Record<string, Partial<UXAuditReport>> = {
   "fontcarveiculos.com.br": {
-    resumoExecutivo: "A auditoria do portal Font Car Veículos (fontcarveiculos.com.br) identificou que o tempo de carregamento no mobile atinge 4.2 segundos devido a imagens não comprimidas. Além disso, o botão de WhatsApp não envia o veículo de interesse pré-preenchido e o preço de vários modelos está oculto, gerando perda estimada de 32% a 46% dos leads qualificados.",
+    resumoExecutivo: "A auditoria do portal Font Car Veículos (fontcarveiculos.com.br) identificou oportunidades de aceleração de carregamento no mobile e otimização do botão de WhatsApp para incluir dados do veículo de interesse automaticamente.",
     pillars: {
       identidadeVisual: {
-        title: "1. Velocidade do Site e Desempenho Mobile",
+        title: "1. Velocidade do Site e Otimização Mobile",
         score: 28,
-        problem: "Tempo de carregamento inicial de 4.2s no mobile com imagens em alta resolução sem otimização WebP.",
-        howItShouldBe: "Comprimir galeria de fotos para WebP progressivo e aplicar lazy-loading para atingir carregamento em 1.2s."
+        problem: "Tempo de carregamento inicial no mobile acima do ideal com imagens de estoque sem otimização WebP.",
+        howItShouldBe: "Comprimir galeria de fotos para WebP progressivo e aplicar lazy-loading para acelerar a vitrine."
       },
       heuristicasNielsen: {
-        title: "2. Clareza de Preço, KM e Informações",
+        title: "2. Ficha Técnica e Destaque Visual do Veículo",
         score: 35,
-        problem: "Omissão de preços em diversos veículos do catálogo com a frase 'Consulte valor', gerando desconfiança.",
-        howItShouldBe: "Exibir o valor à vista transparente e a estimativa da parcela de financiamento em todos os seminovos."
+        problem: "Falta de simulação de parcelas e calculadora de financiamento estimada nos cards de veículos.",
+        howItShouldBe: "Exibir estimativa de entrada e parcelas de financiamento direto nos detalhes do anúncio."
       },
       viesesCognitivos: {
-        title: "3. Botões Nítidos de Contato e WhatsApp",
+        title: "3. Conversão Direta via WhatsApp & CTA",
         score: 30,
-        problem: "Botão de WhatsApp no card do carro abre conversa em branco sem especificar o modelo de interesse do cliente.",
-        howItShouldBe: "Configurar o link do WhatsApp para enviar mensagem pré-formatada com a marca, ano e código do veículo."
+        problem: "Botão de WhatsApp abre conversa genérica sem especificar o veículo de interesse do comprador.",
+        howItShouldBe: "Configurar link do WhatsApp para enviar mensagem pré-formatada com modelo e código do veículo."
       },
       arquiteturaInformacao: {
-        title: "4. Formulário e Captação de Lead",
+        title: "4. Captação de Lead e Formulários",
         score: 42,
-        problem: "Formulário de proposta no site exige dados demorados antes de mostrar a ficha técnica completa do carro.",
-        howItShouldBe: "Reduzir a captura de lead para 2 campos simples (Nome e WhatsApp com máscara automática de DDD)."
+        problem: "Formulário de proposta no site exige dados demorados antes de liberar o atendimento comercial.",
+        howItShouldBe: "Reduzir a captura de lead para 2 campos simples (Nome e WhatsApp com máscara automática)."
       },
       acessibilidade: {
-        title: "5. Visibilidade de Telefone, E-mail e Endereço",
+        title: "5. SEO Local, Telefone e Localização",
         score: 38,
-        problem: "Telefone e e-mail da loja ficam escondidos apenas no rodapé, sem botão de discagem rápida no topo mobile.",
-        howItShouldBe: "Inserir barra fixa no topo mobile com clique direto para ligar no fixo/WhatsApp e e-mail da loja."
+        problem: "Telefone e e-mail da loja ficam restritos ao rodapé sem atalho de discagem no topo mobile.",
+        howItShouldBe: "Inserir barra fixa no topo mobile com clique direto para ligar no fixo/WhatsApp e e-mail."
       }
     }
   },
@@ -316,12 +316,10 @@ export function generateUXAuditReport(storeName: string, url: string, baseScore:
   const locationScore = Math.max(24, Math.min(70, score - 3 + ((seed >> 8) % 11)));
 
   // Estimated lead loss calculation
-  const lossMin = 26 + (seed % 10);
+  const lossMin = 22 + (seed % 10);
   const lossMax = lossMin + 12 + (seed % 8);
 
-  const primaryIssue = ctaProblems[ctaIdx].problem.split(' e ')[0];
-
-  const executiveSummary = `A auditoria de UX do portal de ${storeName} (${cleanDomain || 'site oficial'}) identificou pontos críticos na jornada de conversão. O principal gargalo na captura de clientes é: "${primaryIssue}", o que gera uma perda estimada de ${lossMin}% a ${lossMax}% nos leads qualificados via mobile.`;
+  const executiveSummary = `A auditoria técnica e de UX do portal de ${storeName} (${cleanDomain || 'site oficial'}) analisou a experiência de navegação e conversão mobile. O diagnóstico aponta oportunidades em velocidade de carregamento de imagens do estoque, rastreabilidade de leads via WhatsApp e otimização para motores de busca (SEO Local), estimando um potencial de ganho de até ${lossMin}% a ${lossMax}% na conversão de visitantes em contato direto.`;
 
   return {
     overallScore: score,
@@ -330,31 +328,31 @@ export function generateUXAuditReport(storeName: string, url: string, baseScore:
     resumoExecutivo: executiveSummary,
     pillars: {
       identidadeVisual: {
-        title: "1. Velocidade do Site e Desempenho Mobile",
+        title: "1. Velocidade do Site e Otimização Mobile",
         score: speedScore,
         problem: speedProblems[speedIdx].problem,
         howItShouldBe: speedProblems[speedIdx].howItShouldBe
       },
       heuristicasNielsen: {
-        title: "2. Clareza de Preço, KM e Informações",
+        title: "2. Ficha Técnica e Destaque Visual do Veículo",
         score: infoScore,
         problem: infoProblems[infoIdx].problem,
         howItShouldBe: infoProblems[infoIdx].howItShouldBe
       },
       viesesCognitivos: {
-        title: "3. Botões Nítidos de Contato e WhatsApp",
+        title: "3. Conversão Direta via WhatsApp & CTA",
         score: ctaScore,
         problem: ctaProblems[ctaIdx].problem,
         howItShouldBe: ctaProblems[ctaIdx].howItShouldBe
       },
       arquiteturaInformacao: {
-        title: "4. Formulário e Captação de Lead",
+        title: "4. Captação de Lead e Formulários",
         score: formScore,
         problem: formProblems[formIdx].problem,
         howItShouldBe: formProblems[formIdx].howItShouldBe
       },
       acessibilidade: {
-        title: "5. Visibilidade de Telefone, E-mail e Endereço",
+        title: "5. SEO Local, Telefone e Localização",
         score: locationScore,
         problem: locationProblems[locationIdx].problem,
         howItShouldBe: locationProblems[locationIdx].howItShouldBe

@@ -321,46 +321,56 @@ export function Admin() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-orange-primary/50 transition-colors">
+        <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm hover:border-orange-primary/50' : 'bg-[#111] border-white/5 hover:border-orange-primary/50'
+        }`}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <LayoutDashboard className="w-16 h-16 text-orange-primary" />
           </div>
-          <p className="text-gray-400 text-sm font-medium mb-1">Acessos Totais</p>
-          <h3 className="text-4xl font-bold text-white mb-2">{pageViews.length}</h3>
+          <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Acessos Totais</p>
+          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{pageViews.length}</h3>
           <p className="text-xs text-green-500 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +12% esta semana</p>
         </div>
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-orange-primary/50 transition-colors">
+        <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm hover:border-orange-primary/50' : 'bg-[#111] border-white/5 hover:border-orange-primary/50'
+        }`}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Users className="w-16 h-16 text-orange-primary" />
           </div>
-          <p className="text-gray-400 text-sm font-medium mb-1">Leads Inbound</p>
-          <h3 className="text-4xl font-bold text-white mb-2">{leads.length}</h3>
+          <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Leads Inbound</p>
+          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{leads.length}</h3>
           <p className="text-xs text-green-500 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +3% esta semana</p>
         </div>
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-orange-primary/50 transition-colors">
+        <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm hover:border-orange-primary/50' : 'bg-[#111] border-white/5 hover:border-orange-primary/50'
+        }`}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Database className="w-16 h-16 text-orange-primary" />
           </div>
-          <p className="text-gray-400 text-sm font-medium mb-1">Leads Outbound (Scraped)</p>
-          <h3 className="text-4xl font-bold text-white mb-2">{scrapedLeads.length}</h3>
-          <p className="text-xs text-gray-500 flex items-center gap-1">Prospecção Ativa</p>
+          <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Leads Outbound (Scraped)</p>
+          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{scrapedLeads.length}</h3>
+          <p className={`text-xs flex items-center gap-1 ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Prospecção Ativa</p>
         </div>
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-orange-primary/50 transition-colors">
+        <div className={`border rounded-2xl p-6 relative overflow-hidden group transition-colors ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm hover:border-orange-primary/50' : 'bg-[#111] border-white/5 hover:border-orange-primary/50'
+        }`}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <CheckCircle2 className="w-16 h-16 text-orange-primary" />
           </div>
-          <p className="text-gray-400 text-sm font-medium mb-1">Taxa de Conversão</p>
-          <h3 className="text-4xl font-bold text-white mb-2">
+          <p className={`text-sm font-medium mb-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Taxa de Conversão</p>
+          <h3 className={`text-4xl font-bold mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
             {pageViews.length > 0 ? ((leads.length / pageViews.length) * 100).toFixed(1) : 0}%
           </h3>
-          <p className="text-xs text-gray-500 flex items-center gap-1">Visitas vs Leads</p>
+          <p className={`text-xs flex items-center gap-1 ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Visitas vs Leads</p>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6 lg:col-span-2">
-          <h3 className="text-lg font-bold text-white mb-6">Tráfego da Loja (Últimos dias)</h3>
+        <div className={`border rounded-2xl p-6 lg:col-span-2 ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
+          <h3 className={`text-lg font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Tráfego da Loja (Últimos dias)</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -374,12 +384,12 @@ export function Admin() {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                <XAxis dataKey="name" stroke="#666" tick={{fill: '#666', fontSize: 12}} tickLine={false} axisLine={false} />
-                <YAxis stroke="#666" tick={{fill: '#666', fontSize: 12}} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'light' ? '#e2e8f0' : '#333'} vertical={false} />
+                <XAxis dataKey="name" stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
+                <YAxis stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
                 <RechartsTooltip 
-                  contentStyle={{ backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
-                  itemStyle={{ color: '#fff' }}
+                  contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
+                  itemStyle={{ color: theme === 'light' ? '#0f172a' : '#fff' }}
                 />
                 <Area type="monotone" dataKey="home" name="Home" stroke="#FF6B00" strokeWidth={3} fillOpacity={1} fill="url(#colorHome)" />
                 <Area type="monotone" dataKey="captacao" name="Captação" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorCaptacao)" />
@@ -388,17 +398,19 @@ export function Admin() {
           </div>
         </div>
 
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
-          <h3 className="text-lg font-bold text-white mb-6">Leads Gerados (Inbound)</h3>
+        <div className={`border rounded-2xl p-6 ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
+          <h3 className={`text-lg font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Leads Gerados (Inbound)</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={leadsChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                <XAxis dataKey="name" stroke="#666" tick={{fill: '#666', fontSize: 12}} tickLine={false} axisLine={false} />
-                <YAxis stroke="#666" tick={{fill: '#666', fontSize: 12}} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'light' ? '#e2e8f0' : '#333'} vertical={false} />
+                <XAxis dataKey="name" stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
+                <YAxis stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
                 <RechartsTooltip 
-                  cursor={{fill: 'rgba(255,255,255,0.05)'}}
-                  contentStyle={{ backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                  cursor={{fill: theme === 'light' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)'}}
+                  contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
                 />
                 <Bar dataKey="leads" name="Leads" fill="#FF6B00" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -410,25 +422,33 @@ export function Admin() {
   );
 
   const renderLeads = () => (
-    <div className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="p-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className={`border rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 ${
+      theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+    }`}>
+      <div className={`p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${
+        theme === 'light' ? 'border-slate-200/80' : 'border-white/5'
+      }`}>
         <div>
-          <h3 className="text-xl font-bold text-white">Leads Inbound</h3>
-          <p className="text-sm text-gray-400 mt-1">Contatos que preencheram os formulários do site.</p>
+          <h3 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Leads Inbound</h3>
+          <p className={`text-sm mt-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Contatos que preencheram os formulários do site.</p>
         </div>
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input 
             type="text" 
             placeholder="Buscar lead..." 
-            className="bg-[#0A0A0A] border border-white/10 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-orange-primary w-full md:w-64 transition-colors"
+            className={`border rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-orange-primary w-full md:w-64 transition-colors ${
+              theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400' : 'bg-[#0A0A0A] border-white/10 text-white placeholder:text-gray-500'
+            }`}
           />
         </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-widest bg-[#0A0A0A]/50">
+            <tr className={`border-b text-xs uppercase tracking-widest ${
+              theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-[#0A0A0A]/50 border-white/5 text-gray-500'
+            }`}>
               <th className="p-4 font-bold">Data</th>
               <th className="p-4 font-bold">Contato</th>
               <th className="p-4 font-bold">Loja / Volume</th>
@@ -436,7 +456,7 @@ export function Admin() {
               <th className="p-4 font-bold text-right">Ação</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className={`divide-y ${theme === 'light' ? 'divide-slate-200/80' : 'divide-white/5'}`}>
             {leads.length === 0 && (
               <tr>
                 <td colSpan={5} className="p-12 text-center text-gray-500">
@@ -448,27 +468,29 @@ export function Admin() {
               </tr>
             )}
             {leads.map(lead => (
-              <tr key={lead.id} className="hover:bg-white/5 transition-colors group">
-                <td className="p-4 text-sm text-gray-400 whitespace-nowrap">
+              <tr key={lead.id} className={`transition-colors group ${theme === 'light' ? 'hover:bg-slate-50' : 'hover:bg-white/5'}`}>
+                <td className={`p-4 text-sm whitespace-nowrap ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>
                   {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                 </td>
                 <td className="p-4">
-                  <div className="font-bold text-white mb-1">{lead.name}</div>
-                  <div className="text-sm text-gray-400 flex items-center gap-1"><Phone className="w-3 h-3" /> {lead.whatsapp}</div>
+                  <div className={`font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{lead.name}</div>
+                  <div className={`text-sm flex items-center gap-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}><Phone className="w-3 h-3" /> {lead.whatsapp}</div>
                 </td>
                 <td className="p-4">
-                  <div className="text-white flex items-center gap-1 mb-1"><Building2 className="w-3 h-3 text-orange-primary" /> {lead.store}</div>
-                  <div className="text-xs text-gray-500">Volume: {lead.volume === '1' ? 'até 10' : lead.volume === '2' ? '10 a 30' : lead.volume === '3' ? '30 a 50' : lead.volume === '4' ? '+50' : lead.volume} carros</div>
+                  <div className={`flex items-center gap-1 mb-1 ${theme === 'light' ? 'text-slate-900 font-semibold' : 'text-white'}`}><Building2 className="w-3 h-3 text-orange-primary" /> {lead.store}</div>
+                  <div className={`text-xs ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>Volume: {lead.volume === '1' ? 'até 10' : lead.volume === '2' ? '10 a 30' : lead.volume === '3' ? '30 a 50' : lead.volume === '4' ? '+50' : lead.volume} carros</div>
                 </td>
                 <td className="p-4">
                   <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
-                    lead.source === 'Captacao' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                    lead.source === 'Captacao' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' : 'bg-purple-500/10 text-purple-500 border border-purple-500/20'
                   }`}>
                     {lead.source}
                   </span>
                 </td>
                 <td className="p-4 text-right">
-                  <button className="text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded text-sm font-medium">
+                  <button className={`transition-colors px-3 py-1.5 rounded text-sm font-medium ${
+                    theme === 'light' ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white'
+                  }`}>
                     Detalhes
                   </button>
                 </td>
@@ -518,13 +540,15 @@ export function Admin() {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Scraper Control Panel */}
-        <div className="bg-[#111] border border-white/5 rounded-2xl p-6">
+        <div className={`border rounded-2xl p-6 ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
           <div className="flex flex-col justify-between items-start gap-6">
             <div className="max-w-3xl">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+              <h3 className={`text-xl font-bold flex items-center gap-2 mb-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
                 <Search className="text-orange-primary" /> Como funciona a busca de leads
               </h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
+              <p className={`text-sm leading-relaxed ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
                 Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja, captura contatos (telefone, e-mail e Instagram) e calcula um score de oportunidade: lojas que não possuem site próprio recebem scores mais altos, indicando maior potencial para venda de criação de site e marketing.
               </p>
             </div>
@@ -532,13 +556,17 @@ export function Admin() {
         </div>
 
         {/* CRM Table */}
-        <div className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden">
+        <div className={`border rounded-2xl overflow-hidden ${
+          theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
+        }`}>
           {/* CRM Header & Filters */}
-          <div className="p-6 border-b border-white/5 space-y-4">
+          <div className={`p-6 border-b space-y-4 ${theme === 'light' ? 'border-slate-200/80' : 'border-white/5'}`}>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-bold text-white">CRM de Prospecção</h3>
-                <span className="text-xs text-gray-400 bg-[#0A0A0A] px-3 py-1.5 rounded-full border border-white/5 font-medium flex items-center gap-2">
+                <h3 className={`text-lg font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>CRM de Prospecção</h3>
+                <span className={`text-xs px-3 py-1.5 rounded-full border font-medium flex items-center gap-2 ${
+                  theme === 'light' ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-[#0A0A0A] text-gray-400 border-white/5'
+                }`}>
                   <div className="w-2 h-2 rounded-full bg-orange-primary"></div>
                   {filteredScrapedLeads.length} de {scrapedLeads.length} lojas
                 </span>
@@ -549,11 +577,13 @@ export function Admin() {
                 onClick={() => setProspectOnlyOpportunities(!prospectOnlyOpportunities)}
                 className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
                   prospectOnlyOpportunities 
-                    ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-sm' 
-                    : 'bg-[#0A0A0A] text-gray-400 border-white/10 hover:border-gray-500'
+                    ? 'bg-red-500/20 text-red-500 border-red-500/40 shadow-sm' 
+                    : theme === 'light'
+                      ? 'bg-slate-100 text-slate-600 border-slate-200 hover:border-slate-300'
+                      : 'bg-[#0A0A0A] text-gray-400 border-white/10 hover:border-gray-500'
                 }`}
               >
-                <div className={`w-2 h-2 rounded-full ${prospectOnlyOpportunities ? 'bg-red-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                <div className={`w-2 h-2 rounded-full ${prospectOnlyOpportunities ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
                 Apenas Oportunidades (Score ≥ 70)
               </button>
             </div>
@@ -562,13 +592,15 @@ export function Admin() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
               {/* Search input */}
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Buscar por loja, cidade, fone, e-mail..."
                   value={prospectSearch}
                   onChange={(e) => setProspectSearch(e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-orange-primary/50 transition-colors"
+                  className={`w-full border rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-orange-primary/50 transition-colors ${
+                    theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400' : 'bg-[#0A0A0A] border-white/10 text-white placeholder-gray-500'
+                  }`}
                 />
               </div>
 
@@ -577,7 +609,9 @@ export function Admin() {
                 <select
                   value={prospectStatusFilter}
                   onChange={(e) => setProspectStatusFilter(e.target.value)}
-                  className="w-full appearance-none bg-[#0A0A0A] border border-white/10 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-300 focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors"
+                  className={`w-full appearance-none border rounded-xl pl-3 pr-8 py-2 text-xs focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors ${
+                    theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-gray-300'
+                  }`}
                 >
                   <option value="Todos">Status: Todos</option>
                   <option value="Não contatado">Não contatado</option>
@@ -586,7 +620,7 @@ export function Admin() {
                   <option value="Fechado">Fechado (Ganho)</option>
                   <option value="Perdido">Perdido</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
               </div>
 
               {/* City Filter */}
@@ -594,14 +628,16 @@ export function Admin() {
                 <select
                   value={prospectCityFilter}
                   onChange={(e) => setProspectCityFilter(e.target.value)}
-                  className="w-full appearance-none bg-[#0A0A0A] border border-white/10 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-300 focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors"
+                  className={`w-full appearance-none border rounded-xl pl-3 pr-8 py-2 text-xs focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors ${
+                    theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-gray-300'
+                  }`}
                 >
                   <option value="Todas">Cidade: Todas ({availableCities.length})</option>
                   {availableCities.map(cidade => (
                     <option key={cidade} value={cidade}>{cidade}</option>
                   ))}
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
               </div>
 
               {/* Sort Order */}
@@ -609,7 +645,9 @@ export function Admin() {
                 <select
                   value={prospectSort}
                   onChange={(e) => setProspectSort(e.target.value as any)}
-                  className="w-full appearance-none bg-[#0A0A0A] border border-white/10 rounded-xl pl-3 pr-8 py-2 text-xs text-gray-300 focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors"
+                  className={`w-full appearance-none border rounded-xl pl-3 pr-8 py-2 text-xs focus:outline-none focus:border-orange-primary/50 cursor-pointer transition-colors ${
+                    theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-gray-300'
+                  }`}
                 >
                   <option value="score-desc">Ordenar: Maior Score (Oportunidade)</option>
                   <option value="score-asc">Ordenar: Menor Score</option>
@@ -617,7 +655,7 @@ export function Admin() {
                   <option value="date-asc">Ordenar: Mais Antigos</option>
                   <option value="name-asc">Ordenar: Nome (A-Z)</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
               </div>
             </div>
           </div>
@@ -625,7 +663,9 @@ export function Admin() {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-widest bg-[#0A0A0A]/50">
+                <tr className={`border-b text-xs uppercase tracking-widest ${
+                  theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-[#0A0A0A]/50 border-white/5 text-gray-500'
+                }`}>
                   <th className="p-4 font-bold">Loja & Local</th>
                   <th className="p-4 font-bold">Contato</th>
                   <th className="p-4 font-bold">Score de Oportunidade</th>
@@ -633,7 +673,7 @@ export function Admin() {
                   <th className="p-4 font-bold text-right">Data</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className={`divide-y ${theme === 'light' ? 'divide-slate-200/80' : 'divide-white/5'}`}>
                 {filteredScrapedLeads.length === 0 && (
                   <tr>
                     <td colSpan={5} className="p-12 text-center text-gray-500">
@@ -645,11 +685,11 @@ export function Admin() {
                   </tr>
                 )}
                 {filteredScrapedLeads.map(lead => (
-                  <tr key={lead.id} className="hover:bg-white/5 transition-colors group">
+                  <tr key={lead.id} className={`transition-colors group ${theme === 'light' ? 'hover:bg-slate-50/80' : 'hover:bg-white/5'}`}>
                     <td className="p-4">
-                      <div className="font-bold text-white mb-1">{lead.storeName}</div>
+                      <div className={`font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{lead.storeName}</div>
                       <div className="flex flex-col gap-1">
-                        <div className="text-xs text-gray-400 flex items-center gap-1 mb-0.5">
+                        <div className={`text-xs flex items-center gap-1 mb-0.5 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>
                           <MapPin className="w-3 h-3 text-orange-primary" /> {lead.city}
                         </div>
                         {/* Website Link */}
@@ -665,11 +705,11 @@ export function Admin() {
                               <Globe className="w-3.5 h-3.5 shrink-0 text-orange-primary" />
                               <span className="truncate font-medium">{lead.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
                             </a>
-                            <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.2 rounded font-mono">Site Ativo</span>
+                            <span className="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.2 rounded font-mono font-semibold">Site Ativo</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1 text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold w-fit mt-0.5">
-                            <AlertTriangle className="w-3 h-3 shrink-0 text-amber-400" />
+                          <div className="inline-flex items-center gap-1 text-[11px] text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold w-fit mt-0.5">
+                            <AlertTriangle className="w-3 h-3 shrink-0 text-amber-500" />
                             <span>Sem site próprio (Apenas Social/Portais)</span>
                           </div>
                         )}
@@ -679,36 +719,36 @@ export function Admin() {
                             href={lead.instagram || lead.link} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-xs text-pink-400 hover:text-pink-300 hover:underline flex items-center gap-1.5 truncate max-w-[220px] mt-0.5"
+                            className="text-xs text-pink-500 hover:text-pink-600 hover:underline flex items-center gap-1.5 truncate max-w-[220px] mt-0.5"
                             title="Instagram Oficial"
                           >
-                            <svg className="w-3 h-3 shrink-0 fill-current text-pink-400" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 shrink-0 fill-current text-pink-500" viewBox="0 0 24 24">
                               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                             </svg>
-                            <span className="truncate">Instagram Oficial</span>
+                            <span className="truncate font-medium">Instagram Oficial</span>
                           </a>
                         )}
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="text-xs text-gray-200 flex items-center gap-1.5 mb-1.5">
+                      <div className={`text-xs flex items-center gap-1.5 mb-1.5 ${theme === 'light' ? 'text-slate-800' : 'text-gray-200'}`}>
                         <Phone className="w-3.5 h-3.5 text-orange-primary shrink-0" /> 
                         {lead.phone ? (
                           <a 
                             href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}`} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="hover:text-orange-primary transition-colors font-medium text-xs flex items-center gap-1 text-emerald-400 font-mono"
+                            className="hover:text-orange-primary transition-colors font-medium text-xs flex items-center gap-1 text-emerald-500 font-mono"
                             title="Abrir no WhatsApp"
                           >
                             {lead.phone}
                           </a>
                         ) : (
-                          <span className="text-gray-500 text-xs italic">Não informado</span>
+                          <span className={`text-xs italic ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Não informado</span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-400 flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-gray-500 shrink-0" /> 
+                      <div className={`text-xs flex items-center gap-1.5 ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
+                        <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" /> 
                         {lead.email ? (
                           <a 
                             href={`mailto:${lead.email}`} 
@@ -718,7 +758,7 @@ export function Admin() {
                             {lead.email}
                           </a>
                         ) : (
-                          <span className="text-gray-500 text-[11px] italic">Contato via WhatsApp</span>
+                          <span className={`text-[11px] italic ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Contato via WhatsApp</span>
                         )}
                       </div>
                     </td>
@@ -738,12 +778,18 @@ export function Admin() {
                         <select 
                           value={lead.status}
                           onChange={(e) => handleStatusChange(lead.id, e.target.value as any)}
-                          className={`appearance-none bg-[#0A0A0A] border text-xs font-bold rounded-lg pl-3 pr-8 py-2 focus:outline-none cursor-pointer transition-colors ${
-                            lead.status === 'Não contatado' ? 'border-gray-700 text-gray-400 hover:border-gray-500' :
-                            lead.status === 'Em contato' ? 'border-blue-500/30 text-blue-400 bg-blue-500/5' :
-                            lead.status === 'Reunião agendada' ? 'border-orange-primary/50 text-orange-primary bg-orange-primary/10' :
-                            lead.status === 'Fechado' ? 'border-green-500/50 text-green-400 bg-green-500/10' :
-                            'border-red-500/30 text-red-400 bg-red-500/5'
+                          className={`appearance-none border text-xs font-bold rounded-lg pl-3 pr-8 py-2 focus:outline-none cursor-pointer transition-colors ${
+                            theme === 'light'
+                              ? lead.status === 'Não contatado' ? 'bg-slate-50 border-slate-300 text-slate-600 hover:border-slate-400' :
+                                lead.status === 'Em contato' ? 'border-blue-400 text-blue-600 bg-blue-50' :
+                                lead.status === 'Reunião agendada' ? 'border-orange-400 text-orange-600 bg-orange-50' :
+                                lead.status === 'Fechado' ? 'border-emerald-400 text-emerald-600 bg-emerald-50' :
+                                'border-red-400 text-red-600 bg-red-50'
+                              : lead.status === 'Não contatado' ? 'bg-[#0A0A0A] border-gray-700 text-gray-400 hover:border-gray-500' :
+                                lead.status === 'Em contato' ? 'bg-[#0A0A0A] border-blue-500/30 text-blue-400 bg-blue-500/5' :
+                                lead.status === 'Reunião agendada' ? 'bg-[#0A0A0A] border-orange-primary/50 text-orange-primary bg-orange-primary/10' :
+                                lead.status === 'Fechado' ? 'bg-[#0A0A0A] border-green-500/50 text-green-400 bg-green-500/10' :
+                                'bg-[#0A0A0A] border-red-500/30 text-red-400 bg-red-500/5'
                           }`}
                         >
                           <option value="Não contatado">Não contatado</option>
@@ -752,10 +798,10 @@ export function Admin() {
                           <option value="Fechado">Fechado (Ganho)</option>
                           <option value="Perdido">Perdido</option>
                         </select>
-                        <ChevronDown className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                        <ChevronDown className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
                       </div>
                     </td>
-                    <td className="p-4 text-right text-sm text-gray-500">
+                    <td className={`p-4 text-right text-sm ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>
                       {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                     </td>
                   </tr>
@@ -1076,27 +1122,6 @@ export function Admin() {
                           🇪🇸 ES
                         </button>
                       </div>
-                    </div>
-
-                    {/* Auto Scraper Frequency */}
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2 flex items-center gap-1.5">
-                        <Database className="w-3.5 h-3.5 text-orange-primary" /> {t.autoScraperLabel}
-                      </label>
-                      <select 
-                        value={autoScraperFreq}
-                        onChange={(e) => {
-                          setAutoScraperFreq(e.target.value);
-                          showToast(`Frequência atualizada: ${e.target.value}`);
-                        }}
-                        className={`w-full text-xs font-bold rounded-xl p-2.5 border focus:outline-none focus:border-orange-primary ${
-                          theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-white'
-                        }`}
-                      >
-                        <option value="6h">{t.freq6h}</option>
-                        <option value="24h">{t.freq24h}</option>
-                        <option value="manual">{t.freqManual}</option>
-                      </select>
                     </div>
 
                     {/* Status Badge */}

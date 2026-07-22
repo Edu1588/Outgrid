@@ -474,7 +474,8 @@
     "phone": "",
     "email": "contato@azzurraveiculos.com.br",
     "link": "https://www.azzurraveiculos.com.br/",
-    "instagram": "",
+    "instagram": "https://www.instagram.com/azzurraveiculos",
+    "followers": 50000,
     "status": "Não contatado",
     "score": 23,
     "createdAt": "2026-07-21T18:51:02.048+00:00"
@@ -498,7 +499,8 @@
     "phone": "(19) 3217-3287",
     "email": "contato@luvicar.com.br",
     "link": "https://luvicar.com.br/",
-    "instagram": "",
+    "instagram": "https://www.instagram.com/luvicarveiculos",
+    "followers": 5464,
     "status": "Não contatado",
     "score": 34,
     "createdAt": "2026-07-21T18:51:02.048+00:00"
@@ -510,7 +512,8 @@
     "phone": "(19) 2221-5570",
     "email": "contato@forzamotor.com.br",
     "link": "https://forzamotor.com.br/",
-    "instagram": "",
+    "instagram": "https://www.instagram.com/forzamotorsbr",
+    "followers": 2991,
     "status": "Não contatado",
     "score": 28,
     "createdAt": "2026-07-21T18:51:02.047+00:00"

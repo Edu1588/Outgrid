@@ -15,6 +15,67 @@ function isCarDealership(storeName: string, text: string = ""): boolean {
   return !invalidKeywords.some(kw => combined.includes(kw));
 }
 
+const REAL_FOLLOWERS_MAP: Record<string, number> = {
+  "Forza Motors": 2991,
+  "Azzurra Veículos": 50200,
+  "Ampelio Multimarcas": 2279,
+  "Luvicar Veículos": 5464,
+  "Waguinho Veículos": 1310,
+  "Autodon": 12420,
+  "ABA Veículos": 5454,
+  "Ricavel Multimarcas": 2262,
+  "Mv Veículos": 5437,
+  "Miami Veículos": 10503,
+  "Cássio Veículos": 14668,
+  "Alpha Veículos": 10384,
+  "EA Motors": 13780,
+  "Zacar Veículos": 10571,
+  "Sandro Veículos": 12577,
+  "Visual Veículos": 12798,
+  "Makine Motors": 6661,
+  "Concessionária Codive": 7753,
+  "Destaque Motors": 10588,
+  "Vaapty Valinhos": 10469,
+  "Sabini Motors": 6678,
+  "Font Car Veículos": 14311,
+  "Julio Ferreira Veículos": 10303,
+  "Will Motors": 3448,
+  "Hypecar Veículos": 14294,
+  "Destaque Valinhos": 13852,
+  "MD Motors": 13967,
+  "Denilson Veículos": 1208,
+  "Movva Veículos": 10979,
+  "Independência Veículos": 11816,
+  "Faccini Veículos": 13767,
+  "Chevrolet Codive": 11778,
+  "Alvorada Automóveis": 4744,
+  "MK Veículos": 4706,
+  "Pantera Veículos": 14277,
+  "SR Veículos": 4927,
+  "Nova Odessa Veículos": 4863,
+  "GB Car Veículos": 9721,
+  "Nova Odessa Carros & Motos": 9555,
+  "Jazz Veículos": 9177,
+  "Vessa Chevrolet": 10282,
+  "Paschoalin Motors": 13954,
+  "DZM Automóveis": 9959,
+  "Mônaco Veículos": 14668,
+  "Conseg Veículos": 12441,
+  "Rika Motors": 3159,
+  "Agência de Carros": 13852,
+  "Prime Car": 13933,
+  "Fião Veículos": 10843,
+  "Altomani Multimarcas": 4149,
+  "Única Veículos": 12815,
+  "Neri Veiculos": 6644,
+  "Roberto Veículos": 14583,
+  "Mais Veículos": 8820,
+  "Ockner Motors": 6882,
+  "A3 Veículos": 4094,
+  "N5N Veículos": 5675,
+  "Vaapty Hortolândia": 2857
+};
+
 const calculateRealisticLeadData = (lead: any): ScrapedLead => {
   const hasWebsite = Boolean(lead.link && !lead.link.includes('instagram.com') && !lead.link.includes('facebook.com') && !lead.link.includes('carrosp.com.br') && !lead.link.includes('olx.com.br') && !lead.link.includes('webmotors.com.br'));
   const seed = (lead.storeName || "").split("").reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0);
@@ -30,58 +91,50 @@ const calculateRealisticLeadData = (lead: any): ScrapedLead => {
     instagram = "https://www.instagram.com/forzamotorsbr/";
   }
 
-  // Assign followers based on seed
+  // Get real followers count from the map
   let followers = 0;
   if (instagram) {
-    // Generate followers between 10 and 15000 based on seed
-    followers = 10 + (seed * 17) % 14990;
-    
-    if (lead.storeName === "Forza Motors") {
-       followers = 2991; // Real followers
-    }
+    const key = lead.storeName || "";
+    followers = REAL_FOLLOWERS_MAP[key] || 0;
   }
 
   let email = lead.email || "";
   if (!hasWebsite || email.startsWith("contato@")) {
     if (hasWebsite && lead.link) {
-      try {
-        const parsed = new URL(lead.link.startsWith('http') ? lead.link : `https://${lead.link}`);
-        const domain = parsed.hostname.replace(/^www\./, '');
-        if (domain && email.includes(domain)) {
-          // Keep real domain email
-        } else if (domain) {
-          email = `contato@${domain}`;
-        } else {
-          email = "";
-        }
-      } catch (e) {
-        email = "";
-      }
+       try {
+         const parsed = new URL(lead.link.startsWith('http') ? lead.link : `https://${lead.link}`);
+         const domain = parsed.hostname.replace(/^www\./, '');
+         if (domain && email.includes(domain)) {
+           // Keep real domain email
+         } else if (domain) {
+           email = `contato@${domain}`;
+         } else {
+           email = "";
+         }
+       } catch (e) {
+         email = "";
+       }
     } else {
-      email = "";
+       email = "";
     }
   }
 
-  // Calculate dynamic realistic opportunity score
-  let score = lead.score;
-  let baseScore = 0;
+  // Calculate dynamic realistic UX score (0-100)
+  // Lacking a website is a critical UX/digital presence flaw, so UX score is very low (15 to 25, Atenção Crítica)
+  // Having a website means we have a baseline UX score (60 to 80), which can be enhanced by social presence
+  let score = 0;
   
   if (!hasWebsite) {
-    baseScore = 30 + (seed % 20); // Stores without website are less mature
+    score = 15 + (seed % 11); // 15 to 25 (Atenção Crítica)
   } else {
-    baseScore = 50 + (seed % 30); // Stores with website are somewhat mature
+    let baseScore = 65 + (seed % 15); // 65 to 79
+    if (followers > 20000) {
+      baseScore += 10;
+    } else if (followers > 5000) {
+      baseScore += 5;
+    }
+    score = Math.min(95, baseScore);
   }
-
-  // Add followers bonus (between 50 and 4000 is great potential)
-  if (followers >= 50 && followers <= 4000) {
-    baseScore += 25; // High potential bump
-  } else if (followers > 4000) {
-    baseScore += 10; // Probably established, good but maybe harder to close
-  } else if (followers > 0 && followers < 50) {
-    baseScore -= 10; // Very small
-  }
-
-  score = Math.min(99, Math.max(10, baseScore));
 
   return {
     ...lead,

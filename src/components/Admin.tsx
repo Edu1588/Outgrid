@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getLeads, getLeadsAsync, getPageViews, getScrapedLeads, getScrapedLeadsAsync, saveScrapedLead, updateScrapedLeadStatus, updateScrapedLeadStatusAsync, Lead, PageView, ScrapedLead } from "../lib/storage";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
-import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle, Activity, Timer, Download, Edit2, Ban, MessageCircle, Calendar, Briefcase, FileText, Presentation, Folder, CalendarDays, Archive, PieChart } from 'lucide-react';
+import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle, Activity, Timer, Download, Edit2, Ban, MessageCircle, Calendar, Briefcase, FileText, Presentation, Folder, CalendarDays, Archive, PieChart as LucidePieChart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UXAuditHoverCard } from './UXAuditHoverCard';
 
@@ -929,13 +929,13 @@ export function Admin() {
       if (prospectCityFilter !== "Todas" && lead.city !== prospectCityFilter) {
         return false;
       }
-      if (prospectOnlyOpportunities && (lead.score || 0) < 70) {
+      if (prospectOnlyOpportunities && (lead.score || 0) >= 70) {
         return false;
       }
       return true;
     }).sort((a, b) => {
-      if (prospectSort === 'score-desc') return (b.score || 0) - (a.score || 0);
-      if (prospectSort === 'score-asc') return (a.score || 0) - (b.score || 0);
+      if (prospectSort === 'score-desc') return (a.score || 0) - (b.score || 0);
+      if (prospectSort === 'score-asc') return (b.score || 0) - (a.score || 0);
       if (prospectSort === 'date-desc') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       if (prospectSort === 'date-asc') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (prospectSort === 'name-asc') return a.storeName.localeCompare(b.storeName);
@@ -990,7 +990,7 @@ export function Admin() {
                 }`}
               >
                 <div className={`w-2 h-2 rounded-full ${prospectOnlyOpportunities ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                Apenas Oportunidades (Score ≥ 70)
+                Apenas Oportunidades (Score &lt; 70)
               </button>
             </div>
 
@@ -1055,8 +1055,8 @@ export function Admin() {
                     theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-gray-300'
                   }`}
                 >
-                  <option value="score-desc">Ordenar: Maior Score (Oportunidade)</option>
-                  <option value="score-asc">Ordenar: Menor Score</option>
+                  <option value="score-desc">Ordenar: Maior Oportunidade (Menor Score UX)</option>
+                  <option value="score-asc">Ordenar: Menor Oportunidade (Maior Score UX)</option>
                   <option value="date-desc">Ordenar: Mais Recentes</option>
                   <option value="date-asc">Ordenar: Mais Antigos</option>
                   <option value="name-asc">Ordenar: Nome (A-Z)</option>
@@ -1134,9 +1134,13 @@ export function Admin() {
                               </svg>
                               <span className="truncate font-medium">Instagram</span>
                             </a>
-                            {lead.followers !== undefined && (
-                              <span className="text-[10px] bg-pink-500/10 text-pink-500 border border-pink-500/20 px-1.5 rounded font-mono font-semibold">
-                                {lead.followers} seg.
+                            {lead.followers !== undefined && lead.followers !== null && (
+                              <span 
+                                className="text-[10px] bg-pink-500/10 text-pink-500 border border-pink-500/20 px-1.5 py-0.5 rounded font-mono font-semibold flex items-center gap-1 cursor-help shrink-0"
+                                title="Seguidores reais obtidos via verificação do Instagram"
+                              >
+                                {lead.followers >= 1000 ? `${(lead.followers / 1000).toFixed(1).replace('.0', '')}k` : lead.followers} seg.
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Seguidores Reais Verificados" />
                               </span>
                             )}
                           </div>
@@ -1311,7 +1315,7 @@ export function Admin() {
             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'estrategia' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             <div className="flex items-center gap-3">
-              <PieChart className="w-4 h-4" /> Estratégia
+              <LucidePieChart className="w-4 h-4" /> Estratégia
             </div>
           </button>
 

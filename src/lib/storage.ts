@@ -161,12 +161,8 @@ export function getScrapedLeads(): ScrapedLead[] {
           localStorage.removeItem('outgrid_scraped_leads');
           return INITIAL_SCRAPED_LEADS;
         }
-        const validWithWebsite = parsed.filter(l => l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com'));
-        if (validWithWebsite.length > 0) {
-          // Sync filtered array back to localStorage
-          localStorage.setItem('outgrid_scraped_leads', JSON.stringify(validWithWebsite));
-          return validWithWebsite;
-        }
+        
+        return parsed;
       }
     }
     // Initialize localStorage with initial dataset

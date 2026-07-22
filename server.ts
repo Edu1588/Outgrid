@@ -4,7 +4,7 @@ import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import cors from "cors";
 import fs from "fs/promises";
-import initialLeadsData from "./scraped_leads.json";
+import { INITIAL_SCRAPED_LEADS as initialLeadsData } from "./src/lib/initialScrapedLeads.js";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
@@ -292,18 +292,7 @@ async function getLeadsFromDB() {
     }
   }
 
-  try {
-    const data = await fs.readFile(DATA_FILE, "utf-8");
-    const parsed = JSON.parse(data);
-    if (Array.isArray(parsed)) {
-      console.log("Returned from fs.readFile");
-      return mergeAndDeduplicateLeads(parsed);
-    }
-    return mergeAndDeduplicateLeads(initialLeadsData);
-  } catch (error) {
-    console.log("Returned from initialLeadsData fallback");
-    return mergeAndDeduplicateLeads(initialLeadsData);
-  }
+  return mergeAndDeduplicateLeads(initialLeadsData);
 }
 
 async function saveLeadsToDB(leads) {

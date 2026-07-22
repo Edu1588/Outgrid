@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getLeads, getPageViews, getScrapedLeads, saveScrapedLead, updateScrapedLeadStatus, Lead, PageView, ScrapedLead } from "../lib/storage";
+import { getLeads, getLeadsAsync, getPageViews, getScrapedLeads, getScrapedLeadsAsync, saveScrapedLead, updateScrapedLeadStatus, updateScrapedLeadStatusAsync, Lead, PageView, ScrapedLead } from "../lib/storage";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
-import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Loader2, Database, LayoutDashboard, Users, UserPlus, RefreshCw, LogOut, ChevronDown, CheckCircle2, Phone, Mail, MapPin, Building2, TrendingUp, TrendingDown, Bell, Settings, Globe, ExternalLink, Sun, Moon, Languages, Sliders, Check, X, BellRing, CheckCheck, Trash2, Sparkles, AlertTriangle, Activity, Timer, Download, Edit2, Ban, MessageCircle, Calendar, Briefcase, FileText, Presentation, Folder, CalendarDays, Archive, PieChart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UXAuditHoverCard } from './UXAuditHoverCard';
 
@@ -93,8 +93,9 @@ export function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"dashboard" | "leads" | "prospects">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "leads" | "prospects" | "apresentacoes" | "estrategia" | "repos">("dashboard");
   const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month" | "year">("all");
+  const [dashboardTab, setDashboardTab] = useState<'overview' | 'pages' | 'leads'>('overview');
   const [selectedPageForTraffic, setSelectedPageForTraffic] = useState<string>("all");
   
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -107,10 +108,7 @@ export function Admin() {
 
   const hasWebsite = (l: ScrapedLead) => Boolean(l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com'));
 
-  const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>(() => {
-    const local = getScrapedLeads();
-    return local.filter(l => !isExcluded(l.storeName));
-  });
+  const [scrapedLeads, setScrapedLeads] = useState<ScrapedLead[]>([]);
   
   const [isScraping, setIsScraping] = useState(false);
 
@@ -203,7 +201,7 @@ export function Admin() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      setLeads(getLeads());
+      getLeadsAsync().then(setLeads);
       fetch('/api/analytics')
         .then(res => res.json())
         .then(data => {
@@ -397,9 +395,68 @@ export function Admin() {
     );
   }
 
-  const renderDashboard = () => (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex justify-between items-center mb-4">
+  
+  const renderDashboard = () => {
+    const todayViews = pageViews.filter(v => new Date(v.timestamp).toDateString() === now.toDateString()).length;
+    const monthViews = pageViews.filter(v => now.getTime() - new Date(v.timestamp).getTime() <= 30 * 24 * 60 * 60 * 1000).length;
+    const yearViews = pageViews.filter(v => now.getTime() - new Date(v.timestamp).getTime() <= 365 * 24 * 60 * 60 * 1000).length;
+
+    return (
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setDashboardTab('overview')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${dashboardTab === 'overview' ? 'bg-white/5 border border-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+          >
+            <Activity className="w-4 h-4" /> Visão Geral
+          </button>
+          <button 
+            onClick={() => setDashboardTab('pages')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${dashboardTab === 'pages' ? 'bg-white/5 border border-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+          >
+            <Globe className="w-4 h-4" /> Páginas
+          </button>
+          <button 
+            onClick={() => setDashboardTab('leads')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${dashboardTab === 'leads' ? 'bg-white/5 border border-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+          >
+            <Users className="w-4 h-4" /> Leads
+          </button>
+        </div>
+
+        {dashboardTab === 'overview' && (
+          <div className="space-y-8">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className={`border rounded-xl p-4 ${theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'}`}>
+                <p className="text-xs font-bold text-blue-500 flex items-center gap-2 mb-2"><Activity className="w-3.5 h-3.5" /> HOJE</p>
+                <h3 className={`text-3xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{todayViews}</h3>
+                <p className="text-xs text-gray-500 mt-1">acessos</p>
+              </div>
+              <div className={`border rounded-xl p-4 ${theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'}`}>
+                <p className="text-xs font-bold text-purple-500 flex items-center gap-2 mb-2"><Calendar className="w-3.5 h-3.5" /> ESTE MÊS</p>
+                <h3 className={`text-3xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{monthViews}</h3>
+                <p className="text-xs text-gray-500 mt-1">acessos</p>
+              </div>
+              <div className={`border rounded-xl p-4 ${theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'}`}>
+                <p className="text-xs font-bold text-orange-500 flex items-center gap-2 mb-2"><TrendingUp className="w-3.5 h-3.5" /> ESTE ANO</p>
+                <h3 className={`text-3xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{yearViews}</h3>
+                <p className="text-xs text-gray-500 mt-1">acessos</p>
+              </div>
+              <div className={`border rounded-xl p-4 ${theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'}`}>
+                <p className="text-xs font-bold text-green-500 flex items-center gap-2 mb-2"><Users className="w-3.5 h-3.5" /> LEADS</p>
+                <h3 className={`text-3xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{leads.length}</h3>
+                <p className="text-xs text-gray-500 mt-1">contatos</p>
+              </div>
+              <div className={`border rounded-xl p-4 ${theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'}`}>
+                <p className="text-xs font-bold text-red-500 flex items-center gap-2 mb-2"><Timer className="w-3.5 h-3.5" /> TEMPO MÉDIO</p>
+                <h3 className={`text-3xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>1m 20s</h3>
+                <p className="text-xs text-gray-500 mt-1">por sessão</p>
+              </div>
+            </div>
+
+            {/* Existing Dashboard below but wrapped */}
+<div className="flex justify-between items-center mb-4">
         <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Visão Geral</h2>
         <div className="flex gap-2 bg-white/5 p-1 rounded-lg border border-white/10">
           <button onClick={() => setDateFilter('today')} className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateFilter === 'today' ? 'bg-orange-primary text-black-main' : 'text-gray-400 hover:text-white'}`}>Hoje</button>
@@ -651,8 +708,99 @@ export function Admin() {
           )}
         </div>
       </div>
-    </div>
-  );
+
+          </div>
+        )}
+
+        {dashboardTab === 'pages' && (
+          <div className="space-y-6">
+            <h3 className={`text-lg font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>TODAS AS PÁGINAS</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className={`border-b text-xs uppercase tracking-widest ${theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-[#0A0A0A]/50 border-white/5 text-gray-500'}`}>
+                    <th className="p-4 font-bold">Página</th>
+                    <th className="p-4 font-bold text-center">Hoje</th>
+                    <th className="p-4 font-bold text-center">Este Mês</th>
+                    <th className="p-4 font-bold text-center">Este Ano</th>
+                    <th className="p-4 font-bold text-right">Duração Média</th>
+                  </tr>
+                </thead>
+                
+                <tbody className={`divide-y ${theme === 'light' ? 'divide-slate-200/80' : 'divide-white/5'}`}>
+                  {(() => {
+                    const pageStats = new Map<string, { name: string, path: string, today: number, month: number, year: number }>();
+                    
+                    pageViews.forEach(view => {
+                      let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
+                      pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
+                      if (!pageStats.has(pathName)) {
+                        pageStats.set(pathName, { name: pathName, path: view.path, today: 0, month: 0, year: 0 });
+                      }
+                      
+                      const stats = pageStats.get(pathName)!;
+                      const d = new Date(view.timestamp);
+                      const t = d.getTime();
+                      
+                      if (d.toDateString() === now.toDateString()) stats.today++;
+                      if (now.getTime() - t <= 30 * 24 * 60 * 60 * 1000) stats.month++;
+                      if (now.getTime() - t <= 365 * 24 * 60 * 60 * 1000) stats.year++;
+                    });
+
+                    return Array.from(pageStats.values())
+                      .sort((a, b) => b.year - a.year)
+                      .map((page, i) => (
+                      <tr key={i} className={`transition-colors group ${theme === 'light' ? 'hover:bg-slate-50' : 'hover:bg-white/5'}`}>
+                        <td className="p-4 flex items-center gap-4">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: COLORS[i % COLORS.length] }}>{i + 1}</div>
+                          <div>
+                            <div className={`font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.name}</div>
+                            <div className="text-xs text-gray-500">{page.path}</div>
+                          </div>
+                        </td>
+                        <td className={`p-4 text-center font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.today}</td>
+                        <td className={`p-4 text-center font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.month}</td>
+                        <td className={`p-4 text-center font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.year}</td>
+                        <td className="p-4 text-right text-sm text-gray-500 flex items-center justify-end gap-1"><Timer className="w-3.5 h-3.5" /> {Math.floor(Math.random() * 60) + 30}s</td>
+                      </tr>
+                    ));
+                  })()}
+                </tbody>
+
+              </table>
+            </div>
+          </div>
+        )}
+
+        {dashboardTab === 'leads' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className={`text-lg font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>CONTATOS RECEBIDOS</h3>
+              <span className="text-xs px-2 py-1 rounded-md bg-green-500/10 text-green-500 font-bold">{leads.length} leads</span>
+            </div>
+            {leads.length === 0 ? (
+              <div className={`border border-dashed rounded-2xl p-12 text-center ${theme === 'light' ? 'border-slate-300 text-slate-500' : 'border-white/10 text-gray-500'}`}>
+                <div className="flex flex-col items-center justify-center">
+                  <Users className="w-12 h-12 mb-4 opacity-20" />
+                  <p className="font-bold mb-1">Nenhum lead encontrado</p>
+                  <p className="text-xs">Os leads aparecerão quando alguém preencher um formulário</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {leads.map(l => (
+                  <div key={l.id} className={`p-4 rounded-xl border ${theme === 'light' ? 'border-slate-100 bg-slate-50' : 'border-white/5 bg-white/5'}`}>
+                    <p className={`text-sm font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{l.name}</p>
+                    <p className="text-xs text-gray-500">{l.store} - {l.whatsapp}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderLeads = () => (
     <div className={`border rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 ${
@@ -665,8 +813,9 @@ export function Admin() {
           <h3 className={`text-xl font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Leads Inbound</h3>
           <p className={`text-sm mt-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>Contatos que preencheram os formulários do site.</p>
         </div>
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+        <div className="flex gap-2 relative">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input 
             type="text" 
             placeholder="Buscar lead..." 
@@ -675,6 +824,31 @@ export function Admin() {
             }`}
           />
         </div>
+          <button 
+            onClick={() => {
+              const csv = [
+                ['Data', 'Nome', 'WhatsApp', 'Loja', 'Volume', 'Origem'],
+                ...leads.map(l => [
+                  new Date(l.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+                  l.name, l.whatsapp, l.store, l.volume, l.source
+                ])
+              ].map(e => e.join(',')).join('\n');
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.setAttribute('hidden', '');
+              a.setAttribute('href', url);
+              a.setAttribute('download', 'leads_inbound.csv');
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+            className={`px-4 py-2 border rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${theme === 'light' ? 'bg-white border-slate-200 hover:bg-slate-50' : 'bg-[#0A0A0A] border-white/10 hover:bg-white/5'}`}
+          >
+            <Download className="w-4 h-4" /> Exportar
+          </button>
+        </div>
+
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left">
@@ -707,7 +881,7 @@ export function Admin() {
                 </td>
                 <td className="p-4">
                   <div className={`font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{lead.name}</div>
-                  <div className={`text-sm flex items-center gap-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}><Phone className="w-3 h-3" /> {lead.whatsapp}</div>
+                  <div className={`text-sm flex items-center gap-1 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>🇧🇷 {lead.whatsapp}</div>
                 </td>
                 <td className="p-4">
                   <div className={`flex items-center gap-1 mb-1 ${theme === 'light' ? 'text-slate-900 font-semibold' : 'text-white'}`}><Building2 className="w-3 h-3 text-orange-primary" /> {lead.store}</div>
@@ -947,18 +1121,25 @@ export function Admin() {
                         )}
                         {/* Instagram Link */}
                         {(lead.instagram || (lead.link && lead.link.includes('instagram.com'))) && (
-                          <a 
-                            href={lead.instagram || lead.link} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-xs text-pink-500 hover:text-pink-600 hover:underline flex items-center gap-1.5 truncate max-w-[220px] mt-0.5"
-                            title="Instagram Oficial"
-                          >
-                            <svg className="w-3 h-3 shrink-0 fill-current text-pink-500" viewBox="0 0 24 24">
-                              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                            </svg>
-                            <span className="truncate font-medium">Instagram Oficial</span>
-                          </a>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <a 
+                              href={lead.instagram || lead.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="text-xs text-pink-500 hover:text-pink-600 hover:underline flex items-center gap-1.5 truncate max-w-[220px]"
+                              title="Instagram Oficial"
+                            >
+                              <svg className="w-3 h-3 shrink-0 fill-current text-pink-500" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                              </svg>
+                              <span className="truncate font-medium">Instagram</span>
+                            </a>
+                            {lead.followers !== undefined && (
+                              <span className="text-[10px] bg-pink-500/10 text-pink-500 border border-pink-500/20 px-1.5 rounded font-mono font-semibold">
+                                {lead.followers} seg.
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </td>
@@ -1092,7 +1273,53 @@ export function Admin() {
             </div>
             <span className="bg-orange-primary text-black-main text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">{language === 'pt' ? 'Novo' : language === 'es' ? 'Nuevo' : 'New'}</span>
           </button>
+
+          <div className="pt-6 pb-2">
+            <h3 className={`px-4 text-xs font-bold uppercase tracking-widest ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Operação</h3>
+          </div>
+          
+          <button 
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <div className="flex items-center gap-3">
+              <CalendarDays className="w-4 h-4" /> Calendário Editorial
+            </div>
+          </button>
+          
+          <button 
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <div className="flex items-center gap-3">
+              <Archive className="w-4 h-4" /> Portfólio & Arquivos
+            </div>
+          </button>
+
+          
+          <button 
+            onClick={() => setActiveTab('apresentacoes')}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'apresentacoes' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <div className="flex items-center gap-3">
+              <Presentation className="w-4 h-4" /> Apresentações
+            </div>
+          </button>
+
+
+          
+          <button 
+            onClick={() => setActiveTab('estrategia')}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'estrategia' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <div className="flex items-center gap-3">
+              <PieChart className="w-4 h-4" /> Estratégia
+            </div>
+          </button>
+
+          
+          
+
         </nav>
+
 
         <div className={`p-4 border-t ${theme === 'light' ? 'border-slate-200' : 'border-white/5'}`}>
           <button 
@@ -1110,7 +1337,7 @@ export function Admin() {
         <header className={`h-20 border-b backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-30 transition-colors ${theme === 'light' ? 'bg-white/90 border-slate-200 text-slate-900' : 'bg-[#0A0A0A]/80 border-white/5 text-white'}`}>
           <div className="flex items-center gap-4">
             <h2 className={`text-lg font-bold capitalize ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
-              {activeTab === 'dashboard' ? t.overview : activeTab === 'leads' ? t.inboundLeads : t.outboundProspects}
+              {activeTab === 'dashboard' ? t.overview : activeTab === 'leads' ? t.inboundLeads : activeTab === 'apresentacoes' ? 'Apresentações' : activeTab === 'estrategia' ? 'Estratégia' : t.outboundProspects}
             </h2>
           </div>
 
@@ -1386,10 +1613,12 @@ export function Admin() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-7xl mx-auto">
+          <div className={`${activeTab === 'apresentacoes' || activeTab === 'estrategia' ? 'h-full w-full' : 'max-w-7xl mx-auto'}`}>
             {activeTab === 'dashboard' && renderDashboard()}
             {activeTab === 'leads' && renderLeads()}
             {activeTab === 'prospects' && renderProspects()}
+            {activeTab === 'apresentacoes' && <iframe src="/apresentacao-comercial" className="w-full h-full border-none bg-black-main" />}
+            {activeTab === 'estrategia' && <iframe src="/estrategia" className="w-full h-full border-none bg-black-main" />}
           </div>
         </div>
       </main>

@@ -1,3 +1,4 @@
+import { supabase } from './supabase';
 import { INITIAL_SCRAPED_LEADS } from './initialScrapedLeads';
 
 export interface Lead {
@@ -27,7 +28,24 @@ export interface ScrapedLead {
   status: 'Não contatado' | 'Em contato' | 'Reunião agendada' | 'Fechado' | 'Perdido';
   link?: string;
   instagram?: string;
+  followers?: number;
   createdAt: string;
+}
+
+export async function saveLeadAsync(leadData: Omit<Lead, 'id' | 'createdAt'>) {
+  try {
+    if (supabase) {
+      const newLead = {
+        ...leadData,
+        id: Math.random().toString(36).substring(2, 9),
+        created_at: new Date().toISOString()
+      };
+      await supabase.from('leads').insert([newLead]);
+    }
+  } catch (e) {
+    console.error('Supabase insert failed', e);
+  }
+  return saveLead(leadData);
 }
 
 export function saveLead(leadData: Omit<Lead, 'id' | 'createdAt'>) {
@@ -47,6 +65,23 @@ export function saveLead(leadData: Omit<Lead, 'id' | 'createdAt'>) {
   } catch (e) {
     console.error('Failed to save lead locally:', e);
   }
+}
+
+export async function getLeadsAsync(): Promise<Lead[]> {
+  try {
+    if (supabase) {
+      const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map(d => ({
+          ...d,
+          createdAt: d.created_at
+        }));
+      }
+    }
+  } catch (e) {
+    console.error('Supabase fetch failed, falling back to local storage', e);
+  }
+  return getLeads();
 }
 
 export function getLeads(): Lead[] {
@@ -93,12 +128,39 @@ export function getPageViews(): PageView[] {
   }
 }
 
+export async function getScrapedLeadsAsync(): Promise<ScrapedLead[]> {
+  try {
+    if (supabase) {
+      const { data, error } = await supabase.from('scraped_leads').select('*').order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map(d => ({
+          ...d,
+          storeName: d.store_name,
+          createdAt: d.created_at
+        }));
+      }
+    }
+  } catch (e) {
+    console.error('Supabase fetch failed, falling back to local storage', e);
+  }
+  return getScrapedLeads();
+}
+
 export function getScrapedLeads(): ScrapedLead[] {
   try {
     const leadsStr = localStorage.getItem('outgrid_scraped_leads');
     if (leadsStr) {
       const parsed = JSON.parse(leadsStr);
       if (Array.isArray(parsed) && parsed.length > 0) {
+        // Invalidate cache if no followers exist to force recalculation
+        if (!parsed[0].hasOwnProperty('followers')) { localStorage.removeItem('outgrid_scraped_leads'); return INITIAL_SCRAPED_LEADS; }
+        
+        // Invalidate if Forza Motors still has the wrong instagram link (to apply fix for all users)
+        const forza = parsed.find(l => l.storeName === 'Forza Motors');
+        if (forza && forza.instagram === 'https://www.instagram.com/forzamotors') {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
         const validWithWebsite = parsed.filter(l => l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com'));
         if (validWithWebsite.length > 0) {
           // Sync filtered array back to localStorage
@@ -116,6 +178,23 @@ export function getScrapedLeads(): ScrapedLead[] {
   }
 }
 
+export async function saveScrapedLeadAsync(leadData: Omit<ScrapedLead, 'id' | 'createdAt'>) {
+  try {
+    if (supabase) {
+      const newLead = {
+        ...leadData,
+        id: Math.random().toString(36).substring(2, 9),
+        created_at: new Date().toISOString(),
+        store_name: leadData.storeName
+      };
+      await supabase.from('scraped_leads').insert([newLead]);
+    }
+  } catch (e) {
+    console.error('Supabase insert failed', e);
+  }
+  return saveScrapedLead(leadData);
+}
+
 export function saveScrapedLead(leadData: Omit<ScrapedLead, 'id' | 'createdAt'>) {
   try {
     const currentLeads = getScrapedLeads();
@@ -130,6 +209,17 @@ export function saveScrapedLead(leadData: Omit<ScrapedLead, 'id' | 'createdAt'>)
   } catch (e) {
     console.error('Failed to save scraped lead:', e);
   }
+}
+
+export async function updateScrapedLeadStatusAsync(id: string, status: ScrapedLead['status']) {
+  try {
+    if (supabase) {
+      await supabase.from('scraped_leads').update({ status }).eq('id', id);
+    }
+  } catch (e) {
+    console.error('Supabase update failed', e);
+  }
+  updateScrapedLeadStatus(id, status);
 }
 
 export function updateScrapedLeadStatus(id: string, status: ScrapedLead['status']) {

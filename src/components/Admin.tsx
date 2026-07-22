@@ -95,6 +95,7 @@ export function Admin() {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"dashboard" | "leads" | "prospects">("dashboard");
   const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month" | "year">("all");
+  const [selectedPageForTraffic, setSelectedPageForTraffic] = useState<string>("all");
   
   const [leads, setLeads] = useState<Lead[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
@@ -462,6 +463,18 @@ export function Admin() {
         }`}>
           <div className="flex justify-between items-center mb-6">
             <h3 className={`text-lg font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{t.trafficTitle}</h3>
+            <select
+              value={selectedPageForTraffic}
+              onChange={(e) => setSelectedPageForTraffic(e.target.value)}
+              className={`text-sm px-3 py-1.5 rounded-lg border focus:outline-none focus:border-orange-primary transition-colors ${
+                theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-[#1a1a1a] border-white/10 text-gray-300'
+              }`}
+            >
+              <option value="all">Todas as Páginas</option>
+              {pieData.map((entry, index) => (
+                <option key={index} value={entry.name}>{entry.name}</option>
+              ))}
+            </select>
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -481,7 +494,7 @@ export function Admin() {
                   contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
                   itemStyle={{ color: theme === 'light' ? '#0f172a' : '#fff' }}
                 />
-                {pieData.map((entry, index) => (
+                {pieData.filter(entry => selectedPageForTraffic === 'all' || entry.name === selectedPageForTraffic).map((entry, index) => (
                   <Area key={`area-${index}`} type="monotone" dataKey={entry.name} name={entry.name} stroke={entry.color} strokeWidth={3} fillOpacity={1} fill={`url(#color-${entry.name})`} />
                 ))}
               </AreaChart>

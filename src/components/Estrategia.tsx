@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ProtectedPage } from './ProtectedPage';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
-import { ImagePlus, Loader2, X, Plus, ExternalLink, Trash2 } from 'lucide-react';
+import { ImagePlus, Loader2, X, Plus, ExternalLink, Trash2, Globe } from 'lucide-react';
 
 interface MoodboardImage {
   id: string;
@@ -14,6 +14,97 @@ interface ReferenceLink {
   id: string;
   url: string;
   title: string;
+}
+
+function formatCleanUrl(rawUrl: string) {
+  try {
+    const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`);
+    const clean = parsed.hostname.replace(/^www\./, '') + parsed.pathname;
+    return clean.length > 28 ? clean.substring(0, 26) + '...' : clean;
+  } catch {
+    return rawUrl;
+  }
+}
+
+function LinkThumbImage({ url, title }: { url: string; title: string }) {
+  const [imgSrc, setImgSrc] = useState<string>(() => {
+    try {
+      const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+      const domain = parsed.hostname.replace(/^www\./, '');
+      return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    } catch {
+      return '';
+    }
+  });
+  const [hasError, setHasError] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  let domain = '';
+  let isInstagram = false;
+  let isYoutube = false;
+
+  try {
+    const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+    domain = parsed.hostname.replace(/^www\./, '');
+    if (domain.includes('instagram.com')) isInstagram = true;
+    if (domain.includes('youtube.com') || domain.includes('youtu.be')) isYoutube = true;
+  } catch {
+    domain = '';
+  }
+
+  const previewThumbUrl = `https://image.thum.io/get/width/200/crop/150/${url}`;
+  const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128` : '';
+
+  return (
+    <div className="w-full h-full relative flex items-center justify-center bg-zinc-900/90 overflow-hidden group/thumb">
+      {!hasError ? (
+        <img
+          src={previewThumbUrl}
+          alt={title}
+          onLoad={() => setLoaded(true)}
+          onError={() => {
+            if (faviconUrl && imgSrc !== faviconUrl) {
+              setImgSrc(faviconUrl);
+            } else {
+              setHasError(true);
+            }
+          }}
+          className={`w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110 ${
+            loaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ) : null}
+
+      {(!loaded || hasError) && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 p-2">
+          {faviconUrl ? (
+            <img
+              src={faviconUrl}
+              alt={domain}
+              className="w-7 h-7 object-contain rounded drop-shadow"
+              onError={() => setHasError(true)}
+            />
+          ) : isInstagram ? (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">
+              IG
+            </div>
+          ) : isYoutube ? (
+            <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-[10px] font-bold">
+              YT
+            </div>
+          ) : (
+            <Globe className="w-6 h-6 text-orange-primary opacity-80" />
+          )}
+        </div>
+      )}
+
+      {faviconUrl && loaded && !hasError && (
+        <div className="absolute bottom-1 right-1 bg-black/70 p-0.5 rounded border border-white/10 backdrop-blur-sm">
+          <img src={faviconUrl} alt="" className="w-3.5 h-3.5 object-contain" />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function Estrategia() {
@@ -1009,24 +1100,39 @@ export function Estrategia() {
               {links.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {links.map((link) => (
-                    <div key={link.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4 group relative pr-12">
-                      <h4 className="text-[var(--text)] font-bold mb-2 pr-4 truncate">{link.title}</h4>
-                      <a 
-                        href={link.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-orange-primary hover:text-[#FF7043] text-sm flex items-center gap-1.5 transition-colors truncate"
-                      >
-                        <ExternalLink className="w-4 h-4 shrink-0" />
-                        <span className="truncate">{link.url}</span>
-                      </a>
+                    <div 
+                      key={link.id} 
+                      className="bg-[var(--surface)] border border-[var(--border)] hover:border-orange-primary/50 rounded-xl p-3 flex items-center gap-3.5 group relative transition-all hover:shadow-md"
+                    >
+                      {/* Small Thumbnail */}
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border border-[var(--border)] shadow-sm bg-black/40">
+                        <LinkThumbImage url={link.url} title={link.title} />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 pr-6">
+                        <h4 className="text-[var(--text)] font-bold text-sm mb-1 truncate group-hover:text-orange-primary transition-colors" title={link.title}>
+                          {link.title}
+                        </h4>
+                        <a 
+                          href={link.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-orange-primary hover:text-[#FF7043] text-xs flex items-center gap-1.5 transition-colors truncate"
+                          title={link.url}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{formatCleanUrl(link.url)}</span>
+                        </a>
+                      </div>
                       
+                      {/* Delete Button */}
                       <button
                         onClick={() => handleRemoveLink(link.id)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-soft)] hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-2 rounded-full hover:bg-red-500/10"
+                        className="absolute right-2 top-2 text-[var(--text-soft)] hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded-lg hover:bg-red-500/10"
                         title="Remover link"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}

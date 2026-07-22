@@ -150,12 +150,12 @@ export function UXAuditHoverCard({ storeName, url, score }: UXAuditHoverCardProp
               Métricas do Relatório (Baseadas em Heurísticas Avançadas)
             </div>
 
-            {/* Pillar 1: UI & Identidade Visual */}
+            {/* Pillar 1 */}
             <div className="bg-zinc-900/90 border border-white/10 rounded-lg p-2.5">
               <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
                 <span className="flex items-center gap-1.5">
                   <Layout className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                  1. Identidade Visual e UI
+                  {report.pillars.identidadeVisual.title}
                 </span>
                 <span className={`font-mono text-[11px] font-bold ${report.pillars.identidadeVisual.score >= 70 ? 'text-emerald-400' : report.pillars.identidadeVisual.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
                   {report.pillars.identidadeVisual.score}/100
@@ -169,12 +169,12 @@ export function UXAuditHoverCard({ storeName, url, score }: UXAuditHoverCardProp
               </p>
             </div>
 
-            {/* Pillar 2: Heurísticas de Nielsen */}
+            {/* Pillar 2 */}
             <div className="bg-zinc-900/90 border border-white/10 rounded-lg p-2.5">
               <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
                 <span className="flex items-center gap-1.5">
                   <Eye className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  2. Heurísticas de Nielsen
+                  {report.pillars.heuristicasNielsen.title}
                 </span>
                 <span className={`font-mono text-[11px] font-bold ${report.pillars.heuristicasNielsen.score >= 70 ? 'text-emerald-400' : report.pillars.heuristicasNielsen.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
                   {report.pillars.heuristicasNielsen.score}/100
@@ -191,12 +191,12 @@ export function UXAuditHoverCard({ storeName, url, score }: UXAuditHoverCardProp
             {/* Expandable toggle for the remaining 3 criteria */}
             {showFullReport && (
               <>
-                {/* Pillar 3: Vieses Cognitivos */}
+                {/* Pillar 3 */}
                 <div className="bg-zinc-900/90 border border-white/10 rounded-lg p-2.5 animate-in fade-in duration-150">
                   <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
                     <span className="flex items-center gap-1.5">
                       <Brain className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                      3. Vieses Cognitivos e Psicologia
+                      {report.pillars.viesesCognitivos.title}
                     </span>
                     <span className={`font-mono text-[11px] font-bold ${report.pillars.viesesCognitivos.score >= 70 ? 'text-emerald-400' : report.pillars.viesesCognitivos.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
                       {report.pillars.viesesCognitivos.score}/100
@@ -210,12 +210,12 @@ export function UXAuditHoverCard({ storeName, url, score }: UXAuditHoverCardProp
                   </p>
                 </div>
 
-                {/* Pillar 4: Arquitetura da Informação */}
+                {/* Pillar 4 */}
                 <div className="bg-zinc-900/90 border border-white/10 rounded-lg p-2.5 animate-in fade-in duration-150">
                   <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
                     <span className="flex items-center gap-1.5">
                       <Search className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                      4. Arquitetura da Informação
+                      {report.pillars.arquiteturaInformacao.title}
                     </span>
                     <span className={`font-mono text-[11px] font-bold ${report.pillars.arquiteturaInformacao.score >= 70 ? 'text-emerald-400' : report.pillars.arquiteturaInformacao.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
                       {report.pillars.arquiteturaInformacao.score}/100
@@ -229,12 +229,12 @@ export function UXAuditHoverCard({ storeName, url, score }: UXAuditHoverCardProp
                   </p>
                 </div>
 
-                {/* Pillar 5: Acessibilidade */}
+                {/* Pillar 5 */}
                 <div className="bg-zinc-900/90 border border-white/10 rounded-lg p-2.5 animate-in fade-in duration-150">
                   <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
                     <span className="flex items-center gap-1.5">
                       <Accessibility className="w-3.5 h-3.5 text-pink-400 shrink-0" />
-                      5. Acessibilidade e Inclusão
+                      {report.pillars.acessibilidade.title}
                     </span>
                     <span className={`font-mono text-[11px] font-bold ${report.pillars.acessibilidade.score >= 70 ? 'text-emerald-400' : report.pillars.acessibilidade.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
                       {report.pillars.acessibilidade.score}/100

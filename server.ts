@@ -265,7 +265,7 @@ async function getLeadsFromDB() {
     try {
       const { data, error } = await supabaseClient.from('scraped_leads').select('*').order('created_at', { ascending: false });
       if (!error && data) {
-        const mappedData = data.map(mapLeadFromDB);
+        let mappedData = data.map(mapLeadFromDB);
         if (mappedData.length < 30) {
           // Seed from local json file
           try {
@@ -274,7 +274,8 @@ async function getLeadsFromDB() {
               const deduped = mergeAndDeduplicateLeads(parsed);
               const mappedSeed = deduped.map(mapLeadToDB);
               await supabaseClient.from('scraped_leads').upsert(mappedSeed, { onConflict: 'id' });
-              return deduped;
+              // Merge seed with DB data
+              mappedData = mergeAndDeduplicateLeads([...deduped, ...mappedData]);
             }
           } catch(e) {
             console.error("Failed to seed to Supabase:", e);

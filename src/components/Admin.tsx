@@ -13,7 +13,7 @@ const translations = {
     logout: 'Sair',
     totalViews: 'Acessos Totais',
     conversionRate: 'Taxa de Conversão',
-    trafficTitle: 'Tráfego da Loja (Últimos dias)',
+    trafficTitle: 'Tráfego no Site (Últimos dias)',
     leadsTitle: 'Leads Gerados (Inbound)',
     searchPlaceholder: 'Buscar por loja, cidade, fone, e-mail...',
     settingsTitle: 'Configurações do Painel',
@@ -40,7 +40,7 @@ const translations = {
     logout: 'Log Out',
     totalViews: 'Total Views',
     conversionRate: 'Conversion Rate',
-    trafficTitle: 'Store Traffic (Recent Days)',
+    trafficTitle: 'Site Traffic (Recent Days)',
     leadsTitle: 'Leads Generated (Inbound)',
     searchPlaceholder: 'Search by store, city, phone, email...',
     settingsTitle: 'Dashboard Settings',
@@ -67,7 +67,7 @@ const translations = {
     logout: 'Cerrar Sesión',
     totalViews: 'Visitas Totales',
     conversionRate: 'Tasa de Conversión',
-    trafficTitle: 'Tráfico de la Tienda (Días recientes)',
+    trafficTitle: 'Tráfico del Sitio (Días recientes)',
     leadsTitle: 'Leads Generados (Inbound)',
     searchPlaceholder: 'Buscar por tienda, ciudad, teléfono, email...',
     settingsTitle: 'Configuraciones del Panel',
@@ -296,13 +296,17 @@ export function Admin() {
 
   const viewsByDay = filteredViews.reduce((acc, view) => {
     const date = new Date(view.timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
+    pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
+
     if (!acc[date]) {
-      acc[date] = { name: date, total: 0, home: 0, captacao: 0, outros: 0 };
+      acc[date] = { name: date, total: 0 };
     }
     acc[date].total++;
-    if (view.path === '/') acc[date].home++;
-    else if (view.path === '/captacao') acc[date].captacao++;
-    else acc[date].outros++;
+    
+    if (!acc[date][pathName]) acc[date][pathName] = 0;
+    acc[date][pathName]++;
+    
     return acc;
   }, {} as Record<string, any>);
   
@@ -456,19 +460,19 @@ export function Admin() {
         <div className={`border rounded-2xl p-6 lg:col-span-2 ${
           theme === 'light' ? 'bg-white border-slate-200/80 shadow-sm' : 'bg-[#111] border-white/5'
         }`}>
-          <h3 className={`text-lg font-bold mb-6 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>Tráfego da Loja (Últimos dias)</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className={`text-lg font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{t.trafficTitle}</h3>
+          </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorHome" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#FF6B00" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#FF6B00" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorCaptacao" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
+                  {pieData.map((entry, index) => (
+                    <linearGradient key={`gradient-${index}`} id={`color-${entry.name}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={entry.color} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={entry.color} stopOpacity={0}/>
+                    </linearGradient>
+                  ))}
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={theme === 'light' ? '#e2e8f0' : '#333'} vertical={false} />
                 <XAxis dataKey="name" stroke={theme === 'light' ? '#64748b' : '#666'} tick={{fill: theme === 'light' ? '#64748b' : '#666', fontSize: 12}} tickLine={false} axisLine={false} />
@@ -477,8 +481,9 @@ export function Admin() {
                   contentStyle={theme === 'light' ? { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' } : { backgroundColor: '#050505', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
                   itemStyle={{ color: theme === 'light' ? '#0f172a' : '#fff' }}
                 />
-                <Area type="monotone" dataKey="home" name="Home" stroke="#FF6B00" strokeWidth={3} fillOpacity={1} fill="url(#colorHome)" />
-                <Area type="monotone" dataKey="captacao" name="Captação" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorCaptacao)" />
+                {pieData.map((entry, index) => (
+                  <Area key={`area-${index}`} type="monotone" dataKey={entry.name} name={entry.name} stroke={entry.color} strokeWidth={3} fillOpacity={1} fill={`url(#color-${entry.name})`} />
+                ))}
               </AreaChart>
             </ResponsiveContainer>
           </div>

@@ -241,6 +241,8 @@ function mapLeadToDB(lead: any) {
     score: lead.score !== undefined ? lead.score : null,
     status: lead.status || null,
     link: lead.link || null,
+    instagram: lead.instagram || null,
+    followers: lead.followers || null,
     created_at: lead.createdAt || new Date().toISOString()
   };
 }
@@ -256,7 +258,8 @@ function mapLeadFromDB(dbLead: any) {
     score: dbLead.score !== null ? dbLead.score : undefined,
     status: dbLead.status || "Não contatado",
     link: dbLead.link || "",
-    instagram: dbLead.instagram || "", // Handles missing instagram column in DB gracefully
+    instagram: dbLead.instagram || "",
+    followers: dbLead.followers !== null ? dbLead.followers : undefined,
     createdAt: dbLead.created_at || dbLead.createdAt || new Date().toISOString()
   };
 }

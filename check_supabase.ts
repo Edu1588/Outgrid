@@ -1,4 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './src/lib/supabase';
 
-const supabaseUrl = 'https://vjxuyxszcmlojvincvgp.supabase.co';
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || ''; // wait, I don't know their anon key. 
+async function check() {
+  const { data, error } = await supabase.from('scraped_leads').select('*').limit(5);
+  console.log("Supabase error:", error);
+  console.log("Supabase data:", data);
+}
+check();

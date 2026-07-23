@@ -153,7 +153,7 @@ export function getScrapedLeads(): ScrapedLead[] {
     if (currentVersion !== DATA_VERSION) {
       localStorage.removeItem('outgrid_scraped_leads');
       localStorage.setItem('outgrid_leads_version', DATA_VERSION);
-      return INITIAL_SCRAPED_LEADS;
+      return INITIAL_SCRAPED_LEADS as ScrapedLead[];
     }
 
     const leadsStr = localStorage.getItem('outgrid_scraped_leads');
@@ -161,83 +161,83 @@ export function getScrapedLeads(): ScrapedLead[] {
       const parsed = JSON.parse(leadsStr);
       if (Array.isArray(parsed) && parsed.length > 0) {
         // Invalidate cache if no followers exist to force recalculation
-        if (!parsed[0].hasOwnProperty('followers')) { localStorage.removeItem('outgrid_scraped_leads'); return INITIAL_SCRAPED_LEADS; }
+        if (!parsed[0].hasOwnProperty('followers')) { localStorage.removeItem('outgrid_scraped_leads'); return INITIAL_SCRAPED_LEADS as ScrapedLead[]; }
         
         // Invalidate if Forza Motors still has the wrong instagram link (to apply fix for all users)
         const forza = parsed.find(l => l.storeName === 'Forza Motors');
         if (forza && forza.instagram === 'https://www.instagram.com/forzamotors') {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if GB Car Veículos has the old incorrect follower count or empty link
         const gbCar = parsed.find(l => l.storeName === 'GB Car Veículos');
         if (gbCar && (gbCar.followers === 9721 || !gbCar.link)) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Altomani Multimarcas has the old incorrect follower count or empty link
         const altomani = parsed.find(l => l.storeName === 'Altomani Multimarcas');
         if (altomani && (altomani.followers === 4149 || !altomani.link)) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Alpha Veículos has an empty link to load all newly found websites
         const alpha = parsed.find(l => l.storeName === 'Alpha Veículos');
         if (alpha && !alpha.link) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Roberto Veículos or Mais Veículos have empty links
         const roberto = parsed.find(l => l.storeName === 'Roberto Veículos');
         if (roberto && !roberto.link) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if SR Veículos has an empty link to load new website
         const srVeiculos = parsed.find(l => l.storeName === 'SR Veículos');
         if (srVeiculos && !srVeiculos.link) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Nobre Multimarcas is present but has no instagram link (to apply fix for all users)
         const nobre = parsed.find(l => l.storeName === 'Nobre Multimarcas');
         if (nobre && !nobre.instagram) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Jazz Veículos has wrong follower count or no website link
         const jazz = parsed.find(l => l.storeName === 'Jazz Veículos');
         if (jazz && (jazz.followers === 9177 || !jazz.link)) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Fião Veículos has wrong follower count
         const fiao = parsed.find(l => l.storeName === 'Fião Veículos');
         if (fiao && fiao.followers === 10843) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if Junior Cardoso Vehicles has no link
         const junior = parsed.find(l => l.storeName === 'Junior Cardoso Vehicles');
         if (junior && !junior.link) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
 
         // Invalidate if any lead has an empty phone to force phone/email generation for all users
         const hasEmptyPhone = parsed.some(l => !l.phone);
         if (hasEmptyPhone) {
           localStorage.removeItem('outgrid_scraped_leads');
-          return INITIAL_SCRAPED_LEADS;
+          return INITIAL_SCRAPED_LEADS as ScrapedLead[];
         }
         
         return parsed.filter((l: any) => {
@@ -249,10 +249,10 @@ export function getScrapedLeads(): ScrapedLead[] {
     }
     // Initialize localStorage with initial dataset
     localStorage.setItem('outgrid_scraped_leads', JSON.stringify(INITIAL_SCRAPED_LEADS));
-    return INITIAL_SCRAPED_LEADS;
+    return INITIAL_SCRAPED_LEADS as ScrapedLead[];
   } catch (e) {
     console.error('Failed to get scraped leads:', e);
-    return INITIAL_SCRAPED_LEADS;
+    return INITIAL_SCRAPED_LEADS as ScrapedLead[];
   }
 }
 

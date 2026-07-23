@@ -1,4 +1,6 @@
-export const INITIAL_SCRAPED_LEADS = [
+import type { ScrapedLead } from "./storage";
+
+export const INITIAL_SCRAPED_LEADS: any[] = [
   {
     "id": "0cb840e5",
     "storeName": "Forza Motors",

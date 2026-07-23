@@ -49,6 +49,14 @@ export function Header() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link 
+              to={getHomeLink('#simulador')} 
+              className="bg-orange-primary text-black-main px-4 py-2 rounded-full text-[14px] font-bold hover:bg-white transition-colors"
+            >
+              Solicitar Análise
+            </Link>
+          </li>
         </motion.ul>
 
         {/* Mobile Menu Toggle */}
@@ -77,6 +85,13 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <Link 
+            to={getHomeLink('#simulador')} 
+            onClick={() => setIsOpen(false)}
+            className="bg-orange-primary text-black-main px-4 py-3 rounded-xl text-base font-bold text-center mt-2"
+          >
+            Solicitar Análise
+          </Link>
         </motion.div>
       )}
     </header>

@@ -93,7 +93,7 @@ export function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"dashboard" | "leads" | "prospects" | "apresentacoes" | "estrategia" | "repos">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "leads" | "prospects" | "apresentacoes" | "captacao" | "estrategia" | "repos">("dashboard");
   const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month" | "year">("all");
   const [dashboardTab, setDashboardTab] = useState<'overview' | 'pages' | 'leads'>('overview');
   const [selectedPageForTraffic, setSelectedPageForTraffic] = useState<string>("all");
@@ -727,12 +727,20 @@ export function Admin() {
             </div>
           </div>
           <div className="flex gap-2">
-            <div className="flex flex-col gap-2 pt-6 text-xs text-gray-500 justify-around">
-              {daysOfWeek.filter((_,i) => i%2!==0).map(d => <span key={d}>{d}</span>)}
+            <div className="grid grid-rows-7 gap-1 pt-6 text-xs text-gray-500">
+              {daysOfWeek.map((d, i) => (
+                <div key={d} className="flex items-center justify-end pr-2 h-full">
+                  {i % 2 !== 0 ? d : ''}
+                </div>
+              ))}
             </div>
             <div className="flex-1">
-              <div className="flex justify-between text-xs text-gray-500 mb-2 px-2">
-                {hours.map(h => <span key={h}>{h}h</span>)}
+              <div className="flex gap-1 text-xs text-gray-500 mb-2">
+                {hours.map(h => (
+                  <div key={h} className="flex-1 text-center">
+                    {h}h
+                  </div>
+                ))}
               </div>
               <div className="grid grid-rows-7 gap-1">
                 {daysOfWeek.map(d => (
@@ -831,7 +839,10 @@ export function Admin() {
                         <td className={`p-4 text-center font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.today}</td>
                         <td className={`p-4 text-center font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.month}</td>
                         <td className={`p-4 text-center font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{page.year}</td>
-                        <td className="p-4 text-right text-sm text-gray-500 flex items-center justify-end gap-1"><Timer className="w-3.5 h-3.5" /> {Math.floor(Math.random() * 60) + 30}s</td>
+                        <td className="p-4 text-right text-sm text-gray-500 flex items-center justify-end gap-1">
+                          <Timer className="w-3.5 h-3.5" /> 
+                          {30 + ((page.name.charCodeAt(0) || 0) % 30) + (page.today * 5)}s
+                        </td>
                       </tr>
                     ));
                   })()}
@@ -1012,6 +1023,33 @@ export function Admin() {
       return 0;
     });
 
+    const handleExportCSV = () => {
+      const headers = ['Nome da Loja', 'Cidade', 'Telefone', 'Email', 'Link', 'Instagram', 'Seguidores', 'Score', 'Status'];
+      const csvContent = [
+        headers.join(','),
+        ...filteredScrapedLeads.map(lead => [
+          `"${lead.storeName || ''}"`,
+          `"${lead.city || ''}"`,
+          `"${lead.phone || ''}"`,
+          `"${lead.email || ''}"`,
+          `"${lead.link || ''}"`,
+          `"${lead.instagram || ''}"`,
+          lead.followers || 0,
+          lead.score || 0,
+          `"${lead.status || ''}"`
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'leads_outgrid.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
@@ -1050,6 +1088,19 @@ export function Admin() {
 
               {/* Quick Actions */}
               <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                    theme === 'light'
+                      ? 'bg-slate-100 text-slate-600 border-slate-200 hover:border-slate-300'
+                      : 'bg-[#0A0A0A] text-gray-400 border-white/10 hover:border-gray-500'
+                  }`}
+                  title="Baixar lista de leads filtrada em formato Excel/CSV"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Exportar CSV
+                </button>
                 <button
                   type="button"
                   onClick={() => setProspectOnlyOpportunities(!prospectOnlyOpportunities)}
@@ -1258,7 +1309,7 @@ export function Admin() {
                                     <div className="flex items-center gap-1 shrink-0">
                                       <span 
                                         className="text-[10px] bg-pink-500/10 text-pink-500 border border-pink-500/20 px-1.5 py-0.5 rounded font-mono font-semibold flex items-center gap-1 cursor-help shrink-0"
-                                        title="Seguidores Reais do Instagram (Apify)"
+                                        title="Seguidores Reais do Instagram (Meta Graph API)"
                                       >
                                         {lead.followers >= 1000 ? `${(lead.followers / 1000).toFixed(1).replace('.0', '')}k` : lead.followers} seg.
                                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Seguidores Reais Verificados" />

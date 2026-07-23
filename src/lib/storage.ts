@@ -148,6 +148,14 @@ export async function getScrapedLeadsAsync(): Promise<ScrapedLead[]> {
 
 export function getScrapedLeads(): ScrapedLead[] {
   try {
+    const DATA_VERSION = 'v2.6_no_ux_popup_and_verified_followers';
+    const currentVersion = localStorage.getItem('outgrid_leads_version');
+    if (currentVersion !== DATA_VERSION) {
+      localStorage.removeItem('outgrid_scraped_leads');
+      localStorage.setItem('outgrid_leads_version', DATA_VERSION);
+      return INITIAL_SCRAPED_LEADS;
+    }
+
     const leadsStr = localStorage.getItem('outgrid_scraped_leads');
     if (leadsStr) {
       const parsed = JSON.parse(leadsStr);
@@ -162,9 +170,72 @@ export function getScrapedLeads(): ScrapedLead[] {
           return INITIAL_SCRAPED_LEADS;
         }
 
+        // Invalidate if GB Car Veículos has the old incorrect follower count or empty link
+        const gbCar = parsed.find(l => l.storeName === 'GB Car Veículos');
+        if (gbCar && (gbCar.followers === 9721 || !gbCar.link)) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if Altomani Multimarcas has the old incorrect follower count or empty link
+        const altomani = parsed.find(l => l.storeName === 'Altomani Multimarcas');
+        if (altomani && (altomani.followers === 4149 || !altomani.link)) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if Alpha Veículos has an empty link to load all newly found websites
+        const alpha = parsed.find(l => l.storeName === 'Alpha Veículos');
+        if (alpha && !alpha.link) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if Roberto Veículos or Mais Veículos have empty links
+        const roberto = parsed.find(l => l.storeName === 'Roberto Veículos');
+        if (roberto && !roberto.link) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if SR Veículos has an empty link to load new website
+        const srVeiculos = parsed.find(l => l.storeName === 'SR Veículos');
+        if (srVeiculos && !srVeiculos.link) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
         // Invalidate if Nobre Multimarcas is present but has no instagram link (to apply fix for all users)
         const nobre = parsed.find(l => l.storeName === 'Nobre Multimarcas');
         if (nobre && !nobre.instagram) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if Jazz Veículos has wrong follower count or no website link
+        const jazz = parsed.find(l => l.storeName === 'Jazz Veículos');
+        if (jazz && (jazz.followers === 9177 || !jazz.link)) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if Fião Veículos has wrong follower count
+        const fiao = parsed.find(l => l.storeName === 'Fião Veículos');
+        if (fiao && fiao.followers === 10843) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if Junior Cardoso Vehicles has no link
+        const junior = parsed.find(l => l.storeName === 'Junior Cardoso Vehicles');
+        if (junior && !junior.link) {
+          localStorage.removeItem('outgrid_scraped_leads');
+          return INITIAL_SCRAPED_LEADS;
+        }
+
+        // Invalidate if any lead has an empty phone to force phone/email generation for all users
+        const hasEmptyPhone = parsed.some(l => !l.phone);
+        if (hasEmptyPhone) {
           localStorage.removeItem('outgrid_scraped_leads');
           return INITIAL_SCRAPED_LEADS;
         }

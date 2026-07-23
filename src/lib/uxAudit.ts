@@ -264,6 +264,75 @@ const STORE_CUSTOM_AUDITS: Record<string, Partial<UXAuditReport>> = {
 };
 
 export function generateUXAuditReport(storeName: string, url: string, baseScore: number): UXAuditReport {
+  const hasNoWebsite = !url || url.trim() === "" || 
+    url.toLowerCase().includes("sem site") || 
+    url.toLowerCase().includes("instagram.com") || 
+    url.toLowerCase().includes("facebook.com") || 
+    url.toLowerCase().includes("carrosp.com.br") || 
+    url.toLowerCase().includes("olx.com.br") || 
+    url.toLowerCase().includes("webmotors.com.br") || 
+    url.toLowerCase() === "null";
+
+  if (hasNoWebsite) {
+    const score = baseScore; // Use the actual assigned score of the lead
+    
+    // Generate robust hash seed based on storeName
+    let hash = 0;
+    const str = storeName || "Loja de Veículos";
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    const seed = Math.abs(hash);
+
+    const speedScore = 0; // Presença Digital Própria (Site) is 0 because there is no site
+    const infoScore = Math.max(12, Math.min(28, score + (seed % 6)));
+    const ctaScore = Math.max(10, Math.min(26, score - 2 + (seed % 6)));
+    const formScore = 0; // Captação Ativa de Propostas is 0 because there is no site
+    const locationScore = Math.max(15, Math.min(32, score + 4 + (seed % 6)));
+
+    const executiveSummary = `A auditoria comercial identificou que ${storeName} não possui canal ou site próprio de vendas na internet. Toda a sua operação digital depende de redes sociais (como Instagram) ou portais terceiros concorrentes. Isso causa dispersão imediata de leads, dependência de atendimento manual e risco de o cliente visualizar ofertas de concorrentes no mesmo portal. Um portal próprio aumentaria o controle do tráfego e a conversão de contatos de forma exclusiva.`;
+
+    return {
+      overallScore: score,
+      url: "",
+      storeName: storeName || "Loja de Veículos",
+      resumoExecutivo: executiveSummary,
+      pillars: {
+        identidadeVisual: {
+          title: "1. Presença Digital Própria (Site)",
+          score: speedScore,
+          problem: "Ausência de site próprio força o cliente a buscar seu estoque em portais concorrentes, perdendo exclusividade e identidade.",
+          howItShouldBe: "Desenvolver uma Landing Page ou Portal de estoque próprio para reter 100% da atenção do comprador e gerar leads sem concorrência."
+        },
+        heuristicasNielsen: {
+          title: "2. Organização do Catálogo Digital",
+          score: infoScore,
+          problem: "Catálogo do Instagram ou portais sem padronização de imagens, preços claros ou dados como quilometragem nos destaques.",
+          howItShouldBe: "Organizar o portfólio de veículos com fotos padronizadas de alta qualidade, especificações legíveis e valores expostos."
+        },
+        viesesCognitivos: {
+          title: "3. Direcionamento e Funil de Vendas",
+          score: ctaScore,
+          problem: "O link da bio das redes sociais envia para um WhatsApp genérico, sem identificar o veículo de interesse ou qualificar o contato.",
+          howItShouldBe: "Implementar direcionador com mensagens automáticas pré-preenchidas para identificar instantaneamente o veículo desejado."
+        },
+        arquiteturaInformacao: {
+          title: "4. Captação Ativa de Propostas",
+          score: formScore,
+          problem: "Inexistência de canais automatizados para o cliente simular parcelas ou enviar propostas estruturadas fora do horário comercial.",
+          howItShouldBe: "Disponibilizar formulário de simulação simples focado em capturar Nome e WhatsApp de leads interessados 24h por dia."
+        },
+        acessibilidade: {
+          title: "5. SEO Local e Localização Física",
+          score: locationScore,
+          problem: "Ausência de integração direta entre o Google Maps (Google Meu Negócio) e as redes sociais, dificultando a visita ao showroom físico.",
+          howItShouldBe: "Fixar atalhos de rotas por GPS ('Como Chegar via Maps/Waze') e horário de atendimento de forma destacada em todas as bios."
+        }
+      }
+    };
+  }
+
   // Normalize URL and Domain
   let cleanDomain = url || "";
   try {

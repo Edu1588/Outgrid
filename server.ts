@@ -200,14 +200,13 @@ function mergeAndDeduplicateLeads(leads: any[]): any[] {
       continue;
     }
 
-    // Only set domain email if lead has an official website and no email was set
-    if (!lead.email && hasWebsite) {
-      lead.email = extractDomainEmail(lead.link, lead.storeName);
-    }
-    // If no website and email was previously generic, clean it up
-    if (!hasWebsite && lead.email && lead.email.startsWith("contato@")) {
-      lead.email = "";
-    }
+    const cleanStoreName = (lead.storeName || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]/g, "");
+
+    // Intentionally omitted fake email and phone generation to prevent hallucinated data.
 
     // Calculate dynamic opportunity score based on audit parameters
     const seed = (lead.storeName || "").split("").reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0);
@@ -453,8 +452,8 @@ Analise a lista de empresas e extraia APENAS LOJAS E CONCESSIONÁRIAS DE CARROS 
 REGRAS RÍGIDAS DE FILTRAGEM:
 1. DESCARTE QUALQUER empresa de reboque, guincho, oficina mecânica, funilaria, auto peças, despachante, aluguel de carros ou lava-rápido.
 2. DESCARTE as marcas exclusivas: "Unimais", "Meta Veículos", "Azul Veículos".
-3. NÃO INVENTE NENHUM ENDEREÇO DE E-MAIL! Se o e-mail não estiver explicitamente presente ou se a loja não possuir um domínio de site próprio oficial, retorne "".
-4. "link": Retorne APENAS o site oficial próprio da loja (ex: https://www.nomedaloja.com.br). Se for apenas redes sociais ou portais (OLX, Webmotors), retorne "".
+3. NÃO INVENTE NENHUM ENDEREÇO DE E-MAIL OU TELEFONE! Se o e-mail não estiver explicitamente presente ou se a loja não possuir um domínio de site próprio oficial, retorne "".
+4. "link": Retorne APENAS o site oficial próprio da loja (ex: https://www.nomedaloja.com.br) SE ELE EXISTIR NA BUSCA. NUNCA CRIE OU INVENTE UM LINK! Se for apenas redes sociais ou portais (OLX, Webmotors), retorne "".
 5. "score": 
    - Lojas SEM site próprio -> Score de Oportunidade ALTO (74 a 98).
    - Lojas COM site próprio -> Score BAIXO (18 a 52).
@@ -505,12 +504,6 @@ Retorne um JSON com formato: { "leads": [ { "storeName": "", "phone": "", "email
   const processedLeads = allLeads.map((lead: any) => {
     const officialSite = isOfficialWebsite(lead.link) ? formatWebsiteUrl(lead.link) : "";
     let email = lead.email || "";
-    if (!email && officialSite) {
-      email = extractDomainEmail(officialSite, lead.storeName);
-    }
-    if (!officialSite && email.startsWith("contato@")) {
-      email = "";
-    }
 
     return {
       id: crypto.randomBytes(4).toString("hex"),
@@ -543,152 +536,37 @@ async function startServer() {
     res.json(leads);
   });
 
-  // UPDATE lead status
+  // UPDATE lead details (status, followers, phone, email, link, instagram, etc.)
   app.put("/api/leads/scraped/:id", async (req, res) => {
-    const { status } = req.body;
+    const { status, followers, phone, email, link, instagram } = req.body;
+    const updatePayload: any = {};
+    if (status !== undefined) updatePayload.status = status;
+    if (followers !== undefined) updatePayload.followers = followers;
+    if (phone !== undefined) updatePayload.phone = phone;
+    if (email !== undefined) updatePayload.email = email;
+    if (link !== undefined) updatePayload.link = link;
+    if (instagram !== undefined) updatePayload.instagram = instagram;
+
     if (supabaseClient) {
-      const { error } = await supabaseClient.from('scraped_leads').update({ status }).eq('id', req.params.id);
+      const { error } = await supabaseClient.from('scraped_leads').update(updatePayload).eq('id', req.params.id);
       if (!error) {
          const leads = await getLeadsFromDB();
-         return res.json(leads.find(l => l.id === req.params.id) || { id: req.params.id, status });
+         return res.json(leads.find(l => l.id === req.params.id) || { id: req.params.id, ...updatePayload });
       }
     }
     const leads = await getLeadsFromDB();
     const index = leads.findIndex((l: any) => l.id === req.params.id);
     if (index !== -1) {
-      leads[index].status = status;
+      if (status !== undefined) leads[index].status = status;
+      if (followers !== undefined) leads[index].followers = followers;
+      if (phone !== undefined) leads[index].phone = phone;
+      if (email !== undefined) leads[index].email = email;
+      if (link !== undefined) leads[index].link = link;
+      if (instagram !== undefined) leads[index].instagram = instagram;
       await saveLeadsToDB(leads);
       res.json(leads[index]);
     } else {
       res.status(404).json({ error: "Lead not found" });
-    }
-  });
-
-  // VERIFY REAL INSTAGRAM FOLLOWERS VIA SERPER + GROQ
-  app.post("/api/leads/scraped/:id/verify-followers", async (req, res) => {
-    const { id } = req.params;
-    const leads = await getLeadsFromDB();
-    const leadIndex = leads.findIndex((l: any) => l.id === id);
-    if (leadIndex === -1) {
-      return res.status(404).json({ error: "Lead não encontrado" });
-    }
-
-    const lead = leads[leadIndex];
-    let handle = "";
-    
-    // Attempt to extract handle from instagram URL or storeName
-    if (lead.instagram) {
-      handle = lead.instagram.split('instagram.com/')[1]?.split('?')[0]?.replace(/\/$/, '') || "";
-    }
-    
-    if (!handle) {
-      // Clean store name to guess handle or search
-      const cleanStore = lead.storeName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
-      handle = cleanStore;
-    }
-
-    const serperApiKey = process.env.SERPER_API_KEY || process.env.SERPER;
-    const groqApiKey = process.env.GROQ_API_KEY || process.env.GROQ;
-
-    if (!serperApiKey || !groqApiKey) {
-      return res.status(500).json({ error: "Chaves de API (Serper/Groq) não configuradas no servidor." });
-    }
-
-    try {
-      // 1. Search Google Serper for site:instagram.com/<handle> to get followers snippet
-      const query = `site:instagram.com/${handle} "Followers" OR "seguidores"`;
-      console.log(`Running live follower check search for handle: ${handle}`);
-      const serperRes = await fetch("https://google.serper.dev/search", {
-        method: "POST",
-        headers: {
-          "X-API-KEY": serperApiKey,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ q: query, gl: "br", hl: "pt-br", num: 5 })
-      });
-
-      if (!serperRes.ok) {
-        throw new Error(`Serper respondeu com status: ${serperRes.status}`);
-      }
-
-      const serperData = (await serperRes.json()) as { organic?: any[] };
-      let snippets = (serperData.organic || []).map((item: any) => `${item.title} - ${item.snippet}`).join('\n');
-
-      if (!snippets.trim()) {
-        // Fallback: search for general store name + instagram
-        console.log(`No direct snippets for handle ${handle}, running fallback search...`);
-        const fallbackQuery = `"${lead.storeName}" instagram seguidores`;
-        const fbSerperRes = await fetch("https://google.serper.dev/search", {
-          method: "POST",
-          headers: {
-            "X-API-KEY": serperApiKey,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ q: fallbackQuery, gl: "br", hl: "pt-br", num: 5 })
-        });
-        if (fbSerperRes.ok) {
-          const fbData = (await fbSerperRes.json()) as { organic?: any[] };
-          snippets = (fbData.organic || []).map((item: any) => `${item.title} - ${item.snippet}`).join('\n');
-        }
-      }
-
-      console.log(`Found snippets for ${lead.storeName}:`, snippets.substring(0, 300));
-
-      // 2. Call Groq to parse snippets
-      const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${groqApiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            {
-              role: "system",
-              content: `Você é um robô extrator de dados extremamente preciso.
-Dadas as snippets de busca do Google para o perfil do Instagram de uma loja de veículos, extraia a quantidade REAL e ATUAL de seguidores (followers).
-Retorne APENAS um objeto JSON válido no formato:
-{
-  "followers": <número inteiro ou null se não houver>,
-  "followersFormatted": "<string formatada, ex: '50k', '2.8k' ou null>"
-}
-REGRAS:
-- Não tente adivinhar, simular, calcular ou inventar números.
-- Se as snippets de busca indicarem "50K followers", o "followers" é 50000 e "followersFormatted" é "50k".
-- Se indicarem "3K+ followers", o "followers" é 3000 e "followersFormatted" é "3k".
-- Se não houver nenhuma menção a seguidores ou followers reais nas snippets, retorne {"followers": null, "followersFormatted": null}.`
-            },
-            {
-              role: "user",
-              content: `Loja: ${lead.storeName} (@${handle})\nSnippets de Busca:\n${snippets}`
-            }
-          ],
-          response_format: { type: "json_object" }
-        })
-      });
-
-      if (!groqResponse.ok) {
-        throw new Error(`Groq respondeu com status: ${groqResponse.status}`);
-      }
-
-      const groqData = (await groqResponse.json()) as { choices?: any[] };
-      let content = groqData.choices?.[0]?.message?.content || "{}";
-      const result = JSON.parse(content);
-
-      if (result && result.followers !== undefined && result.followers !== null) {
-        lead.followers = result.followers;
-        leads[leadIndex] = lead;
-        await saveLeadsToDB(leads);
-        console.log(`Live followers count updated for ${lead.storeName}: ${lead.followers}`);
-        res.json({ success: true, lead });
-      } else {
-        res.json({ success: false, error: "Não foi possível extrair seguidores reais a partir das snippets de busca.", lead });
-      }
-
-    } catch (error: any) {
-      console.error("Erro na verificação de seguidores:", error);
-      res.status(500).json({ error: "Erro interno durante a verificação.", details: error.message });
     }
   });
 

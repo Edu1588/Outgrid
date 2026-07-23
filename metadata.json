@@ -1,6 +1,8 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Outgrid",
+  "description": "Sistema de inteligência e captação automotiva, com dashboard admin e verificação de seguidores.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

@@ -1,175 +1,15 @@
-import { ScrapedLead } from './storage';
-
-function isCarDealership(storeName: string, text: string = ""): boolean {
-  if (!storeName) return false;
-  const combined = `${storeName} ${text}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  
-  const invalidKeywords = [
-    "reboque", "guincho", "socorro", "transporte", "fretamento",
-    "mecanica", "oficina", "funilaria", "pintura", "auto peca", "autopecas", "pneus", "borracharia",
-    "despachante", "vistoria", "emplacamento", "insulfilm", "som e acessorio",
-    "locadora", "rent a car", "aluguel", "locacao", "lava rapido", "lava jato", "estetica automotiva",
-    "taxi", "escolar", "mudanca"
-  ];
-
-  return !invalidKeywords.some(kw => combined.includes(kw));
-}
-
-const REAL_FOLLOWERS_MAP: Record<string, number> = {
-  "Forza Motors": 2991,
-  "Azzurra Veículos": 50200,
-  "Nobre Multimarcas": 4325,
-  "Junior Cardoso Vehicles": 2480,
-  "Loja de Veículos": 1200,
-  "DNA Veículos": 3250,
-  "Ampelio Multimarcas": 2279,
-  "Luvicar Veículos": 5464,
-  "Waguinho Veículos": 1310,
-  "Autodon": 12420,
-  "ABA Veículos": 5454,
-  "Ricavel Multimarcas": 2262,
-  "Mv Veículos": 5437,
-  "Miami Veículos": 10503,
-  "Cássio Veículos": 14668,
-  "Alpha Veículos": 10384,
-  "EA Motors": 13780,
-  "Zacar Veículos": 10571,
-  "Sandro Veículos": 12577,
-  "Visual Veículos": 12798,
-  "Makine Motors": 6661,
-  "Concessionária Codive": 7753,
-  "Destaque Motors": 10588,
-  "Vaapty Valinhos": 10469,
-  "Sabini Motors": 6678,
-  "Font Car Veículos": 14311,
-  "Julio Ferreira Veículos": 10303,
-  "Will Motors": 3448,
-  "Hypecar Veículos": 14294,
-  "Destaque Valinhos": 13852,
-  "MD Motors": 13967,
-  "Denilson Veículos": 1208,
-  "Movva Veículos": 10979,
-  "Independência Veículos": 11816,
-  "Faccini Veículos": 13767,
-  "Chevrolet Codive": 11778,
-  "Alvorada Automóveis": 4744,
-  "MK Veículos": 4706,
-  "Pantera Veículos": 14277,
-  "SR Veículos": 4927,
-  "Nova Odessa Veículos": 4863,
-  "GB Car Veículos": 9721,
-  "Nova Odessa Carros & Motos": 9555,
-  "Jazz Veículos": 9177,
-  "Vessa Chevrolet": 10282,
-  "Paschoalin Motors": 13954,
-  "DZM Automóveis": 9959,
-  "Mônaco Veículos": 14668,
-  "Conseg Veículos": 12441,
-  "Rika Motors": 3159,
-  "Agência de Carros": 13852,
-  "Prime Car": 13933,
-  "Fião Veículos": 10843,
-  "Altomani Multimarcas": 4149,
-  "Única Veículos": 12815,
-  "Neri Veiculos": 6644,
-  "Roberto Veículos": 14583,
-  "Mais Veículos": 8820,
-  "Ockner Motors": 6882,
-  "A3 Veículos": 4094,
-  "N5N Veículos": 5675,
-  "Vaapty Hortolândia": 2857
-};
-
-const calculateRealisticLeadData = (lead: any): ScrapedLead => {
-  const hasWebsite = Boolean(lead.link && !lead.link.includes('instagram.com') && !lead.link.includes('facebook.com') && !lead.link.includes('carrosp.com.br') && !lead.link.includes('olx.com.br') && !lead.link.includes('webmotors.com.br'));
-  const seed = (lead.storeName || "").split("").reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0);
-
-  // Clean instagram links
-  let instagram = lead.instagram || "";
-  if (instagram.includes("/reel/") || instagram.includes("/p/") || instagram.includes("/stories/")) {
-    if (lead.storeName === "Nobre Multimarcas") {
-      instagram = "https://www.instagram.com/nobremultimarcas_/";
-    } else if (lead.storeName === "Junior Cardoso Vehicles") {
-      instagram = "https://www.instagram.com/juniorcardosovehicles/";
-    } else if (lead.storeName === "Loja de Veículos") {
-      instagram = "https://www.instagram.com/lojadeveiculos/";
-    } else if (lead.storeName === "DNA Veículos") {
-      instagram = "https://www.instagram.com/dnaveiculos/";
-    } else {
-      instagram = "";
-    }
-  }
-  
-  // Fix Forza Motors
-  if (lead.storeName === "Forza Motors") {
-    instagram = "https://www.instagram.com/forzamotorsbr/";
-  }
-
-  // Get real followers count from the map
-  let followers = 0;
-  if (instagram) {
-    const key = lead.storeName || "";
-    followers = REAL_FOLLOWERS_MAP[key] || 0;
-  }
-
-  let email = lead.email || "";
-  if (!hasWebsite || email.startsWith("contato@")) {
-    if (hasWebsite && lead.link) {
-       try {
-         const parsed = new URL(lead.link.startsWith('http') ? lead.link : `https://${lead.link}`);
-         const domain = parsed.hostname.replace(/^www\./, '');
-         if (domain && email.includes(domain)) {
-           // Keep real domain email
-         } else if (domain) {
-           email = `contato@${domain}`;
-         } else {
-           email = "";
-         }
-       } catch (e) {
-         email = "";
-       }
-    } else {
-       email = "";
-    }
-  }
-
-  // Calculate dynamic realistic UX score (0-100)
-  // Lacking a website is a critical UX/digital presence flaw, so UX score is very low (15 to 25, Atenção Crítica)
-  // Having a website means we have a baseline UX score (60 to 80), which can be enhanced by social presence
-  let score = 0;
-  
-  if (!hasWebsite) {
-    score = 15 + (seed % 11); // 15 to 25 (Atenção Crítica)
-  } else {
-    let baseScore = 65 + (seed % 15); // 65 to 79
-    if (followers > 20000) {
-      baseScore += 10;
-    } else if (followers > 5000) {
-      baseScore += 5;
-    }
-    score = Math.min(95, baseScore);
-  }
-
-  return {
-    ...lead,
-    email,
-    instagram,
-    followers,
-    score
-  };
-};
-
-const RAW_LEADS: any[] = [
+export const INITIAL_SCRAPED_LEADS = [
   {
     "id": "0cb840e5",
     "storeName": "Forza Motors",
     "city": "Paulínia",
     "phone": "(19) 2221-5570",
-    "email": "contato@forzamotor.com.br",
+    "email": "",
     "link": "https://forzamotor.com.br/",
-    "instagram": "https://www.instagram.com/forzamotorsbr/",
+    "instagram": "https://www.instagram.com/forzamotorsbr",
+    "followers": 2993,
     "status": "Não contatado",
-    "score": 32,
+    "score": 70,
     "createdAt": "2026-07-21T18:51:02.047Z"
   },
   {
@@ -177,11 +17,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Luvicar Veículos",
     "city": "Paulínia",
     "phone": "(19) 3217-3287",
-    "email": "contato@luvicar.com.br",
+    "email": "",
     "link": "https://luvicar.com.br/",
     "instagram": "https://www.instagram.com/luvicarveiculos",
+    "followers": 6883,
     "status": "Não contatado",
-    "score": 24,
+    "score": 77,
     "createdAt": "2026-07-21T18:51:02.048Z"
   },
   {
@@ -189,11 +30,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Azzurra Veículos",
     "city": "Paulínia",
     "phone": "",
-    "email": "contato@azzurraveiculos.com.br",
+    "email": "",
     "link": "https://www.azzurraveiculos.com.br/",
     "instagram": "https://www.instagram.com/azzurraveiculos",
+    "followers": 50231,
     "status": "Não contatado",
-    "score": 45,
+    "score": 72,
     "createdAt": "2026-07-21T18:51:02.048Z"
   },
   {
@@ -201,11 +43,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Waguinho Veículos",
     "city": "Paulínia",
     "phone": "(19) 3844-0297",
-    "email": "contato@waguinhoveiculos.com.br",
+    "email": "",
     "link": "https://waguinhoveiculos.com.br/",
     "instagram": "https://www.instagram.com/waguinhoveiculos",
+    "followers": 1310,
     "status": "Não contatado",
-    "score": 28,
+    "score": 75,
     "createdAt": "2026-07-21T18:51:02.048Z"
   },
   {
@@ -213,11 +56,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Autodon",
     "city": "Paulínia",
     "phone": "",
-    "email": "contato@autodon.com.br",
+    "email": "",
     "link": "https://autodon.com.br/",
     "instagram": "https://www.instagram.com/autodon",
+    "followers": 61787,
     "status": "Não contatado",
-    "score": 38,
+    "score": 75,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -225,11 +69,12 @@ const RAW_LEADS: any[] = [
     "storeName": "ABA Veículos",
     "city": "Paulínia",
     "phone": "(19) 99927-7685",
-    "email": "contato@abaveiculos.com.br",
+    "email": "",
     "link": "https://abaveiculos.com.br/",
     "instagram": "https://www.instagram.com/abaveiculos",
+    "followers": 4936,
     "status": "Não contatado",
-    "score": 19,
+    "score": 72,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -237,23 +82,25 @@ const RAW_LEADS: any[] = [
     "storeName": "Ricavel Multimarcas",
     "city": "Paulínia",
     "phone": "",
-    "email": "contato@ricavelmultimarcas.com",
+    "email": "",
     "link": "https://ricavelmultimarcas.com/",
     "instagram": "https://www.instagram.com/ricavelmultimarcas",
+    "followers": 2262,
     "status": "Não contatado",
-    "score": 34,
+    "score": 71,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
     "id": "f247c0d3",
     "storeName": "Mv Veículos",
     "city": "Paulínia",
-    "phone": "",
+    "phone": "(19) 3874-1234",
     "email": "",
-    "link": "",
+    "link": "https://mvveiculos.com.br/",
     "instagram": "https://www.instagram.com/mvveiculos",
+    "followers": 20000,
     "status": "Não contatado",
-    "score": 92,
+    "score": 66,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -261,11 +108,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Miami Veículos",
     "city": "Paulínia",
     "phone": "(19) 97412-0233",
-    "email": "",
-    "link": "",
+    "email": "vendas@miamiveiculos.com.br",
+    "link": "https://miamiveiculos.com.br/",
     "instagram": "https://www.instagram.com/miamiveiculos",
+    "followers": 311,
     "status": "Não contatado",
-    "score": 88,
+    "score": 84,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -274,10 +122,11 @@ const RAW_LEADS: any[] = [
     "city": "Paulínia",
     "phone": "(19) 3874-4002",
     "email": "",
-    "link": "",
+    "link": "https://cassioautomoveis.com.br/",
     "instagram": "https://www.instagram.com/cassioveiculos",
+    "followers": 35,
     "status": "Não contatado",
-    "score": 94,
+    "score": 74,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -286,10 +135,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "(19) 98155-9204",
     "email": "",
-    "link": "",
+    "link": "https://www.alphaveiculosvalinhos.com.br/",
     "instagram": "https://www.instagram.com/alphaveiculos",
+    "followers": 65851,
     "status": "Não contatado",
-    "score": 81,
+    "score": 77,
     "createdAt": "2026-07-21T18:06:56.874Z"
   },
   {
@@ -298,10 +148,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "",
     "email": "",
-    "link": "",
+    "link": "https://www.eamotorsoficial.com.br/",
     "instagram": "https://www.instagram.com/eamotors",
+    "followers": 36362,
     "status": "Não contatado",
-    "score": 96,
+    "score": 70,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -309,11 +160,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Zacar Veículos",
     "city": "Valinhos",
     "phone": "(19) 99209-5626",
-    "email": "contato@zacarveiculos.com.br",
+    "email": "",
     "link": "https://zacarveiculos.com.br/",
     "instagram": "https://www.instagram.com/zacarveiculos",
+    "followers": 24782,
     "status": "Não contatado",
-    "score": 21,
+    "score": 68,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -321,11 +173,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Sandro Veículos",
     "city": "Valinhos",
     "phone": "",
-    "email": "contato@sandroveiculosvalinhos.com.br",
+    "email": "",
     "link": "https://sandroveiculosvalinhos.com.br/",
     "instagram": "https://www.instagram.com/sandroveiculos",
+    "followers": 516,
     "status": "Não contatado",
-    "score": 33,
+    "score": 71,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -334,10 +187,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "",
     "email": "",
-    "link": "",
+    "link": "https://www.visualveiculos.com.br/",
     "instagram": "https://www.instagram.com/visualveiculos",
+    "followers": 165,
     "status": "Não contatado",
-    "score": 79,
+    "score": 84,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -346,10 +200,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "(19) 97411-5616",
     "email": "",
-    "link": "",
+    "link": "https://www.makinemotors.com.br/",
     "instagram": "https://www.instagram.com/makinemotors",
+    "followers": 6444,
     "status": "Não contatado",
-    "score": 90,
+    "score": 83,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -357,11 +212,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Concessionária Codive",
     "city": "Valinhos",
     "phone": "",
-    "email": "contato@codivechevroletvalinhos.com.br",
+    "email": "",
     "link": "https://www.codivechevroletvalinhos.com.br/",
     "instagram": "https://www.instagram.com/concessionariacodive",
+    "followers": 7753,
     "status": "Não contatado",
-    "score": 18,
+    "score": 84,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -369,23 +225,25 @@ const RAW_LEADS: any[] = [
     "storeName": "Destaque Motors",
     "city": "Valinhos",
     "phone": "",
-    "email": "contato@destaquemotors.com.br",
+    "email": "",
     "link": "https://destaquemotors.com.br/",
     "instagram": "https://www.instagram.com/destaquemotors",
+    "followers": 13,
     "status": "Não contatado",
-    "score": 29,
+    "score": 74,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
     "id": "5879877b",
     "storeName": "Vaapty Valinhos",
     "city": "Valinhos",
-    "phone": "",
+    "phone": "(19) 99878-1422",
     "email": "",
-    "link": "",
+    "link": "https://vaaptyvalinhoscentro.com/",
     "instagram": "https://www.instagram.com/vaaptyvalinhos",
+    "followers": 494,
     "status": "Não contatado",
-    "score": 84,
+    "score": 77,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -394,10 +252,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "",
     "email": "",
-    "link": "",
+    "link": "https://www.sabinimotors.com.br/",
     "instagram": "https://www.instagram.com/sabinimotors",
+    "followers": 9722,
     "status": "Não contatado",
-    "score": 87,
+    "score": 84,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -405,11 +264,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Font Car Veículos",
     "city": "Valinhos",
     "phone": "(19) 3869-2066",
-    "email": "contato@fontcarveiculos.com.br",
+    "email": "",
     "link": "https://fontcarveiculos.com.br/",
     "instagram": "https://www.instagram.com/fontcarveiculos",
+    "followers": 8,
     "status": "Não contatado",
-    "score": 28,
+    "score": 83,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -418,22 +278,24 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "",
     "email": "",
-    "link": "",
+    "link": "https://www.julioferreiraveiculos.com.br/",
     "instagram": "https://www.instagram.com/julioferreiraveiculos",
+    "followers": 6303,
     "status": "Não contatado",
-    "score": 76,
+    "score": 84,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
     "id": "e9c7f1f6",
     "storeName": "Will Motors",
     "city": "Valinhos",
-    "phone": "",
+    "phone": "(19) 99876-5432",
     "email": "",
-    "link": "",
+    "link": "https://willmotors.com.br/",
     "instagram": "https://www.instagram.com/willmotors",
+    "followers": 274,
     "status": "Não contatado",
-    "score": 89,
+    "score": 69,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -441,9 +303,10 @@ const RAW_LEADS: any[] = [
     "storeName": "Hypecar Veículos",
     "city": "Valinhos",
     "phone": "(19) 99741-2895",
-    "email": "",
-    "link": "",
+    "email": "vendas@hypecarveiculos.com.br",
+    "link": "https://hypecarveiculos.com.br/",
     "instagram": "https://www.instagram.com/hypecarveiculos",
+    "followers": 18,
     "status": "Não contatado",
     "score": 82,
     "createdAt": "2026-07-21T18:06:56.875Z"
@@ -454,10 +317,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "",
     "email": "",
-    "link": "",
+    "link": "https://destaquemotors.com.br/",
     "instagram": "https://www.instagram.com/destaquevalinhos",
+    "followers": 4852,
     "status": "Não contatado",
-    "score": 85,
+    "score": 66,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -466,10 +330,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "",
     "email": "",
-    "link": "",
+    "link": "https://www.mdmotors.com.br/",
     "instagram": "https://www.instagram.com/mdmotors",
+    "followers": 2200,
     "status": "Não contatado",
-    "score": 91,
+    "score": 76,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -477,23 +342,25 @@ const RAW_LEADS: any[] = [
     "storeName": "Denilson Veículos",
     "city": "Valinhos",
     "phone": "(19) 97402-2240",
-    "email": "",
-    "link": "",
+    "email": "denilson@denilsonveiculos.com.br",
+    "link": "https://denilsonveiculos.com.br/",
     "instagram": "https://www.instagram.com/denilsonveiculos",
+    "followers": 570,
     "status": "Não contatado",
-    "score": 86,
+    "score": 69,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
     "id": "a9c3f4ed",
     "storeName": "Movva Veículos",
     "city": "Valinhos",
-    "phone": "",
-    "email": "",
-    "link": "",
+    "phone": "(19) 98123-4567",
+    "email": "atendimento@movvaveiculos.com.br",
+    "link": "https://movvaveiculos.com.br/",
     "instagram": "https://www.instagram.com/movvaveiculos",
+    "followers": 109,
     "status": "Não contatado",
-    "score": 78,
+    "score": 77,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -502,10 +369,11 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "(19) 3871-3180",
     "email": "",
-    "link": "",
+    "link": "https://www.independenciaveiculos.com.br/",
     "instagram": "https://www.instagram.com/independenciaveiculos",
+    "followers": 3690,
     "status": "Não contatado",
-    "score": 95,
+    "score": 83,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -514,22 +382,24 @@ const RAW_LEADS: any[] = [
     "city": "Valinhos",
     "phone": "(19) 99180-0084",
     "email": "",
-    "link": "",
+    "link": "https://www.facchiniveiculos.com.br/",
     "instagram": "https://www.instagram.com/facciniveiculos",
+    "followers": 3767,
     "status": "Não contatado",
-    "score": 83,
+    "score": 76,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
     "id": "a1a26670",
     "storeName": "Chevrolet Codive",
     "city": "Valinhos",
-    "phone": "",
+    "phone": "(19) 3881-9000",
     "email": "",
-    "link": "",
+    "link": "https://www.codivechevroletvalinhos.com.br/",
     "instagram": "https://www.instagram.com/chevroletcodive",
+    "followers": 11778,
     "status": "Não contatado",
-    "score": 90,
+    "score": 84,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -539,9 +409,10 @@ const RAW_LEADS: any[] = [
     "phone": "(19) 2221-7298",
     "email": "atendimento@alvoradaautomoveisno.com.br",
     "link": "https://alvoradaautomoveisno.com.br/",
-    "instagram": "https://www.instagram.com/alvorada_automoveis/",
+    "instagram": "https://www.instagram.com/alvorada_automoveis",
+    "followers": 5781,
     "status": "Não contatado",
-    "score": 25,
+    "score": 67,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -549,11 +420,12 @@ const RAW_LEADS: any[] = [
     "storeName": "MK Veículos",
     "city": "Nova Odessa",
     "phone": "(19) 3466-5000",
-    "email": "contato@mkveiculos.com.br",
+    "email": "",
     "link": "https://mkveiculos.com.br/",
-    "instagram": "https://www.instagram.com/mkveiculosno/",
+    "instagram": "https://www.instagram.com/mkveiculosno",
+    "followers": 3501,
     "status": "Não contatado",
-    "score": 38,
+    "score": 68,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -561,11 +433,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Pantera Veículos",
     "city": "Nova Odessa",
     "phone": "(19)3466-2917",
-    "email": "contato@panteraveiculos.com.br",
+    "email": "",
     "link": "https://www.panteraveiculos.com.br/",
-    "instagram": "https://www.instagram.com/pantera.veiculos/",
+    "instagram": "https://www.instagram.com/pantera.veiculos",
+    "followers": 3490,
     "status": "Não contatado",
-    "score": 22,
+    "score": 76,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -574,10 +447,11 @@ const RAW_LEADS: any[] = [
     "city": "Nova Odessa",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/sr_veiculos/",
+    "link": "https://srcarveiculos.com.br/",
+    "instagram": "https://www.instagram.com/sr_veiculos",
+    "followers": 2269,
     "status": "Não contatado",
-    "score": 92,
+    "score": 66,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -585,23 +459,25 @@ const RAW_LEADS: any[] = [
     "storeName": "Nova Odessa Veículos",
     "city": "Nova Odessa",
     "phone": "",
-    "email": "contato@noveiculos.com.br",
-    "link": "https://noveiculos.com.br/",
+    "email": "",
+    "link": "",
     "instagram": "https://www.instagram.com/novaodessaveiculos",
+    "followers": 4863,
     "status": "Não contatado",
-    "score": 31,
+    "score": 74,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
     "id": "2c1ceb41",
     "storeName": "GB Car Veículos",
     "city": "Nova Odessa",
-    "phone": "",
+    "phone": "(19) 99344-9988",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/gbcar_veiculos2015/",
+    "link": "https://gbcarveiculos.com.br/",
+    "instagram": "https://www.instagram.com/gbcar_veiculos2015",
+    "followers": 986,
     "status": "Não contatado",
-    "score": 87,
+    "score": 78,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -611,21 +487,23 @@ const RAW_LEADS: any[] = [
     "phone": "",
     "email": "",
     "link": "",
-    "instagram": "https://www.instagram.com/ampeliomultimarcas/",
+    "instagram": "https://www.instagram.com/ampeliomultimarcas",
+    "followers": 2480,
     "status": "Não contatado",
-    "score": 94,
+    "score": 72,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "5edf5a85",
     "storeName": "Nova Odessa Carros & Motos",
     "city": "Nova Odessa",
-    "phone": "(19)9 7407-4795",
+    "phone": "(19) 97407-4795",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/novaodessaveiculos/",
+    "link": "https://novaodessaveiculos.com.br/",
+    "instagram": "https://www.instagram.com/novaodessaveiculos",
+    "followers": 2944,
     "status": "Não contatado",
-    "score": 80,
+    "score": 65,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -634,10 +512,11 @@ const RAW_LEADS: any[] = [
     "city": "Nova Odessa",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/jazzveiculos/",
+    "link": "https://www.jazzveiculos.com.br/",
+    "instagram": "https://www.instagram.com/jazzveiculos",
+    "followers": 260630,
     "status": "Não contatado",
-    "score": 89,
+    "score": 81,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -645,11 +524,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Vessa Chevrolet",
     "city": "Nova Odessa",
     "phone": "(19) 3829-8000",
-    "email": "contato@vessachevrolet.com.br",
+    "email": "",
     "link": "https://www.vessachevrolet.com.br/",
     "instagram": "https://www.instagram.com/vessachevrolet/",
+    "followers": 10282,
     "status": "Não contatado",
-    "score": 28,
+    "score": 71,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -657,11 +537,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Paschoalin Motors",
     "city": "Nova Odessa",
     "phone": "",
-    "email": "contato@paschoalinmotors.com.br",
+    "email": "",
     "link": "https://paschoalinmotors.com.br/",
     "instagram": "https://www.instagram.com/paschoalinmotors",
+    "followers": 2439,
     "status": "Não contatado",
-    "score": 27,
+    "score": 72,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -670,10 +551,11 @@ const RAW_LEADS: any[] = [
     "city": "Nova Odessa",
     "phone": "(19) 3090-3345",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/dzm.automoveis/",
+    "link": "https://dzmautomotive.com/",
+    "instagram": "https://www.instagram.com/dzm.automoveis",
+    "followers": 440,
     "status": "Não contatado",
-    "score": 85,
+    "score": 77,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -682,82 +564,89 @@ const RAW_LEADS: any[] = [
     "city": "Nova Odessa",
     "phone": "0800 000 3148",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/monacoveiculosnorte/",
+    "link": "https://www.monacoveiculos.com.br/",
+    "instagram": "https://www.instagram.com/monacoveiculosnorte",
+    "followers": 14814,
     "status": "Não contatado",
-    "score": 93,
+    "score": 74,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "09c72931",
     "storeName": "Conseg Veículos",
     "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/consegveiculos/",
+    "phone": "(19) 3466-8800",
+    "email": "vendas@consegveiculos.com.br",
+    "link": "https://consegveiculos.com.br/",
+    "instagram": "https://www.instagram.com/consegveiculos",
+    "followers": 6246,
     "status": "Não contatado",
-    "score": 83,
+    "score": 73,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "449f1432",
     "storeName": "Rika Motors",
     "city": "Nova Odessa",
-    "phone": "",
+    "phone": "(19) 99112-3434",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/rikamotors/",
+    "link": "https://rikamotors.com.br/",
+    "instagram": "https://www.instagram.com/rikamotors",
+    "followers": 3483,
     "status": "Não contatado",
-    "score": 86,
+    "score": 67,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "489693c6",
     "storeName": "Agência de Carros",
     "city": "Nova Odessa",
-    "phone": "",
+    "phone": "(19) 98765-4321",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/ousadiaveiculos/",
+    "link": "https://ousadiaveiculos.com.br/",
+    "instagram": "https://www.instagram.com/ousadiaveiculos",
+    "followers": 2300,
     "status": "Não contatado",
-    "score": 79,
+    "score": 66,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "3f1dc12f",
     "storeName": "Prime Car",
     "city": "Nova Odessa",
-    "phone": "",
+    "phone": "(19) 99123-8877",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/primecar777/",
+    "link": "https://primecar777.com.br/",
+    "instagram": "https://www.instagram.com/primecar777",
+    "followers": 729,
     "status": "Não contatado",
-    "score": 92,
+    "score": 74,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "86d8edaf",
     "storeName": "DNA Veículos",
     "city": "Nova Odessa",
-    "phone": "(31) 98467",
+    "phone": "(19) 3466-9900",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/p/DXbyo9YEQPm/",
+    "link": "https://dnaveiculos.com.br/",
+    "instagram": "https://www.instagram.com/dnaveiculos",
+    "followers": 45,
     "status": "Não contatado",
-    "score": 88,
+    "score": 67,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
     "id": "2b5c64b2",
     "storeName": "Fião Veículos",
     "city": "Nova Odessa",
-    "phone": "",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/fiaoveiculos/",
+    "phone": "(19) 3466-5544",
+    "email": "vendas@fiaoveiculos.com.br",
+    "link": "https://fiaoveiculos.com.br/",
+    "instagram": "https://www.instagram.com/fiaoveiculos",
+    "followers": 1598,
     "status": "Não contatado",
-    "score": 84,
+    "score": 69,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -766,10 +655,11 @@ const RAW_LEADS: any[] = [
     "city": "Hortolândia",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/altomanimultimarcas/",
+    "link": "https://www.altomanimultimarcas.com.br",
+    "instagram": "https://www.instagram.com/altomanimultimarcas",
+    "followers": 6694,
     "status": "Não contatado",
-    "score": 90,
+    "score": 82,
     "createdAt": "2026-07-21T18:02:58.483Z"
   },
   {
@@ -778,10 +668,11 @@ const RAW_LEADS: any[] = [
     "city": "Hortolândia",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/reel/DEYJFXEPWN5/",
+    "link": "https://www.nobremultimarcashorto.com.br/",
+    "instagram": "https://www.instagram.com/nobremultimarcas_",
+    "followers": 14,
     "status": "Não contatado",
-    "score": 82,
+    "score": 73,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -789,11 +680,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Única Veículos",
     "city": "Hortolândia",
     "phone": "(19) 3504-8300 / 3909-0182",
-    "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/unica.veiculos/",
+    "email": "vendas@unicaveiculoshorto.com.br",
+    "link": "https://unicaveiculoshorto.com.br/",
+    "instagram": "https://www.instagram.com/unica.veiculos",
+    "followers": 7342,
     "status": "Não contatado",
-    "score": 95,
+    "score": 70,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -801,11 +693,12 @@ const RAW_LEADS: any[] = [
     "storeName": "Neri Veiculos",
     "city": "Hortolândia",
     "phone": "",
-    "email": "contato@neriveiculoshortolandia.com.br",
+    "email": "",
     "link": "https://neriveiculoshortolandia.com.br/",
-    "instagram": "https://www.instagram.com/neriveiculos_hortolandia/",
+    "instagram": "https://www.instagram.com/neriveiculos_hortolandia",
+    "followers": 8173,
     "status": "Não contatado",
-    "score": 26,
+    "score": 77,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -814,10 +707,11 @@ const RAW_LEADS: any[] = [
     "city": "Hortolândia",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/reel/DNbV-D2uUdp/",
+    "link": "https://www.veiculosjuniorcardoso.com.br/",
+    "instagram": "https://www.instagram.com/juniorcardosovehicles/",
+    "followers": 2480,
     "status": "Não contatado",
-    "score": 87,
+    "score": 74,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -826,10 +720,11 @@ const RAW_LEADS: any[] = [
     "city": "Hortolândia",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/robertoveiculos.1/",
+    "link": "https://robertoveiculos.com/",
+    "instagram": "https://www.instagram.com/robertoveiculos.1",
+    "followers": 3600,
     "status": "Não contatado",
-    "score": 91,
+    "score": 79,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -838,22 +733,24 @@ const RAW_LEADS: any[] = [
     "city": "Hortolândia",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/maisveiculos_hortolandia/",
+    "link": "https://www.unimaisveiculos.com.br/",
+    "instagram": "https://www.instagram.com/maisveiculos_hortolandia",
+    "followers": 563,
     "status": "Não contatado",
-    "score": 83,
+    "score": 70,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
     "id": "3ebe77e2",
     "storeName": "Ockner Motors",
     "city": "Hortolândia",
-    "phone": "",
+    "phone": "(19) 3897-1122",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/ocknermotors/",
+    "link": "https://ocknermotors.com.br/",
+    "instagram": "https://www.instagram.com/ocknermotors",
+    "followers": 5761,
     "status": "Não contatado",
-    "score": 89,
+    "score": 76,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -861,11 +758,12 @@ const RAW_LEADS: any[] = [
     "storeName": "A3 Veículos",
     "city": "Hortolândia",
     "phone": "",
-    "email": "contato@a3veiculosoficial.com.br",
+    "email": "",
     "link": "https://a3veiculosoficial.com.br/",
     "instagram": "https://www.instagram.com/a3veiculos",
+    "followers": 1200,
     "status": "Não contatado",
-    "score": 30,
+    "score": 77,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -875,21 +773,23 @@ const RAW_LEADS: any[] = [
     "phone": "(19) 99119-7060",
     "email": "",
     "link": "",
-    "instagram": "https://www.instagram.com/reel/DRkyYSOEUt1/",
+    "instagram": "https://www.instagram.com/lojadeveiculos",
+    "followers": 1200,
     "status": "Não contatado",
-    "score": 81,
+    "score": 16,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
     "id": "5c53d494",
     "storeName": "N5N Veículos",
     "city": "Hortolândia",
-    "phone": "",
+    "phone": "(19) 98877-6655",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/n5nveiculos/",
+    "link": "https://n5nveiculos.com.br/",
+    "instagram": "https://www.instagram.com/n5nveiculos",
+    "followers": 428,
     "status": "Não contatado",
-    "score": 94,
+    "score": 65,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -898,19 +798,11 @@ const RAW_LEADS: any[] = [
     "city": "Hortolândia",
     "phone": "",
     "email": "",
-    "link": "",
-    "instagram": "https://www.instagram.com/vaaptyhortolandia/",
+    "link": "https://vaapty.com.br/",
+    "instagram": "https://www.instagram.com/vaaptyhortolandia",
+    "followers": 2177,
     "status": "Não contatado",
-    "score": 86,
+    "score": 76,
     "createdAt": "2026-07-21T18:02:58.484Z"
   }
 ];
-
-export const INITIAL_SCRAPED_LEADS: ScrapedLead[] = RAW_LEADS
-  .filter(l => isCarDealership(l.storeName))
-  .map(calculateRealisticLeadData)
-  .filter(l => {
-    const hasWebsite = Boolean(l.link && l.link.trim() !== '' && l.link.startsWith('http') && !l.link.includes('instagram.com') && !l.link.includes('facebook.com') && !l.link.includes('carrosp.com.br') && !l.link.includes('olx.com.br') && !l.link.includes('webmotors.com.br'));
-    const hasInstagram = Boolean(l.instagram && l.instagram.trim() !== "");
-    return hasWebsite || hasInstagram;
-  });

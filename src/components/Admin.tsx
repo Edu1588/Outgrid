@@ -273,6 +273,70 @@ export function Admin() {
     }
   };
 
+  const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{
+    phone: string;
+    email: string;
+    link: string;
+    instagram: string;
+    followers: string;
+  }>({
+    phone: '',
+    email: '',
+    link: '',
+    instagram: '',
+    followers: ''
+  });
+
+  const handleStartEdit = (lead: ScrapedLead) => {
+    setEditingLeadId(lead.id);
+    setEditForm({
+      phone: lead.phone || '',
+      email: lead.email || '',
+      link: lead.link || '',
+      instagram: lead.instagram || '',
+      followers: lead.followers !== undefined && lead.followers !== null ? String(lead.followers) : ''
+    });
+  };
+
+  const handleSaveEdit = async (id: string) => {
+    const updatedFollowers = editForm.followers.trim() === '' ? null : parseInt(editForm.followers, 10);
+    const payload = {
+      phone: editForm.phone,
+      email: editForm.email,
+      link: editForm.link,
+      instagram: editForm.instagram,
+      followers: isNaN(updatedFollowers as any) ? null : updatedFollowers
+    };
+
+    // Optimistic UI update
+    setScrapedLeads(prev => prev.map(l => l.id === id ? { ...l, ...payload, followers: payload.followers as any } : l));
+    setEditingLeadId(null);
+
+    try {
+      const res = await fetch(`/api/leads/scraped/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Update local storage
+        const currentLocal = JSON.parse(localStorage.getItem('outgrid_scraped_leads') || '[]');
+        const updatedLocal = currentLocal.map((l: any) => l.id === id ? { ...l, ...payload, followers: payload.followers } : l);
+        localStorage.setItem('outgrid_scraped_leads', JSON.stringify(updatedLocal));
+        showToast('Dados do lead atualizados com sucesso!');
+      } else {
+        showToast('Falha ao salvar alterações no servidor.');
+        fetchScrapedLeads(); // revert
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Erro de rede ao salvar alterações.');
+      fetchScrapedLeads(); // revert
+    }
+  };
+
   // Prepare Analytics Data
   const now = new Date();
   const filteredViews = pageViews.filter(view => {
@@ -296,6 +360,8 @@ export function Admin() {
   const viewsByDay = filteredViews.reduce((acc, view) => {
     const date = new Date(view.timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
     let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
+    pathName = pathName.split('#')[0] || pathName.replace('#', 'Home Section: ');
+    pathName = pathName.replace(/-/g, ' ');
     pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
 
     if (!acc[date]) {
@@ -323,6 +389,8 @@ export function Admin() {
   // Data for Pie Chart & Bar Chart
   const pageDistributionMap = filteredViews.reduce((acc, view) => {
     let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
+    pathName = pathName.split('#')[0] || pathName.replace('#', 'Home Section: ');
+    pathName = pathName.replace(/-/g, ' ');
     pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
     if (!acc[pathName]) acc[pathName] = 0;
     acc[pathName]++;
@@ -733,6 +801,8 @@ export function Admin() {
                     
                     pageViews.forEach(view => {
                       let pathName = view.path === '/' ? 'Home' : view.path.replace('/', '');
+                      pathName = pathName.split('#')[0] || pathName.replace('#', 'Home Section: ');
+                      pathName = pathName.replace(/-/g, ' ');
                       pathName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
                       if (!pageStats.has(pathName)) {
                         pageStats.set(pathName, { name: pathName, path: view.path, today: 0, month: 0, year: 0 });
@@ -978,20 +1048,23 @@ export function Admin() {
                 </span>
               </div>
 
-              {/* Quick Toggle for Opportunities */}
-              <button
-                onClick={() => setProspectOnlyOpportunities(!prospectOnlyOpportunities)}
-                className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
-                  prospectOnlyOpportunities 
-                    ? 'bg-red-500/20 text-red-500 border-red-500/40 shadow-sm' 
-                    : theme === 'light'
-                      ? 'bg-slate-100 text-slate-600 border-slate-200 hover:border-slate-300'
-                      : 'bg-[#0A0A0A] text-gray-400 border-white/10 hover:border-gray-500'
-                }`}
-              >
-                <div className={`w-2 h-2 rounded-full ${prospectOnlyOpportunities ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                Apenas Oportunidades (Score &lt; 70)
-              </button>
+              {/* Quick Actions */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setProspectOnlyOpportunities(!prospectOnlyOpportunities)}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                    prospectOnlyOpportunities 
+                      ? 'bg-red-500/20 text-red-500 border-red-500/40 shadow-sm' 
+                      : theme === 'light'
+                        ? 'bg-slate-100 text-slate-600 border-slate-200 hover:border-slate-300'
+                        : 'bg-[#0A0A0A] text-gray-400 border-white/10 hover:border-gray-500'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${prospectOnlyOpportunities ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                  Apenas Oportunidades (Score &lt; 70)
+                </button>
+              </div>
             </div>
 
             {/* Filter Bar Controls */}
@@ -1077,12 +1150,13 @@ export function Admin() {
                   <th className="p-4 font-bold">Score de Oportunidade</th>
                   <th className="p-4 font-bold">Status</th>
                   <th className="p-4 font-bold text-right">Data</th>
+                  <th className="p-4 font-bold text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${theme === 'light' ? 'divide-slate-200/80' : 'divide-white/5'}`}>
                 {filteredScrapedLeads.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="p-12 text-center text-gray-500">
+                    <td colSpan={6} className="p-12 text-center text-gray-500">
                       <div className="flex flex-col items-center justify-center">
                         <Search className="w-12 h-12 mb-4 opacity-20" />
                         <p>Nenhuma loja encontrada para os filtros selecionados.</p>
@@ -1090,139 +1164,250 @@ export function Admin() {
                     </td>
                   </tr>
                 )}
-                {filteredScrapedLeads.map(lead => (
-                  <tr key={lead.id} className={`transition-colors group ${theme === 'light' ? 'hover:bg-slate-50/80' : 'hover:bg-white/5'}`}>
-                    <td className="p-4">
-                      <div className={`font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{lead.storeName}</div>
-                      <div className="flex flex-col gap-1">
-                        <div className={`text-xs flex items-center gap-1 mb-0.5 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>
-                          <MapPin className="w-3 h-3 text-orange-primary" /> {lead.city}
+                {filteredScrapedLeads.map(lead => {
+                  const isEditing = editingLeadId === lead.id;
+                  return (
+                    <tr key={lead.id} className={`transition-colors group ${theme === 'light' ? 'hover:bg-slate-50/80' : 'hover:bg-white/5'} ${isEditing ? (theme === 'light' ? 'bg-orange-50/20' : 'bg-orange-primary/5') : ''}`}>
+                      <td className="p-4">
+                        <div className={`font-bold mb-1 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{lead.storeName}</div>
+                        <div className="flex flex-col gap-1">
+                          <div className={`text-xs flex items-center gap-1 mb-0.5 ${theme === 'light' ? 'text-slate-500' : 'text-gray-400'}`}>
+                            <MapPin className="w-3 h-3 text-orange-primary" /> {lead.city}
+                          </div>
+
+                          {isEditing ? (
+                            <div className="flex flex-col gap-1.5 mt-1.5 max-w-[240px]">
+                              <div>
+                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Site Oficial</label>
+                                <input 
+                                  type="text" 
+                                  value={editForm.link} 
+                                  onChange={(e) => setEditForm(prev => ({ ...prev, link: e.target.value }))}
+                                  className={`w-full text-xs px-2 py-1 rounded border focus:outline-none ${
+                                    theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
+                                  }`}
+                                  placeholder="ex: www.loja.com.br"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Instagram Link</label>
+                                <input 
+                                  type="text" 
+                                  value={editForm.instagram} 
+                                  onChange={(e) => setEditForm(prev => ({ ...prev, instagram: e.target.value }))}
+                                  className={`w-full text-xs px-2 py-1 rounded border focus:outline-none ${
+                                    theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
+                                  }`}
+                                  placeholder="ex: https://instagram.com/user"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Seguidores Reais</label>
+                                <input 
+                                  type="number" 
+                                  value={editForm.followers} 
+                                  onChange={(e) => setEditForm(prev => ({ ...prev, followers: e.target.value }))}
+                                  className={`w-full text-xs px-2 py-1 rounded border focus:outline-none ${
+                                    theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
+                                  }`}
+                                  placeholder="Seguidores"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {/* Website Link */}
+                              {lead.link && !lead.link.includes('instagram.com') ? (
+                                <div className="flex items-center gap-2">
+                                  <a 
+                                    href={lead.link.startsWith('http') ? lead.link : `https://${lead.link}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-xs text-orange-primary hover:underline flex items-center gap-1.5 truncate max-w-[200px]"
+                                    title="Site Oficial"
+                                  >
+                                    <Globe className="w-3.5 h-3.5 shrink-0 text-orange-primary" />
+                                    <span className="truncate font-medium">{lead.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                                  </a>
+                                  <span className="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.2 rounded font-mono font-semibold">Site Ativo</span>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center gap-1 text-[11px] text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold w-fit mt-0.5">
+                                  <AlertTriangle className="w-3 h-3 shrink-0 text-amber-500" />
+                                  <span>Sem site próprio (Apenas Social/Portais)</span>
+                                </div>
+                              )}
+
+                              {/* Instagram Link */}
+                              {(lead.instagram || (lead.link && lead.link.includes('instagram.com'))) && (
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <a 
+                                    href={lead.instagram || lead.link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-xs text-pink-500 hover:text-pink-600 hover:underline flex items-center gap-1.5 truncate max-w-[140px]"
+                                    title="Instagram Oficial"
+                                  >
+                                    <svg className="w-3 h-3 shrink-0 fill-current text-pink-500" viewBox="0 0 24 24">
+                                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                    </svg>
+                                    <span className="truncate font-medium">Instagram</span>
+                                  </a>
+
+                                  {lead.followers !== undefined && lead.followers !== null && (
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      <span 
+                                        className="text-[10px] bg-pink-500/10 text-pink-500 border border-pink-500/20 px-1.5 py-0.5 rounded font-mono font-semibold flex items-center gap-1 cursor-help shrink-0"
+                                        title="Seguidores Reais do Instagram (Apify)"
+                                      >
+                                        {lead.followers >= 1000 ? `${(lead.followers / 1000).toFixed(1).replace('.0', '')}k` : lead.followers} seg.
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Seguidores Reais Verificados" />
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </>
+                          )}
                         </div>
-                        {/* Website Link */}
-                        {lead.link && !lead.link.includes('instagram.com') ? (
-                          <div className="flex items-center gap-2">
-                            <a 
-                              href={lead.link.startsWith('http') ? lead.link : `https://${lead.link}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="text-xs text-orange-primary hover:underline flex items-center gap-1.5 truncate max-w-[200px]"
-                              title="Site Oficial"
-                            >
-                              <Globe className="w-3.5 h-3.5 shrink-0 text-orange-primary" />
-                              <span className="truncate font-medium">{lead.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                            </a>
-                            <span className="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.2 rounded font-mono font-semibold">Site Ativo</span>
+                      </td>
+                      <td className="p-4">
+                        {isEditing ? (
+                          <div className="flex flex-col gap-1.5 max-w-[200px]">
+                            <div>
+                              <label className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">WhatsApp / Celular</label>
+                              <input 
+                                type="text" 
+                                value={editForm.phone} 
+                                onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                                className={`w-full text-xs px-2 py-1 rounded border focus:outline-none ${
+                                  theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
+                                }`}
+                                placeholder="(19) 99999-9999"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">E-mail</label>
+                              <input 
+                                type="email" 
+                                value={editForm.email} 
+                                onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                                className={`w-full text-xs px-2 py-1 rounded border focus:outline-none ${
+                                  theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
+                                }`}
+                                placeholder="contato@loja.com.br"
+                              />
+                            </div>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1 text-[11px] text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold w-fit mt-0.5">
-                            <AlertTriangle className="w-3 h-3 shrink-0 text-amber-500" />
-                            <span>Sem site próprio (Apenas Social/Portais)</span>
-                          </div>
+                          <>
+                            <div className={`text-xs flex items-center gap-1.5 mb-1.5 ${theme === 'light' ? 'text-slate-800' : 'text-gray-200'}`}>
+                              <Phone className="w-3.5 h-3.5 text-orange-primary shrink-0" /> 
+                              {lead.phone ? (
+                                <a 
+                                  href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="hover:text-orange-primary transition-colors font-medium text-xs flex items-center gap-1 text-emerald-500 font-mono"
+                                  title="Abrir no WhatsApp"
+                                >
+                                  {lead.phone}
+                                </a>
+                              ) : (
+                                <span className={`text-xs italic ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Não informado</span>
+                              )}
+                            </div>
+                            <div className={`text-xs flex items-center gap-1.5 ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
+                              <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" /> 
+                              {lead.email ? (
+                                <a 
+                                  href={`mailto:${lead.email}`} 
+                                  className="hover:text-orange-primary transition-colors truncate max-w-[180px]"
+                                  title={lead.email}
+                                >
+                                  {lead.email}
+                                </a>
+                              ) : (
+                                <span className={`text-[11px] italic ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Contato via WhatsApp</span>
+                              )}
+                            </div>
+                          </>
                         )}
-                        {/* Instagram Link */}
-                        {(lead.instagram || (lead.link && lead.link.includes('instagram.com'))) && (
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <a 
-                              href={lead.instagram || lead.link} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="text-xs text-pink-500 hover:text-pink-600 hover:underline flex items-center gap-1.5 truncate max-w-[220px]"
-                              title="Instagram Oficial"
-                            >
-                              <svg className="w-3 h-3 shrink-0 fill-current text-pink-500" viewBox="0 0 24 24">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                              </svg>
-                              <span className="truncate font-medium">Instagram</span>
-                            </a>
-                            {lead.followers !== undefined && lead.followers !== null && (
-                              <span 
-                                className="text-[10px] bg-pink-500/10 text-pink-500 border border-pink-500/20 px-1.5 py-0.5 rounded font-mono font-semibold flex items-center gap-1 cursor-help shrink-0"
-                                title="Seguidores reais obtidos via verificação do Instagram"
-                              >
-                                {lead.followers >= 1000 ? `${(lead.followers / 1000).toFixed(1).replace('.0', '')}k` : lead.followers} seg.
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Seguidores Reais Verificados" />
-                              </span>
-                            )}
-                          </div>
+                      </td>
+                      <td className="p-4">
+                        {lead.score !== undefined ? (
+                          <UXAuditHoverCard 
+                            storeName={lead.storeName} 
+                            url={lead.link || ''} 
+                            score={lead.score} 
+                          />
+                        ) : (
+                          <span className="text-sm text-gray-500">N/A</span>
                         )}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className={`text-xs flex items-center gap-1.5 mb-1.5 ${theme === 'light' ? 'text-slate-800' : 'text-gray-200'}`}>
-                        <Phone className="w-3.5 h-3.5 text-orange-primary shrink-0" /> 
-                        {lead.phone ? (
-                          <a 
-                            href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="hover:text-orange-primary transition-colors font-medium text-xs flex items-center gap-1 text-emerald-500 font-mono"
-                            title="Abrir no WhatsApp"
+                      </td>
+                      <td className="p-4">
+                        <div className="relative inline-block">
+                          <select 
+                            value={lead.status}
+                            onChange={(e) => handleStatusChange(lead.id, e.target.value as any)}
+                            className={`appearance-none border text-xs font-bold rounded-lg pl-3 pr-8 py-2 focus:outline-none cursor-pointer transition-colors ${
+                              theme === 'light'
+                                ? lead.status === 'Não contatado' ? 'bg-slate-50 border-slate-300 text-slate-600 hover:border-slate-400' :
+                                  lead.status === 'Em contato' ? 'border-blue-400 text-blue-600 bg-blue-50' :
+                                  lead.status === 'Reunião agendada' ? 'border-orange-400 text-orange-600 bg-orange-50' :
+                                  lead.status === 'Fechado' ? 'border-emerald-400 text-emerald-600 bg-emerald-50' :
+                                  'border-red-400 text-red-600 bg-red-50'
+                                : lead.status === 'Não contatado' ? 'bg-[#0A0A0A] border-gray-700 text-gray-400 hover:border-gray-500' :
+                                  lead.status === 'Em contato' ? 'bg-[#0A0A0A] border-blue-500/30 text-blue-400 bg-blue-500/5' :
+                                  lead.status === 'Reunião agendada' ? 'bg-[#0A0A0A] border-orange-primary/50 text-orange-primary bg-orange-primary/10' :
+                                  lead.status === 'Fechado' ? 'bg-[#0A0A0A] border-green-500/50 text-green-400 bg-green-500/10' :
+                                  'bg-[#0A0A0A] border-red-500/30 text-red-400 bg-red-500/5'
+                            }`}
                           >
-                            {lead.phone}
-                          </a>
+                            <option value="Não contatado">Não contatado</option>
+                            <option value="Em contato">Em contato</option>
+                            <option value="Reunião agendada">Reunião agendada</option>
+                            <option value="Fechado">Fechado (Ganho)</option>
+                            <option value="Perdido">Perdido</option>
+                          </select>
+                          <ChevronDown className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+                        </div>
+                      </td>
+                      <td className={`p-4 text-right text-sm ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>
+                        {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                      </td>
+                      <td className="p-4 text-right">
+                        {isEditing ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button 
+                              onClick={() => handleSaveEdit(lead.id)}
+                              className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 rounded transition-colors"
+                              title="Salvar alterações"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => setEditingLeadId(null)}
+                              className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded transition-colors"
+                              title="Cancelar"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
                         ) : (
-                          <span className={`text-xs italic ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Não informado</span>
-                        )}
-                      </div>
-                      <div className={`text-xs flex items-center gap-1.5 ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
-                        <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" /> 
-                        {lead.email ? (
-                          <a 
-                            href={`mailto:${lead.email}`} 
-                            className="hover:text-orange-primary transition-colors truncate max-w-[180px]"
-                            title={lead.email}
+                          <button 
+                            onClick={() => handleStartEdit(lead)}
+                            className="p-1.5 hover:bg-orange-primary/10 text-orange-primary hover:text-orange-primary/80 border border-orange-primary/20 hover:border-orange-primary/40 rounded transition-colors inline-flex items-center gap-1 text-xs"
+                            title="Editar dados do lead"
                           >
-                            {lead.email}
-                          </a>
-                        ) : (
-                          <span className={`text-[11px] italic ${theme === 'light' ? 'text-slate-400' : 'text-gray-500'}`}>Contato via WhatsApp</span>
+                            <Edit2 className="w-3.5 h-3.5" />
+                            <span>Editar</span>
+                          </button>
                         )}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      {lead.score !== undefined ? (
-                        <UXAuditHoverCard 
-                          storeName={lead.storeName} 
-                          url={lead.link || ''} 
-                          score={lead.score} 
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-500">N/A</span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <div className="relative inline-block">
-                        <select 
-                          value={lead.status}
-                          onChange={(e) => handleStatusChange(lead.id, e.target.value as any)}
-                          className={`appearance-none border text-xs font-bold rounded-lg pl-3 pr-8 py-2 focus:outline-none cursor-pointer transition-colors ${
-                            theme === 'light'
-                              ? lead.status === 'Não contatado' ? 'bg-slate-50 border-slate-300 text-slate-600 hover:border-slate-400' :
-                                lead.status === 'Em contato' ? 'border-blue-400 text-blue-600 bg-blue-50' :
-                                lead.status === 'Reunião agendada' ? 'border-orange-400 text-orange-600 bg-orange-50' :
-                                lead.status === 'Fechado' ? 'border-emerald-400 text-emerald-600 bg-emerald-50' :
-                                'border-red-400 text-red-600 bg-red-50'
-                              : lead.status === 'Não contatado' ? 'bg-[#0A0A0A] border-gray-700 text-gray-400 hover:border-gray-500' :
-                                lead.status === 'Em contato' ? 'bg-[#0A0A0A] border-blue-500/30 text-blue-400 bg-blue-500/5' :
-                                lead.status === 'Reunião agendada' ? 'bg-[#0A0A0A] border-orange-primary/50 text-orange-primary bg-orange-primary/10' :
-                                lead.status === 'Fechado' ? 'bg-[#0A0A0A] border-green-500/50 text-green-400 bg-green-500/10' :
-                                'bg-[#0A0A0A] border-red-500/30 text-red-400 bg-red-500/5'
-                          }`}
-                        >
-                          <option value="Não contatado">Não contatado</option>
-                          <option value="Em contato">Em contato</option>
-                          <option value="Reunião agendada">Reunião agendada</option>
-                          <option value="Fechado">Fechado (Ganho)</option>
-                          <option value="Perdido">Perdido</option>
-                        </select>
-                        <ChevronDown className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
-                      </div>
-                    </td>
-                    <td className={`p-4 text-right text-sm ${theme === 'light' ? 'text-slate-500' : 'text-gray-500'}`}>
-                      {new Date(lead.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1308,14 +1493,21 @@ export function Admin() {
             </div>
           </button>
 
+          <button 
+            onClick={() => setActiveTab('captacao')}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'captacao' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <div className="flex items-center gap-3">
+              <LucidePieChart className="w-4 h-4" /> Captação
+            </div>
+          </button>
 
-          
           <button 
             onClick={() => setActiveTab('estrategia')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'estrategia' ? 'bg-orange-primary/10 text-orange-primary' : theme === 'light' ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             <div className="flex items-center gap-3">
-              <LucidePieChart className="w-4 h-4" /> Estratégia
+              <LineChart className="w-4 h-4" /> Estratégia
             </div>
           </button>
 
@@ -1341,7 +1533,7 @@ export function Admin() {
         <header className={`h-20 border-b backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-30 transition-colors ${theme === 'light' ? 'bg-white/90 border-slate-200 text-slate-900' : 'bg-[#0A0A0A]/80 border-white/5 text-white'}`}>
           <div className="flex items-center gap-4">
             <h2 className={`text-lg font-bold capitalize ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
-              {activeTab === 'dashboard' ? t.overview : activeTab === 'leads' ? t.inboundLeads : activeTab === 'apresentacoes' ? 'Apresentações' : activeTab === 'estrategia' ? 'Estratégia' : t.outboundProspects}
+              {activeTab === 'dashboard' ? t.overview : activeTab === 'leads' ? t.inboundLeads : activeTab === 'apresentacoes' ? 'Apresentações' : activeTab === 'captacao' ? 'Captação' : activeTab === 'estrategia' ? 'Estratégia' : t.outboundProspects}
             </h2>
           </div>
 
@@ -1617,11 +1809,12 @@ export function Admin() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className={`${activeTab === 'apresentacoes' || activeTab === 'estrategia' ? 'h-full w-full' : 'max-w-7xl mx-auto'}`}>
+          <div className={`${activeTab === 'apresentacoes' || activeTab === 'captacao' || activeTab === 'estrategia' ? 'h-full w-full' : 'max-w-7xl mx-auto'}`}>
             {activeTab === 'dashboard' && renderDashboard()}
             {activeTab === 'leads' && renderLeads()}
             {activeTab === 'prospects' && renderProspects()}
             {activeTab === 'apresentacoes' && <iframe src="/apresentacao-comercial" className="w-full h-full border-none bg-black-main" />}
+            {activeTab === 'captacao' && <iframe src="/captacao" className="w-full h-full border-none bg-black-main" />}
             {activeTab === 'estrategia' && <iframe src="/estrategia" className="w-full h-full border-none bg-black-main" />}
           </div>
         </div>

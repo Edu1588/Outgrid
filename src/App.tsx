@@ -70,12 +70,12 @@ function ScrollManager() {
 }
 
 function PageTracker() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
     if (!pathname.startsWith('/admin')) {
-      trackPageView(pathname);
+      trackPageView(pathname + hash);
     }
-  }, [pathname]);
+  }, [pathname, hash]);
   return null;
 }
 

@@ -279,13 +279,11 @@ export function Admin() {
     email: string;
     link: string;
     instagram: string;
-    followers: string;
   }>({
     phone: '',
     email: '',
     link: '',
     instagram: '',
-    followers: ''
   });
 
   const handleStartEdit = (lead: ScrapedLead) => {
@@ -295,22 +293,19 @@ export function Admin() {
       email: lead.email || '',
       link: lead.link || '',
       instagram: lead.instagram || '',
-      followers: lead.followers !== undefined && lead.followers !== null ? String(lead.followers) : ''
     });
   };
 
   const handleSaveEdit = async (id: string) => {
-    const updatedFollowers = editForm.followers.trim() === '' ? null : parseInt(editForm.followers, 10);
     const payload = {
       phone: editForm.phone,
       email: editForm.email,
       link: editForm.link,
       instagram: editForm.instagram,
-      followers: isNaN(updatedFollowers as any) ? null : updatedFollowers
     };
 
     // Optimistic UI update
-    setScrapedLeads(prev => prev.map(l => l.id === id ? { ...l, ...payload, followers: payload.followers as any } : l));
+    setScrapedLeads(prev => prev.map(l => l.id === id ? { ...l, ...payload } : l));
     setEditingLeadId(null);
 
     try {
@@ -323,7 +318,7 @@ export function Admin() {
         const data = await res.json();
         // Update local storage
         const currentLocal = JSON.parse(localStorage.getItem('outgrid_scraped_leads') || '[]');
-        const updatedLocal = currentLocal.map((l: any) => l.id === id ? { ...l, ...payload, followers: payload.followers } : l);
+        const updatedLocal = currentLocal.map((l: any) => l.id === id ? { ...l, ...payload } : l);
         localStorage.setItem('outgrid_scraped_leads', JSON.stringify(updatedLocal));
         showToast('Dados do lead atualizados com sucesso!');
       } else {
@@ -1063,7 +1058,7 @@ export function Admin() {
                 <Search className="text-orange-primary" /> Como funciona a busca de leads
               </h3>
               <p className={`text-sm leading-relaxed ${theme === 'light' ? 'text-slate-600' : 'text-gray-400'}`}>
-                Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja, captura contatos (telefone, e-mail e Instagram) e calcula um score de oportunidade: lojas que não possuem site próprio recebem scores mais altos, indicando maior potencial para venda de criação de site e marketing.
+                Nosso sistema busca automaticamente por concessionárias de pequeno e médio porte na região de Campinas. Uma inteligência artificial analisa os resultados, limpa o nome real da loja, captura contatos (telefone, e-mail e Instagram) e calcula um score de oportunidade: o score é calculado com base na presença digital (qualidade do site e número de seguidores), indicando maior potencial para venda de criação de site e marketing.
               </p>
             </div>
           </div>
@@ -1179,8 +1174,8 @@ export function Admin() {
                     theme === 'light' ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-[#0A0A0A] border-white/10 text-gray-300'
                   }`}
                 >
-                  <option value="score-desc">Ordenar: Maior Oportunidade (Menor Score UX)</option>
-                  <option value="score-asc">Ordenar: Menor Oportunidade (Maior Score UX)</option>
+                  <option value="score-desc">Ordenar: Maior Oportunidade </option>
+                  <option value="score-asc">Ordenar: Menor Oportunidade </option>
                   <option value="date-desc">Ordenar: Mais Recentes</option>
                   <option value="date-asc">Ordenar: Mais Antigos</option>
                   <option value="name-asc">Ordenar: Nome (A-Z)</option>
@@ -1250,18 +1245,6 @@ export function Admin() {
                                     theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
                                   }`}
                                   placeholder="ex: https://instagram.com/user"
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Seguidores Reais</label>
-                                <input 
-                                  type="number" 
-                                  value={editForm.followers} 
-                                  onChange={(e) => setEditForm(prev => ({ ...prev, followers: e.target.value }))}
-                                  className={`w-full text-xs px-2 py-1 rounded border focus:outline-none ${
-                                    theme === 'light' ? 'bg-white border-slate-300 text-slate-950' : 'bg-[#0F0F0F] border-white/10 text-white'
-                                  }`}
-                                  placeholder="Seguidores"
                                 />
                               </div>
                             </div>

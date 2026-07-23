@@ -11,7 +11,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/forzamotorsbr",
     "followers": 2993,
     "status": "Não contatado",
-    "score": 70,
+    "score": 63,
     "createdAt": "2026-07-21T18:51:02.047Z"
   },
   {
@@ -24,7 +24,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/luvicarveiculos",
     "followers": 6883,
     "status": "Não contatado",
-    "score": 77,
+    "score": 86,
     "createdAt": "2026-07-21T18:51:02.048Z"
   },
   {
@@ -37,7 +37,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/azzurraveiculos",
     "followers": 50231,
     "status": "Não contatado",
-    "score": 72,
+    "score": 100,
     "createdAt": "2026-07-21T18:51:02.048Z"
   },
   {
@@ -50,7 +50,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/waguinhoveiculos",
     "followers": 1310,
     "status": "Não contatado",
-    "score": 75,
+    "score": 48,
     "createdAt": "2026-07-21T18:51:02.048Z"
   },
   {
@@ -63,7 +63,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/autodon",
     "followers": 61787,
     "status": "Não contatado",
-    "score": 75,
+    "score": 100,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -76,7 +76,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/abaveiculos",
     "followers": 4936,
     "status": "Não contatado",
-    "score": 72,
+    "score": 76,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -89,7 +89,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/ricavelmultimarcas",
     "followers": 2262,
     "status": "Não contatado",
-    "score": 71,
+    "score": 58,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -102,7 +102,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/mvveiculos",
     "followers": 20000,
     "status": "Não contatado",
-    "score": 66,
+    "score": 100,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -115,7 +115,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/miamiveiculos",
     "followers": 311,
     "status": "Não contatado",
-    "score": 84,
+    "score": 34,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -128,7 +128,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/cassioveiculos",
     "followers": 35,
     "status": "Não contatado",
-    "score": 74,
+    "score": 24,
     "createdAt": "2026-07-21T18:51:02.049Z"
   },
   {
@@ -141,7 +141,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/alphaveiculos",
     "followers": 65851,
     "status": "Não contatado",
-    "score": 77,
+    "score": 100,
     "createdAt": "2026-07-21T18:06:56.874Z"
   },
   {
@@ -154,7 +154,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/eamotors",
     "followers": 36362,
     "status": "Não contatado",
-    "score": 70,
+    "score": 100,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -167,7 +167,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/zacarveiculos",
     "followers": 24782,
     "status": "Não contatado",
-    "score": 68,
+    "score": 100,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -180,7 +180,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/sandroveiculos",
     "followers": 516,
     "status": "Não contatado",
-    "score": 71,
+    "score": 38,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -193,7 +193,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/visualveiculos",
     "followers": 165,
     "status": "Não contatado",
-    "score": 84,
+    "score": 30,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -206,7 +206,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/makinemotors",
     "followers": 6444,
     "status": "Não contatado",
-    "score": 83,
+    "score": 84,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -219,7 +219,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/concessionariacodive",
     "followers": 7753,
     "status": "Não contatado",
-    "score": 84,
+    "score": 90,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -232,7 +232,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/destaquemotors",
     "followers": 13,
     "status": "Não contatado",
-    "score": 74,
+    "score": 22,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -245,7 +245,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/vaaptyvalinhos",
     "followers": 494,
     "status": "Não contatado",
-    "score": 77,
+    "score": 37,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -258,7 +258,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/sabinimotors",
     "followers": 9722,
     "status": "Não contatado",
-    "score": 84,
+    "score": 98,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -271,7 +271,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/fontcarveiculos",
     "followers": 8,
     "status": "Não contatado",
-    "score": 83,
+    "score": 22,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -284,7 +284,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/julioferreiraveiculos",
     "followers": 6303,
     "status": "Não contatado",
-    "score": 84,
+    "score": 83,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -297,7 +297,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/willmotors",
     "followers": 274,
     "status": "Não contatado",
-    "score": 69,
+    "score": 33,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -310,7 +310,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/hypecarveiculos",
     "followers": 18,
     "status": "Não contatado",
-    "score": 82,
+    "score": 23,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -323,7 +323,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/destaquevalinhos",
     "followers": 4852,
     "status": "Não contatado",
-    "score": 66,
+    "score": 75,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -336,7 +336,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/mdmotors",
     "followers": 2200,
     "status": "Não contatado",
-    "score": 76,
+    "score": 57,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -349,7 +349,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/denilsonveiculos",
     "followers": 570,
     "status": "Não contatado",
-    "score": 69,
+    "score": 39,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -362,7 +362,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/movvaveiculos",
     "followers": 109,
     "status": "Não contatado",
-    "score": 77,
+    "score": 28,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -375,7 +375,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/independenciaveiculos",
     "followers": 3690,
     "status": "Não contatado",
-    "score": 83,
+    "score": 68,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -388,7 +388,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/facciniveiculos",
     "followers": 3767,
     "status": "Não contatado",
-    "score": 76,
+    "score": 69,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -401,7 +401,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/chevroletcodive",
     "followers": 11778,
     "status": "Não contatado",
-    "score": 84,
+    "score": 100,
     "createdAt": "2026-07-21T18:06:56.875Z"
   },
   {
@@ -414,7 +414,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/alvorada_automoveis",
     "followers": 5781,
     "status": "Não contatado",
-    "score": 67,
+    "score": 80,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -427,7 +427,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/mkveiculosno",
     "followers": 3501,
     "status": "Não contatado",
-    "score": 68,
+    "score": 67,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -440,7 +440,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/pantera.veiculos",
     "followers": 3490,
     "status": "Não contatado",
-    "score": 76,
+    "score": 67,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -453,7 +453,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/sr_veiculos",
     "followers": 2269,
     "status": "Não contatado",
-    "score": 66,
+    "score": 58,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -466,7 +466,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/novaodessaveiculos",
     "followers": 4863,
     "status": "Não contatado",
-    "score": 74,
+    "score": 55,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -479,7 +479,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/gbcar_veiculos2015",
     "followers": 986,
     "status": "Não contatado",
-    "score": 78,
+    "score": 45,
     "createdAt": "2026-07-21T18:05:17.062Z"
   },
   {
@@ -492,7 +492,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/ampeliomultimarcas",
     "followers": 2480,
     "status": "Não contatado",
-    "score": 72,
+    "score": 39,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -505,7 +505,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/novaodessaveiculos",
     "followers": 2944,
     "status": "Não contatado",
-    "score": 65,
+    "score": 63,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -518,7 +518,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/jazzveiculos",
     "followers": 260630,
     "status": "Não contatado",
-    "score": 81,
+    "score": 100,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -531,7 +531,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/vessachevrolet/",
     "followers": 10282,
     "status": "Não contatado",
-    "score": 71,
+    "score": 100,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -544,7 +544,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/paschoalinmotors",
     "followers": 2439,
     "status": "Não contatado",
-    "score": 72,
+    "score": 59,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -557,7 +557,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/dzm.automoveis",
     "followers": 440,
     "status": "Não contatado",
-    "score": 77,
+    "score": 36,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -570,7 +570,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/monacoveiculosnorte",
     "followers": 14814,
     "status": "Não contatado",
-    "score": 74,
+    "score": 100,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -583,7 +583,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/consegveiculos",
     "followers": 6246,
     "status": "Não contatado",
-    "score": 73,
+    "score": 83,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -609,7 +609,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/ousadiaveiculos",
     "followers": 2300,
     "status": "Não contatado",
-    "score": 66,
+    "score": 58,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -622,7 +622,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/primecar777",
     "followers": 729,
     "status": "Não contatado",
-    "score": 74,
+    "score": 41,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -635,7 +635,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/dnaveiculos",
     "followers": 45,
     "status": "Não contatado",
-    "score": 67,
+    "score": 25,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -648,7 +648,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/fiaoveiculos",
     "followers": 1598,
     "status": "Não contatado",
-    "score": 69,
+    "score": 51,
     "createdAt": "2026-07-21T18:05:17.063Z"
   },
   {
@@ -661,7 +661,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/altomanimultimarcas",
     "followers": 6694,
     "status": "Não contatado",
-    "score": 82,
+    "score": 85,
     "createdAt": "2026-07-21T18:02:58.483Z"
   },
   {
@@ -674,7 +674,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/nobremultimarcas_",
     "followers": 14,
     "status": "Não contatado",
-    "score": 73,
+    "score": 22,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -687,7 +687,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/unica.veiculos",
     "followers": 7342,
     "status": "Não contatado",
-    "score": 70,
+    "score": 88,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -700,7 +700,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/neriveiculos_hortolandia",
     "followers": 8173,
     "status": "Não contatado",
-    "score": 77,
+    "score": 92,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -713,7 +713,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/juniorcardosovehicles/",
     "followers": 2480,
     "status": "Não contatado",
-    "score": 74,
+    "score": 59,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -726,7 +726,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/robertoveiculos.1",
     "followers": 3600,
     "status": "Não contatado",
-    "score": 79,
+    "score": 68,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -739,7 +739,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/maisveiculos_hortolandia",
     "followers": 563,
     "status": "Não contatado",
-    "score": 70,
+    "score": 38,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -752,7 +752,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/ocknermotors",
     "followers": 5761,
     "status": "Não contatado",
-    "score": 76,
+    "score": 80,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -765,7 +765,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/a3veiculos",
     "followers": 1200,
     "status": "Não contatado",
-    "score": 77,
+    "score": 47,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -778,7 +778,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/lojadeveiculos",
     "followers": 1200,
     "status": "Não contatado",
-    "score": 16,
+    "score": 27,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -791,7 +791,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/n5nveiculos",
     "followers": 428,
     "status": "Não contatado",
-    "score": 65,
+    "score": 36,
     "createdAt": "2026-07-21T18:02:58.484Z"
   },
   {
@@ -804,7 +804,7 @@ export const INITIAL_SCRAPED_LEADS: any[] = [
     "instagram": "https://www.instagram.com/vaaptyhortolandia",
     "followers": 2177,
     "status": "Não contatado",
-    "score": 76,
+    "score": 57,
     "createdAt": "2026-07-21T18:02:58.484Z"
   }
 ];

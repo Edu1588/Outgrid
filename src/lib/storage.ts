@@ -148,7 +148,7 @@ export async function getScrapedLeadsAsync(): Promise<ScrapedLead[]> {
 
 export function getScrapedLeads(): ScrapedLead[] {
   try {
-    const DATA_VERSION = 'v2.6_no_ux_popup_and_verified_followers';
+    const DATA_VERSION = 'v2.7_score_recalculated';
     const currentVersion = localStorage.getItem('outgrid_leads_version');
     if (currentVersion !== DATA_VERSION) {
       localStorage.removeItem('outgrid_scraped_leads');

@@ -51,7 +51,7 @@ export function Header() {
           ))}
           <li>
             <Link 
-              to={getHomeLink('#simulador')} 
+              to={getHomeLink('#contato')} 
               className="bg-orange-primary text-black-main px-4 py-2 rounded-full text-[14px] font-bold hover:bg-white transition-colors"
             >
               Solicitar Análise
@@ -86,7 +86,7 @@ export function Header() {
             </Link>
           ))}
           <Link 
-            to={getHomeLink('#simulador')} 
+            to={getHomeLink('#contato')} 
             onClick={() => setIsOpen(false)}
             className="bg-orange-primary text-black-main px-4 py-3 rounded-xl text-base font-bold text-center mt-2"
           >
